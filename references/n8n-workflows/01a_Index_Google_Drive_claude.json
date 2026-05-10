@@ -1,0 +1,326 @@
+{
+  "name": "01a - Index Google Drive Documents",
+  "nodes": [
+    {
+      "id": "1544746c-74f6-4760-9830-361dab97bf63",
+      "name": "▶ Start GDrive Indexing",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "7520ec41-bf99-4b99-9455-895a2c998ab9",
+      "name": "📋 File List (edit me)",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        480,
+        300
+      ],
+      "typeVersion": 3.4,
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\"files\": [{\"drive_id\": \"PASTE_GOOGLE_DRIVE_FILE_ID_HERE\", \"name\": \"Трудовой кодекс РФ\", \"section\": \"Трудовое право\", \"date\": \"2024-01-01\"}, {\"drive_id\": \"PASTE_GOOGLE_DRIVE_FILE_ID_HERE_2\", \"name\": \"ФЗ №196 О безопасности дорожного движения\", \"section\": \"Транспортное право\", \"date\": \"2024-01-01\"}, {\"drive_id\": \"PASTE_GOOGLE_DRIVE_FILE_ID_HERE_3\", \"name\": \"Правила перевозок грузов ПП №2200\", \"section\": \"Транспортное право\", \"date\": \"2021-11-01\"}, {\"drive_id\": \"PASTE_GOOGLE_DRIVE_FILE_ID_HERE_4\", \"name\": \"Типовой трудовой договор Минтруда\", \"section\": \"Шаблон документа\", \"date\": \"2023-01-01\"}, {\"drive_id\": \"PASTE_GOOGLE_DRIVE_FILE_ID_HERE_5\", \"name\": \"Политика удалённой работы\", \"section\": \"Внутренний регламент\", \"date\": \"2024-06-01\"}]}",
+        "options": {}
+      }
+    },
+    {
+      "id": "479ade00-560c-4156-8035-13a47e8f9034",
+      "name": "Split Files",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        720,
+        300
+      ],
+      "typeVersion": 1,
+      "parameters": {
+        "fieldToSplitOut": "files",
+        "options": {
+          "destinationFieldName": "file"
+        }
+      }
+    },
+    {
+      "id": "31728ba1-e338-4b9b-bfc8-9a3aa9b4d9c7",
+      "name": "🔁 Loop Over Files",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        960,
+        300
+      ],
+      "typeVersion": 3,
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      }
+    },
+    {
+      "id": "247bf663-c6be-4de2-8006-9e44fd29e8cc",
+      "name": "Google Drive Download",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1200,
+        300
+      ],
+      "typeVersion": 3,
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.file.drive_id }}"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "2dd5f1eb-b968-40dc-83a3-35b8f7a1019f",
+      "name": "📎 Prepare Metadata",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1440,
+        300
+      ],
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "\n// Grab metadata from the file list item (accessible from loop context)\n// The Google Drive download replaces JSON, so we re-read from loop node\nconst loopItems = $('Loop Over Files').all();\nconst fileItem = loopItems[0]; // current batch item\nconst file = fileItem.json.file || {};\n\nconst fileName    = file.name    || 'unknown_document.pdf';\nconst fileSection = file.section || 'Общий документ';\nconst fileDate    = file.date    || new Date().toISOString().split('T')[0];\n\n// Pass binary data through + metadata as JSON fields\nreturn [{\n  json: {\n    file_name:    fileName,\n    file_section: fileSection,\n    file_date:    fileDate,\n    source:       'google_drive'\n  },\n  binary: $input.first().binary   // preserve the downloaded PDF binary\n}];\n"
+      }
+    },
+    {
+      "id": "0a615ac1-a42d-4656-9493-40f336cbaf49",
+      "name": "📥 Insert to Supabase",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "position": [
+        1700,
+        300
+      ],
+      "typeVersion": 1,
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "documents",
+          "cachedResultName": "documents"
+        },
+        "embeddingBatchSize": 30,
+        "options": {}
+      }
+    },
+    {
+      "id": "e5d861e5-0da3-4a70-9665-975c935fa62d",
+      "name": "📄 PDF Loader + Metadata",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        1500,
+        520
+      ],
+      "typeVersion": 1,
+      "parameters": {
+        "dataType": "binary",
+        "loader": "pdfLoader",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "values": [
+              {
+                "name": "file",
+                "value": "={{ $json.file_name }}"
+              },
+              {
+                "name": "section",
+                "value": "={{ $json.file_section }}"
+              },
+              {
+                "name": "date",
+                "value": "={{ $json.file_date }}"
+              },
+              {
+                "name": "source",
+                "value": "google_drive"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "e1df0627-6d50-4d0d-8652-bb24996c7faa",
+      "name": "✂️ Text Splitter ~500tok",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "position": [
+        1500,
+        720
+      ],
+      "typeVersion": 1,
+      "parameters": {
+        "chunkSize": 1200,
+        "chunkOverlap": 120,
+        "options": {}
+      }
+    },
+    {
+      "id": "7566ee93-1918-4a75-b719-a8c216460213",
+      "name": "🔢 OpenAI Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        1900,
+        520
+      ],
+      "typeVersion": 1,
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      }
+    },
+    {
+      "id": "ac930d41-a989-4884-bbfc-ebd2b52d0d42",
+      "name": "✅ Indexing Done",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1700,
+        100
+      ],
+      "typeVersion": 3.4,
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3e6d8196-d264-41e5-9e99-82b39a0fb72d",
+              "name": "status",
+              "type": "string",
+              "value": "All files indexed to Supabase"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "▶ Start GDrive Indexing": {
+      "main": [
+        [
+          {
+            "node": "📋 File List (edit me)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 File List (edit me)": {
+      "main": [
+        [
+          {
+            "node": "Split Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Files": {
+      "main": [
+        [
+          {
+            "node": "🔁 Loop Over Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔁 Loop Over Files": {
+      "main": [
+        [
+          {
+            "node": "✅ Indexing Done",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Drive Download",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Download": {
+      "main": [
+        [
+          {
+            "node": "📎 Prepare Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📎 Prepare Metadata": {
+      "main": [
+        [
+          {
+            "node": "📥 Insert to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Insert to Supabase": {
+      "main": [
+        [
+          {
+            "node": "🔁 Loop Over Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📄 PDF Loader + Metadata": {
+      "ai_document": [
+        [
+          {
+            "node": "📥 Insert to Supabase",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✂️ Text Splitter ~500tok": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "📄 PDF Loader + Metadata",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔢 OpenAI Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "📥 Insert to Supabase",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

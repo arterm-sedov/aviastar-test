@@ -1,0 +1,410 @@
+{
+  "name": "01b - Index Web URLs (HTML Fetch)",
+  "nodes": [
+    {
+      "id": "847faf4f-4190-4279-87bc-9220a25624c3",
+      "name": "▶ Start Web Indexing",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "384d37a0-d9c5-4cf7-8988-1317d3bb7ba8",
+      "name": "🌐 URL List",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        480,
+        300
+      ],
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "\n// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n// Seed URLs for HR/Legal knowledge base\n// Add or remove entries freely\n// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nconst urls = [\n  // External: Онлайнинспекция (official Роструд FAQ)\n  {\n    url:     \"https://онлайнинспекция.рф/questions\",\n    name:    \"Роструд FAQ - Онлайнинспекция\",\n    section: \"Трудовые вопросы (внешний источник)\",\n    date:    new Date().toISOString().split('T')[0]\n  },\n  // КонсультантПлюс free: Трудовой кодекс overview\n  {\n    url:     \"https://www.consultant.ru/document/cons_doc_LAW_34683/\",\n    name:    \"Трудовой кодекс РФ - КонсультантПлюс\",\n    section: \"Трудовое законодательство\",\n    date:    \"2024-01-01\"\n  },\n  // Минтруд: типовой трудовой договор\n  {\n    url:     \"https://mintrud.gov.ru/employment/employers/3\",\n    name:    \"Типовой договор - Минтруд\",\n    section: \"Шаблоны документов\",\n    date:    \"2024-01-01\"\n  },\n  // Правила перевозок (официальный текст)\n  {\n    url:     \"https://www.consultant.ru/document/cons_doc_LAW_379480/\",\n    name:    \"Правила перевозок грузов ПП №2200\",\n    section: \"Транспортное право\",\n    date:    \"2021-11-01\"\n  },\n  // ФЗ о безопасности дорожного движения\n  {\n    url:     \"https://www.consultant.ru/document/cons_doc_LAW_17585/\",\n    name:    \"ФЗ №196 О безопасности дорожного движения\",\n    section: \"Транспортное право\",\n    date:    \"2024-01-01\"\n  }\n];\n\n// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n// Output one item per URL\n// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nreturn urls.map(u => ({ json: u }));\n"
+      }
+    },
+    {
+      "id": "9db19da6-3470-4421-862c-f0382db6530d",
+      "name": "Deduplicate URLs",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "position": [
+        720,
+        300
+      ],
+      "typeVersion": 1,
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "url",
+        "options": {}
+      }
+    },
+    {
+      "id": "642ea10c-30af-4ab9-a54b-2776c99e9388",
+      "name": "🔁 Loop Over URLs",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        960,
+        300
+      ],
+      "typeVersion": 3,
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      }
+    },
+    {
+      "id": "79acacfc-d47b-499a-a6d1-fad0f7f33fed",
+      "name": "🌍 Fetch Page HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1200,
+        300
+      ],
+      "typeVersion": 4.2,
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          },
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        },
+        "headers": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (compatible; n8n-indexer/1.0)"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "ru-RU,ru;q=0.9"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "f9da6fa3-b42b-42e9-b7a9-fada9773e19c",
+      "name": "📰 Extract Main Content",
+      "type": "n8n-nodes-base.html",
+      "position": [
+        1440,
+        300
+      ],
+      "typeVersion": 1.2,
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "data",
+              "cssSelector": "article, main, .content, .document, #content, .article, p",
+              "returnValue": "text",
+              "skipSelectors": "nav, header, footer, script, style, .menu, .sidebar, .ads, form"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "4f0dece8-0a98-454b-887f-9eb2cfbb47e2",
+      "name": "🧹 Clean Text + Metadata",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1680,
+        300
+      ],
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "\n// Fetch loop context (URL metadata flows from the loop)\nconst loopItem = $('🔁 Loop Over URLs').first().json;\nconst htmlItem = $input.first().json;\n\nlet rawText = htmlItem.data || '';\n\n// ── Clean the HTML-extracted text ──\nrawText = rawText\n  .replace(/\\r/g, '')\n  .replace(/\\t/g, ' ')\n  .replace(/[ ]{3,}/g, ' ')       // collapse whitespace\n  .replace(/\\n{4,}/g, '\\n\\n')     // max 2 blank lines\n  .replace(/https?:\\/\\/\\S+/g, '') // strip inline URLs\n  .trim();\n\n// Skip near-empty pages (navigation, error pages, etc.)\nif (!rawText || rawText.length < 300) {\n  console.log(`SKIP: \"${loopItem.name}\" - content too short (${rawText.length} chars)`);\n  return [];\n}\n\nreturn [{\n  json: {\n    cleaned_text: rawText,\n    file_name:    loopItem.name    || 'web_page',\n    file_section: loopItem.section || 'Внешний источник',\n    file_date:    loopItem.date    || new Date().toISOString().split('T')[0],\n    source_url:   loopItem.url     || '',\n    source:       'web_fetch',\n    char_count:   rawText.length\n  }\n}];\n"
+      }
+    },
+    {
+      "id": "58a5acb9-d921-49b3-bfa0-399e231392e5",
+      "name": "Skip Already Indexed",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "position": [
+        1920,
+        300
+      ],
+      "typeVersion": 1,
+      "parameters": {
+        "operation": "removeItemsSeenInPreviousExecutions",
+        "dedupeValue": "={{ $json.source_url }}",
+        "options": {
+          "scope": "node",
+          "historySize": 10000
+        }
+      }
+    },
+    {
+      "id": "0bd7f087-b890-4782-b781-1900a1ee373b",
+      "name": "📥 Insert to Supabase",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "position": [
+        2160,
+        300
+      ],
+      "typeVersion": 1,
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "documents",
+          "cachedResultName": "documents"
+        },
+        "embeddingBatchSize": 30,
+        "options": {}
+      }
+    },
+    {
+      "id": "7f3ca5c8-99b9-4ce7-9a24-e452458c7db2",
+      "name": "📄 Text Loader + Metadata",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        1960,
+        520
+      ],
+      "typeVersion": 1,
+      "parameters": {
+        "dataType": "json",
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.cleaned_text }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "values": [
+              {
+                "name": "file",
+                "value": "={{ $json.file_name }}"
+              },
+              {
+                "name": "section",
+                "value": "={{ $json.file_section }}"
+              },
+              {
+                "name": "date",
+                "value": "={{ $json.file_date }}"
+              },
+              {
+                "name": "source_url",
+                "value": "={{ $json.source_url }}"
+              },
+              {
+                "name": "source",
+                "value": "web_fetch"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "1e00001a-23b0-4a8d-a9ee-291db701dfaa",
+      "name": "✂️ Text Splitter ~500tok",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "position": [
+        1960,
+        720
+      ],
+      "typeVersion": 1,
+      "parameters": {
+        "chunkSize": 1200,
+        "chunkOverlap": 120,
+        "options": {}
+      }
+    },
+    {
+      "id": "a3c48057-1b42-4f0b-84b8-17bc6aab3527",
+      "name": "🔢 OpenAI Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        2360,
+        520
+      ],
+      "typeVersion": 1,
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      }
+    },
+    {
+      "id": "31aa0026-c47b-4d41-8916-f2c857f07276",
+      "name": "✅ Web Indexing Done",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2160,
+        100
+      ],
+      "typeVersion": 3.4,
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0daae209-0130-45f9-962e-332c78aae254",
+              "name": "status",
+              "type": "string",
+              "value": "All web pages indexed to Supabase"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "▶ Start Web Indexing": {
+      "main": [
+        [
+          {
+            "node": "🌐 URL List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🌐 URL List": {
+      "main": [
+        [
+          {
+            "node": "Deduplicate URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deduplicate URLs": {
+      "main": [
+        [
+          {
+            "node": "🔁 Loop Over URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔁 Loop Over URLs": {
+      "main": [
+        [
+          {
+            "node": "✅ Web Indexing Done",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "🌍 Fetch Page HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🌍 Fetch Page HTML": {
+      "main": [
+        [
+          {
+            "node": "📰 Extract Main Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📰 Extract Main Content": {
+      "main": [
+        [
+          {
+            "node": "🧹 Clean Text + Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧹 Clean Text + Metadata": {
+      "main": [
+        [
+          {
+            "node": "Skip Already Indexed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skip Already Indexed": {
+      "main": [
+        [
+          {
+            "node": "📥 Insert to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Insert to Supabase": {
+      "main": [
+        [
+          {
+            "node": "🔁 Loop Over URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📄 Text Loader + Metadata": {
+      "ai_document": [
+        [
+          {
+            "node": "📥 Insert to Supabase",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✂️ Text Splitter ~500tok": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "📄 Text Loader + Metadata",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔢 OpenAI Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "📥 Insert to Supabase",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
