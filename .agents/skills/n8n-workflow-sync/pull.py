@@ -16,7 +16,7 @@ def _from_winreg(key):
 
 N8N_URL = _env("N8N_API_URL", "http://localhost:5678")
 N8N_KEY = _env("N8N_API_KEY")
-WF_ID = os.environ.get("N8N_WORKFLOW_ID", "")
+WF_ID = _env("N8N_WORKFLOW_ID", "")
 OUTPUT = os.environ.get("N8N_WORKFLOW_PATH",
     os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "n8n", "legal-rag.json")))
 

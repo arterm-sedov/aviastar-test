@@ -1,8 +1,5 @@
 {
   "name": "aviastar-test v2 (file-based + AI classifier)",
-  "description": null,
-  "active": false,
-  "isArchived": false,
   "nodes": [
     {
       "parameters": {},
@@ -795,29 +792,34 @@
     },
     {
       "parameters": {
-        "inputText": "={{ .chatInput }}",
+        "inputText": "={{ $json.chatInput }}",
         "categories": {
           "categories": [
             {
+              "category": "hr",
               "description": "HR-related: vacation, hiring, personnel, employees, recruitment, dismissal, staff policies"
             },
             {
+              "category": "legal",
               "description": "Legal: contracts, laws, regulations, labor code, rights, agreements, compliance"
             },
             {
+              "category": "general",
               "description": "General questions not specific to HR or legal domains"
             }
           ]
         },
-        "options": {}
+        "options": {
+          "systemPromptTemplate": "Please classify the text provided by the user into one of the following categories: {categories}, and use the provided formatting instructions below. Don't explain, and only output the json."
+        }
       },
       "id": "46d7bcd2-935d-434b-877f-45c423c29107",
       "name": "AI Text Classifier",
       "type": "@n8n/n8n-nodes-langchain.textClassifier",
       "typeVersion": 1.1,
       "position": [
-        1424,
-        1584
+        1408,
+        1552
       ]
     },
     {
@@ -844,6 +846,7 @@
       ]
     }
   ],
+  "pinData": {},
   "connections": {
     "RAG Chatbot": {
       "main": [
@@ -1258,13 +1261,7 @@
         ]
       ],
       "ai_languageModel": [
-        [
-          {
-            "node": "Gemini 2.5 Flash",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Enrich with Classification": {
@@ -1279,15 +1276,15 @@
       ]
     }
   },
+  "active": false,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "binaryMode": "separate"
   },
-  "staticData": null,
-  "meta": null,
-  "pinData": null,
-  "activeVersionId": null,
-  "versionCounter": 1,
-  "triggerCount": 0,
-  "tags": [],
-  "activeVersion": null
+  "versionId": "38957bf0-5caf-4dec-9204-74d054bfcabe",
+  "meta": {
+    "instanceId": "ab8a07d2b692d5341ee84514c51cbc763550aefa32d8142b49ff4b768c362524"
+  },
+  "id": "UQ32XEuvDAc9MNer",
+  "tags": []
 }
