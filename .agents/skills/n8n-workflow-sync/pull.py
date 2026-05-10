@@ -5,7 +5,7 @@ N8N_URL = os.environ.get("N8N_API_URL", "http://localhost:5678")
 N8N_KEY = os.environ.get("N8N_API_KEY")
 WF_ID = os.environ.get("N8N_WORKFLOW_ID", "")
 OUTPUT = os.environ.get("N8N_WORKFLOW_PATH",
-    os.path.join(os.path.dirname(__file__), "legal-rag.json"))
+    os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "n8n", "legal-rag.json")))
 
 if not N8N_KEY:
     print("ERROR: N8N_API_KEY not set in environment", file=sys.stderr)

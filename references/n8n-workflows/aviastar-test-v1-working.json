@@ -1,8 +1,5 @@
 {
-  "name": "aviastar-test v2 (file-based + AI classifier)",
-  "description": null,
-  "active": false,
-  "isArchived": false,
+  "name": "aviastar-test",
   "nodes": [
     {
       "parameters": {},
@@ -181,6 +178,28 @@
       "webhookId": "965843ea-8dc2-4760-b13a-b65b68e3e8aa",
       "typeVersion": 1.1,
       "notes": "� arterm-sedov"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "???????? ??",
+        "filter": {},
+        "options": {}
+      },
+      "id": "46a86145-f19e-4123-87eb-35e2f2339e05",
+      "name": "Search Google Drive Folder",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2608,
+        1056
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9Rw7OKmS4usZkWZz",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
     },
     {
       "parameters": {
@@ -423,6 +442,45 @@
     },
     {
       "parameters": {
+        "fieldToSplitOut": "files",
+        "options": {
+          "destinationFieldName": "file"
+        }
+      },
+      "id": "a9984bf7-c38e-4f1e-8636-ca9cbc6ee814",
+      "name": "Split Out Google Docs",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        1056
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "document",
+              "type": "object",
+              "value": "={{ { \"id\": $json.file.id, \"name\": $json.file.name, \"source\": \"google\" } }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1e82786e-455d-4fb0-90c5-3bec1f190a8e",
+      "name": "Prepare Google Doc For Processing",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3056,
+        1056
+      ]
+    },
+    {
+      "parameters": {
         "operation": "extractHtmlContent",
         "extractionValues": {
           "values": [
@@ -564,6 +622,26 @@
     },
     {
       "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $json.document.id }}"
+      },
+      "id": "bb254cc8-f9fe-4ba8-922e-f4a0b46a64fd",
+      "name": "Fetch Google Doc",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        4400,
+        784
+      ],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "JGqmYsYCHFTqOIu6",
+          "name": "Google Docs OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
         "url": "={{ $json.document.url }}",
         "options": {}
       },
@@ -619,7 +697,7 @@
                 "type": "string",
                 "operation": "equals"
               },
-              "rightValue": "local"
+              "rightValue": "google"
             }
           ],
           "combinator": "and"
@@ -633,6 +711,200 @@
       "position": [
         4000,
         864
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "??????",
+                    "id": "561e5a41-0291-4495-9c9a-a56e2efb6dac"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "??????????",
+                    "id": "16b8f142-443e-46fd-9fd8-da248ab1eea7"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "????? ?? ??????",
+                    "id": "3f726a9c-e839-447c-a801-d5937a88675a"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "????",
+                    "id": "3fa2a89e-0055-4b3f-9a2c-527c1990b8d8"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "????????",
+                    "id": "dce1446c-614a-4a5f-916b-2a8425d5ffa9"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "?????????",
+                    "id": "ab0cb1b7-569f-407f-9e55-9e2acffefeff"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "hr",
+                    "id": "dc7214b9-05e6-4e42-bfdb-a8d201e3d3de"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "employee",
+                    "id": "c9c07999-7242-4090-b47c-36fa429ca2bf"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "vacation",
+                    "id": "21ac3c8b-bfd7-4387-ab28-af99d2cedb65"
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "HR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "???????",
+                    "id": "73058778-4207-436a-bfdc-16076c04ab94"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "?????",
+                    "id": "4756a8a7-3977-4bb7-9028-b911fa57ff2c"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "?????",
+                    "id": "c2a3d600-d58d-4843-bdf8-ecf5f557699e"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "?????????",
+                    "id": "d70d6ce9-151c-47bc-954f-533a770c2e61"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "legal",
+                    "id": "023cda33-e01d-4a28-8dda-f7c178cf2dd3"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "contract",
+                    "id": "6f8d5765-1162-446b-88bd-76540a7e26bc"
+                  },
+                  {
+                    "leftValue": "={{ $json.chatInput }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "??????",
+                    "id": "e707d581-d52f-459a-9785-70fab5005c05"
+                  }
+                ],
+                "combinator": "or"
+              },
+              "renameOutput": true,
+              "outputKey": "Legal"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "General"
+        }
+      },
+      "id": "27ae911f-ee21-4f19-b23b-3f251c514f85",
+      "name": "Classify Query",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1712,
+        1584
       ]
     },
     {
@@ -739,120 +1011,15 @@
         3008,
         1696
       ]
-    },
-    {
-      "parameters": {
-        "operation": "read",
-        "fileSelector": "/docs/*"
-      },
-      "id": "2186b6e6-fa19-447e-9a07-f59967f1508c",
-      "name": "Read Local Documents",
-      "type": "n8n-nodes-base.readWriteFile",
-      "typeVersion": 1,
-      "position": [
-        2608,
-        1056
-      ]
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "1",
-              "name": "document",
-              "type": "object",
-              "value": "={{ { \"id\": $json.fileName, \"name\": $json.fileName, \"source\": \"local\" } }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "a8599ee9-d9d6-4a5f-8de9-5c548f5cbe2e",
-      "name": "Prepare Local Document",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        2832,
-        1056
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "pdf",
-        "binaryPropertyName": "data",
-        "options": {
-          "joinPages": true
-        }
-      },
-      "id": "0ccf8fbf-4fa2-4702-80b2-3e5ae88281ee",
-      "name": "Extract Local PDF",
-      "type": "n8n-nodes-base.extractFromFile",
-      "typeVersion": 1,
-      "position": [
-        4400,
-        784
-      ]
-    },
-    {
-      "parameters": {
-        "inputText": "={{ $json.chatInput }}",
-        "categories": {
-          "categories": [
-            {
-              "name": "HR",
-              "description": "HR-related: vacation, hiring, personnel, employees, recruitment, dismissal"
-            },
-            {
-              "name": "Legal",
-              "description": "Legal: contracts, laws, regulations, labor code, rights"
-            },
-            {
-              "name": "General",
-              "description": "General questions not specific to HR or legal domains"
-            }
-          ]
-        }
-      },
-      "id": "46d7bcd2-935d-434b-877f-45c423c29107",
-      "name": "AI Text Classifier",
-      "type": "@n8n/n8n-nodes-langchain.textClassifier",
-      "typeVersion": 1.1,
-      "position": [
-        1712,
-        1584
-      ]
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "1",
-              "name": "chatInput",
-              "type": "string",
-              "value": "={{ \"[Query category: \" + $json.category + \", confidence: \" + $json.confidence + \"]\\n\\n\" + $json.chatInput }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "21d400ec-788d-4861-b722-7746bda904c2",
-      "name": "Enrich with Classification",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        1856,
-        1584
-      ]
     }
   ],
+  "pinData": {},
   "connections": {
     "RAG Chatbot": {
       "main": [
         [
           {
-            "node": "AI Text Classifier",
+            "node": "Classify Query",
             "type": "main",
             "index": 0
           }
@@ -947,6 +1114,17 @@
         ]
       ]
     },
+    "Search Google Drive Folder": {
+      "main": [
+        [
+          {
+            "node": "Split Out Google Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Remove Duplicate Documents": {
       "main": [
         [
@@ -960,6 +1138,7 @@
     },
     "Loop Over Documents": {
       "main": [
+        [],
         [
           {
             "node": "Route Document By Source",
@@ -1039,7 +1218,7 @@
       "main": [
         [
           {
-            "node": "Read Local Documents",
+            "node": "Search Google Drive Folder",
             "type": "main",
             "index": 0
           },
@@ -1047,6 +1226,28 @@
             "node": "Fetch Legal/HR Websites",
             "type": "main",
             "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Google Docs": {
+      "main": [
+        [
+          {
+            "node": "Prepare Google Doc For Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Google Doc For Processing": {
+      "main": [
+        [
+          {
+            "node": "Merge Document Sources",
+            "type": "main",
+            "index": 1
           }
         ]
       ]
@@ -1106,6 +1307,17 @@
         ]
       ]
     },
+    "Fetch Google Doc": {
+      "main": [
+        [
+          {
+            "node": "Prepare Document Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Fetch Web Page": {
       "main": [
         [
@@ -1132,7 +1344,7 @@
       "main": [
         [
           {
-            "node": "Extract Local PDF",
+            "node": "Fetch Google Doc",
             "type": "main",
             "index": 0
           }
@@ -1151,6 +1363,17 @@
         [
           {
             "node": "Loop Over Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Query": {
+      "main": [
+        [
+          {
+            "node": "Legal/HR AI Agent",
             "type": "main",
             "index": 0
           }
@@ -1196,82 +1419,18 @@
           }
         ]
       ]
-    },
-    "Read Local Documents": {
-      "main": [
-        [
-          {
-            "node": "Prepare Local Document",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare Local Document": {
-      "main": [
-        [
-          {
-            "node": "Merge Document Sources",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Extract Local PDF": {
-      "main": [
-        [
-          {
-            "node": "Prepare Document Metadata",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "AI Text Classifier": {
-      "main": [
-        [
-          {
-            "node": "Enrich with Classification",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ],
-      "ai_languageModel": [
-        [
-          {
-            "node": "Gemini 2.5 Flash",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Enrich with Classification": {
-      "main": [
-        [
-          {
-            "node": "Legal/HR AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
+  "active": false,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "staticData": null,
-  "meta": null,
-  "pinData": {},
-  "activeVersionId": null,
-  "versionCounter": 13,
-  "triggerCount": 0,
-  "tags": [],
-  "activeVersion": null
+  "versionId": "cf0b3a53-4ba9-4e80-8c20-0d72b2a0859a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ab8a07d2b692d5341ee84514c51cbc763550aefa32d8142b49ff4b768c362524"
+  },
+  "id": "QwHk77OeKJzgsxpU",
+  "tags": []
 }
