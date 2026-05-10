@@ -795,24 +795,23 @@
     },
     {
       "parameters": {
-        "inputText": "={{ $json.chatInput }}",
+        "inputText": "={{ .chatInput }}",
         "categories": {
           "categories": [
             {
-              "category": "hr",
-              "description": "HR-related: vacation, hiring, personnel, employees, recruitment, dismissal"
+              "name": "HR",
+              "description": "HR-related: vacation, hiring, personnel, employees, recruitment, dismissal, staff policies"
             },
             {
-              "category": "legal",
-              "description": "Legal: contracts, laws, regulations, labor code, rights"
+              "name": "Legal",
+              "description": "Legal: contracts, laws, regulations, labor code, rights, agreements, compliance"
             },
             {
-              "category": "general",
+              "name": "General",
               "description": "General questions not specific to HR or legal domains"
             }
           ]
-        },
-        "options": {}
+        }
       },
       "id": "46d7bcd2-935d-434b-877f-45c423c29107",
       "name": "AI Text Classifier",
@@ -1260,7 +1259,13 @@
         ]
       ],
       "ai_languageModel": [
-        []
+        [
+          {
+            "node": "Gemini 2.5 Flash",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
       ]
     },
     "Enrich with Classification": {
@@ -1283,7 +1288,7 @@
   "meta": null,
   "pinData": {},
   "activeVersionId": null,
-  "versionCounter": 24,
+  "versionCounter": 25,
   "triggerCount": 0,
   "tags": [],
   "activeVersion": null
