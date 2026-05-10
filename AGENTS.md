@@ -1,13 +1,13 @@
 # AGENTS.md - Aviastar n8n RAG AI Assistant
 
-n8n workflow automation for Legal/HR RAG pipeline. Supabase pgvector + Gemini LLM.
+n8n workflow automation for Legal/HR RAG pipeline. Supabase pgvector + LLM.
 
 **Implementations follow:** SDD, lean, DRY, non-breaking, 12-factor. Always research before coding.
 
 ## Research & Planning
 
 - Research n8n node configs with `get_node` MCP tool before adding nodes.
-- Reference n8n source at `C:\Repos\n8n` for node implementations.
+- Reference n8n source at `..\n8n` for node implementations.
 - Plan workflow changes before editing JSON — validate after each change.
 - Deep web research for n8n docs: https://docs.n8n.io, GitHub issues.
 
@@ -25,19 +25,16 @@ n8n workflow automation for Legal/HR RAG pipeline. Supabase pgvector + Gemini LL
 # Validate workflow JSON before pushing
 # (uses n8n-mcp validate_workflow tool)
 
-# Push to local n8n (requires N8N_API_KEY env var)
-.\n8n\push.ps1
+# Push to local n8n
+python .agents/skills/n8n-workflow-sync/push.py
 
 # Pull from local n8n
-.\n8n\pull.ps1 -WorkflowId "QwHk77OeKJzgsxpU"
+$env:N8N_WORKFLOW_ID="vonKtk32bMVn0Iw4"
+python .agents/skills/n8n-workflow-sync/pull.py
 
 # Verify n8n container
 docker ps --filter "name=n8n"
 docker logs n8n --tail 10
-
-# Direct API test
-$env:N8N_API_KEY="<key>"; $headers=@{"X-N8N-API-KEY"=$env:N8N_API_KEY}
-Invoke-RestMethod -Uri "http://localhost:5678/api/v1/workflows" -Headers $headers
 ```
 
 ## Project Structure
@@ -135,7 +132,7 @@ Invoke-RestMethod -Uri "$N8N_URL/api/v1/workflows/<ID>" -Method Put -Headers $he
 
 | Path | Content | Use |
 |------|---------|-----|
-| `C:\Repos\n8n` | n8n source (TypeScript) | Node implementations, type structures |
-| `C:\Repos\n8n-docs` | n8n documentation (MDX) | Node docs, API docs, guides |
-| `C:\Repos\n8n-skills` | Claude Code skills for n8n | Skill reference, MCP usage patterns |
-| `C:\Repos\n8n-mcp` | n8n-mcp MCP server source | MCP tool behavior, env config, API client code |
+| `..\n8n` | n8n source (TypeScript) | Node implementations, type structures |
+| `..\n8n-docs` | n8n documentation (MDX) | Node docs, API docs, guides |
+| `..\n8n-skills` | Claude Code skills for n8n | Skill reference, MCP usage patterns |
+| `..\n8n-mcp` | n8n-mcp MCP server source | MCP tool behavior, env config, API client code |

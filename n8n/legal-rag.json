@@ -1,1295 +1,1222 @@
-﻿{
-    "name":  "aviastar-test v2 (file-based + AI classifier)",
-    "description":  null,
-    "active":  false,
-    "isArchived":  false,
-    "nodes":  [
-                  {
-                      "parameters":  {
-
-                                     },
-                      "id":  "cbb4cdc3-4c51-442e-a6d2-37407d54453d",
-                      "name":  "Simple Memory",
-                      "type":  "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-                      "position":  [
-                                       2064,
-                                       1824
-                                   ],
-                      "typeVersion":  1.3,
-                      "notes":  "? arterm-sedov"
-                  },
-                  {
-                      "parameters":  {
-                                         "textSplittingMode":  "custom",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "8398f926-d1b8-435e-be06-9610dcf96a22",
-                      "name":  "Default Data Loader",
-                      "type":  "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
-                      "position":  [
-                                       5424,
-                                       1184
-                                   ],
-                      "typeVersion":  1.1,
-                      "notes":  "? arterm-sedov"
-                  },
-                  {
-                      "parameters":  {
-                                         "chunkSize":  500,
-                                         "chunkOverlap":  50,
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "13731313-af7f-4b20-80b9-cee005f918c1",
-                      "name":  "Recursive Character Text Splitter",
-                      "type":  "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
-                      "position":  [
-                                       5504,
-                                       1392
-                                   ],
-                      "typeVersion":  1,
-                      "notes":  "? arterm-sedov"
-                  },
-                  {
-                      "parameters":  {
-                                         "modelName":  "models/gemini-3-flash-preview",
-                                         "options":  {
-                                                         "temperature":  0
-                                                     }
-                                     },
-                      "id":  "dc50134c-6a66-4144-8cc7-453eccdbedc5",
-                      "name":  "Gemini 2.5 Flash",
-                      "type":  "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-                      "position":  [
-                                       1936,
-                                       1824
-                                   ],
-                      "typeVersion":  1,
-                      "credentials":  {
-                                          "googlePalmApi":  {
-                                                                "id":  "ShEZYQLJQGGRzpFF",
-                                                                "name":  "Google Gemini(PaLM) Api account"
-                                                            }
-                                      },
-                      "notes":  "? arterm-sedov"
-                  },
-                  {
-                      "parameters":  {
-
-                                     },
-                      "id":  "1de80d54-bd97-4109-8295-2e2eeeba3481",
-                      "name":  "Gemini Query Embedding",
-                      "type":  "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
-                      "position":  [
-                                       2272,
-                                       2032
-                                   ],
-                      "typeVersion":  1,
-                      "credentials":  {
-                                          "googlePalmApi":  {
-                                                                "id":  "ShEZYQLJQGGRzpFF",
-                                                                "name":  "Google Gemini(PaLM) Api account"
-                                                            }
-                                      },
-                      "notes":  "? arterm-sedov"
-                  },
-                  {
-                      "parameters":  {
-
-                                     },
-                      "id":  "269c92b8-b277-4160-a332-de8cade0c212",
-                      "name":  "Gemini Chunk Embedding",
-                      "type":  "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
-                      "position":  [
-                                       5296,
-                                       1184
-                                   ],
-                      "typeVersion":  1,
-                      "credentials":  {
-                                          "googlePalmApi":  {
-                                                                "id":  "ShEZYQLJQGGRzpFF",
-                                                                "name":  "Google Gemini(PaLM) Api account"
-                                                            }
-                                      },
-                      "notes":  "? arterm-sedov"
-                  },
-                  {
-                      "parameters":  {
-                                         "operation":  "getAll",
-                                         "tableId":  "documents",
-                                         "limit":  1
-                                     },
-                      "id":  "d480c904-8e75-4166-bbf0-d8cb3a4a8efe",
-                      "name":  "Keep Supabase Instance Alive",
-                      "type":  "n8n-nodes-base.supabase",
-                      "position":  [
-                                       1712,
-                                       2032
-                                   ],
-                      "typeVersion":  1,
-                      "credentials":  {
-                                          "supabaseApi":  {
-                                                              "id":  "lfRTEqcP2QKagNi4",
-                                                              "name":  "Supabase account"
-                                                          }
-                                      },
-                      "notes":  "? arterm-sedov"
-                  },
-                  {
-                      "parameters":  {
-                                         "rule":  {
-                                                      "interval":  [
-                                                                       {
-                                                                           "daysInterval":  6
-                                                                       }
-                                                                   ]
-                                                  }
-                                     },
-                      "id":  "26badb62-c7b3-4633-8854-0ef14a9860f1",
-                      "name":  "Every 6 Days",
-                      "type":  "n8n-nodes-base.scheduleTrigger",
-                      "position":  [
-                                       1488,
-                                       2032
-                                   ],
-                      "typeVersion":  1.2,
-                      "notes":  "? arterm-sedov"
-                  },
-                  {
-                      "parameters":  {
-
-                                     },
-                      "id":  "86668008-4656-4c36-a8a3-5ebbb24df683",
-                      "name":  "Start Indexing",
-                      "type":  "n8n-nodes-base.manualTrigger",
-                      "position":  [
-                                       1488,
-                                       960
-                                   ],
-                      "typeVersion":  1,
-                      "notes":  "? arterm-sedov"
-                  },
-                  {
-                      "parameters":  {
-                                         "public":  true,
-                                         "initialMessages":  "????????????! ? AI-????????? ?? ???????? ? ??????????? ????????.\n?? ?????? ?????? ??? ??????? ?? ????????? ????????????????, ?????????? ????????? ???????? ? HR-??????????. ????????:\n\"????? ??????? ?????????? ????????\"\n\"????? ????????? ????? ??? ?????? ?? ???????\"",
-                                         "options":  {
-                                                         "inputPlaceholder":  "??????? ?????? ?? ???????? ??? ??????????? ????????...",
-                                                         "subtitle":  "",
-                                                         "title":  "",
-                                                         "customCss":  "/* === THEME OVERRIDE: n8n Glass \u0026 Glow (Revised) === */\n\n/*\n  This theme is built upon the default n8n chat CSS variables.\n  We\u0027ll use your desired branding and layout, and then add\n  the \"glass\" effect using a semi-transparent background\n  and a backdrop-filter on the main window class.\n*/\n\n:root {\n  /* --- 1. CORE BRANDING \u0026 FONTS --- */\n  /* Your choices for font and primary color are applied here. */\n  --chat--font-family: \u0027Inter\u0027, -apple-system, BlinkMacSystemFont, \u0027Segoe UI\u0027, Roboto, sans-serif;\n  --chat--color-primary: #EA4B71; /* n8n Red */\n  --chat--color-primary-shade-50: #D93A60;\n  --chat--color-primary-shade-100: #C82A50;\n  --chat--color-secondary: #20b69e; /* Kept default secondary for things like file uploads */\n  --chat--color-secondary-shade-50: #1ca08a;\n  --chat--color-white: #ffffff;\n  --chat--color-light: #f2f4f8;\n  --chat--color-dark: #1F2937; /* Darker, more modern text color */\n  --chat--color-disabled: #9CA3AF;\n  --chat--color-typing: #404040;\n\n  /* --- 2. WINDOW \u0026 LAYOUT --- */\n  /* Your dimensions and rounded corners. The actual glass effect is handled in the class override below. */\n  --chat--window--width: 430px;\n  --chat--window--height: 80vh;\n  --chat--window--border-radius: 16px;\n  --chat--window--border: 1px solid rgba(255, 255, 255, 0.3);\n  --chat--spacing: 1rem; /* 16px base spacing */\n  --chat--window--z-index: 9999;\n  --chat--window--bottom: var(--chat--spacing);\n  --chat--window--right: var(--chat--spacing);\n  --chat--window--margin-bottom: var(--chat--spacing);\n\n  /* --- 3. GLASSMORPHISM BACKGROUNDS --- */\n  /* We make the main sections transparent to let the glass window show through. */\n  --chat--header--background: transparent;\n  --chat--body--background: transparent;\n  --chat--footer--background: transparent;\n\n  /* --- 4. HEADER STYLING (REMOVED) --- */\n  /* The header is removed by setting its height, padding, and border to 0/none. */\n  --chat--header-height: 0;\n  --chat--header--padding: 0;\n  --chat--header--border-bottom: none;\n  /* The rest of the header variables are now irrelevant. */\n  --chat--header--color: var(--chat--color-dark);\n  --chat--heading--font-size: 1.5rem;\n  --chat--subtitle--font-size: 0.875rem;\n  --chat--subtitle--line-height: 1.4;\n  --chat--close--button--color-hover: var(--chat--color-primary);\n\n  /* --- 5. MESSAGE BUBBLES --- */\n  --chat--message--font-size: 0.875rem;\n  --chat--message--padding: 12px 16px;\n  --chat--message--border-radius: 12px;\n  --chat--message-line-height: 1.6;\n  --chat--message--margin-bottom: calc(var(--chat--spacing) * 0.75);\n  /* Adjusted padding: Top is 0, sides and bottom use the base spacing. */\n  --chat--messages-list--padding: 0 var(--chat--spacing) var(--chat--spacing);\n  --chat--message--bot--background: var(--chat--color-white);\n  --chat--message--bot--color: #111827;\n  --chat--message--bot--border: none;\n  --chat--message--user--background: var(--chat--color-primary);\n  --chat--message--user--color: var(--chat--color-white);\n  --chat--message--user--border: none;\n\n  /* --- 6. INPUT AREA --- */\n  --chat--textarea--height: 50px;\n  --chat--textarea--max-height: 10rem;\n  --chat--input--font-size: 0.9rem;\n  --chat--input--border: 0;\n  --chat--input--border-radius: 12px; /* Rounded input field */\n  --chat--input--padding: 12px 16px;\n  --chat--input--background: rgba(255, 255, 255, 0.5); /* Semi-transparent input */\n  --chat--input--text-color: #111827;\n  --chat--input--line-height: 1.5;\n  --chat--input--border-active: 0;\n\n  /* --- 7. SEND \u0026 FILE BUTTONS --- */\n  --chat--input--send--button--background: transparent;\n  --chat--input--send--button--color: var(--chat--color-primary);\n  --chat--input--send--button--background-hover: transparent;\n  --chat--input--send--button--color-hover: var(--chat--color-primary-shade-50);\n  --chat--input--file--button--background: transparent;\n  --chat--input--file--button--color: var(--chat--color-secondary);\n  --chat--input--file--button--background-hover: transparent;\n  --chat--input--file--button--color-hover: var(--chat--color-secondary-shade-50);\n\n  /* --- 8. TOGGLE BUTTON \u0026 OTHERS --- */\n  /* Using your primary brand color for the main toggle button */\n  --chat--toggle--size: 64px;\n  --chat--toggle--width: var(--chat--toggle--size);\n  --chat--toggle--height: var(--chat--toggle--size);\n  --chat--toggle--border-radius: 50%;\n  --chat--toggle--background: var(--chat--color-primary);\n  --chat--toggle--hover--background: var(--chat--color-primary-shade-50);\n  --chat--toggle--active--background: var(--chat--color-primary-shade-100);\n  --chat--toggle--color: var(--chat--color-white);\n}\n\n/* === CLASS OVERRIDES === */\n/*\n  These are essential for effects that CSS variables can\u0027t control,\n  like the glass blur, shadows, and max-height.\n*/\n\n.chat-window {\n  /* This is the magic for the glass effect! */\n  background-color: rgba(249, 243, 245, 0.6); /* A semi-transparent background color */\n  backdrop-filter: blur(20px);\n  -webkit-backdrop-filter: blur(20px); /* For Safari compatibility */\n\n  /* A subtle shadow helps lift the window off the page */\n  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);\n\n  /* Here we apply the max-height you wanted */\n  max-height: 750px;\n}\n\n/* Add top margin to the first message only for initial spacing */\n.chat-messages-list .chat-message:first-child {\n  margin-top: var(--chat--spacing);\n}\n\n/* Make user messages slightly wider for better balance */\n.chat-message.is-user {\n\tmax-width: 70%;\n}\n\n.chat-message.is-bot {\n\tmax-width: 80%;\n}\n\n/* Add a subtle glow to messages on hover */\n.chat-message {\n    transition: transform 0.2s ease, box-shadow 0.2s ease;\n}\n.chat-message:hover {\n    transform: translateY(-2px);\n    box-shadow: 0 0 25px 0 rgba(234, 75, 113, 0.2);\n}\n\n/* === PAGE BACKGROUND === */\n/* Your dotted background to simulate the n8n canvas. Perfect as is! */\nbody {\n    background-color: #FDFBFF;\n    background-image:\n        radial-gradient(circle at 1px 1px, rgba(0,0,0,0.07) 1px, transparent 0),\n        linear-gradient(135deg, #F9F3F5 0%, #EFF3FB 100%);\n    background-size: 25px 25px, 100% 100%;\n}"
-                                                     }
-                                     },
-                      "id":  "c3b9723c-8b6b-4c2a-b5eb-259be8d29c02",
-                      "name":  "RAG Chatbot",
-                      "type":  "@n8n/n8n-nodes-langchain.chatTrigger",
-                      "position":  [
-                                       1344,
-                                       1632
-                                   ],
-                      "webhookId":  "965843ea-8dc2-4760-b13a-b65b68e3e8aa",
-                      "typeVersion":  1.1,
-                      "notes":  "? arterm-sedov"
-                  },
-                  {
-                      "parameters":  {
-                                         "compare":  "selectedFields",
-                                         "fieldsToCompare":  "document.id",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "0c8ef159-e312-4f45-9e54-a89c74ad3f99",
-                      "name":  "Remove Duplicate Documents",
-                      "type":  "n8n-nodes-base.removeDuplicates",
-                      "typeVersion":  1.1,
-                      "position":  [
-                                       3504,
-                                       960
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "batchSize":  5,
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "94a55d4d-466b-457a-851f-8126e48b53d3",
-                      "name":  "Loop Over Documents",
-                      "type":  "n8n-nodes-base.splitInBatches",
-                      "typeVersion":  3,
-                      "position":  [
-                                       3728,
-                                       960
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "assignments":  {
-                                                             "assignments":  [
-                                                                                 {
-                                                                                     "id":  "1",
-                                                                                     "name":  "content",
-                                                                                     "type":  "string",
-                                                                                     "value":  "={{ $json.content }}"
-                                                                                 },
-                                                                                 {
-                                                                                     "id":  "2",
-                                                                                     "name":  "documentId",
-                                                                                     "type":  "string",
-                                                                                     "value":  "={{ $json.documentId ?? $json.document.id }}"
-                                                                                 },
-                                                                                 {
-                                                                                     "id":  "3",
-                                                                                     "name":  "documentName",
-                                                                                     "type":  "string",
-                                                                                     "value":  "={{ $json.title ?? $json.document.url }}"
-                                                                                 },
-                                                                                 {
-                                                                                     "id":  "4",
-                                                                                     "name":  "processedDate",
-                                                                                     "type":  "string",
-                                                                                     "value":  "={{ $now.toISO() }}"
-                                                                                 }
-                                                                             ]
-                                                         },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "b01cce59-fd3d-4a9c-a6b5-d5aa86c7e68f",
-                      "name":  "Prepare Document Metadata",
-                      "type":  "n8n-nodes-base.set",
-                      "typeVersion":  3.4,
-                      "position":  [
-                                       4624,
-                                       880
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "assignments":  {
-                                                             "assignments":  [
-                                                                                 {
-                                                                                     "id":  "1",
-                                                                                     "name":  "pageContent",
-                                                                                     "type":  "string",
-                                                                                     "value":  "={{ $json.content.trim() }}"
-                                                                                 },
-                                                                                 {
-                                                                                     "id":  "2",
-                                                                                     "name":  "metadata",
-                                                                                     "type":  "object",
-                                                                                     "value":  "={{ { \"documentId\": $json.documentId, \"documentName\": $json.documentName, \"processedDate\": $json.processedDate } }}"
-                                                                                 }
-                                                                             ]
-                                                         },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "9e9ee9f9-c8ac-408f-9989-3c5f7bf7e3af",
-                      "name":  "Clean Document Content",
-                      "type":  "n8n-nodes-base.set",
-                      "typeVersion":  3.4,
-                      "position":  [
-                                       4848,
-                                       880
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "compare":  "selectedFields",
-                                         "fieldsToCompare":  "metadata.documentId",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "82df69bf-2393-4255-983e-624724c6fb4b",
-                      "name":  "Remove Duplicate Content",
-                      "type":  "n8n-nodes-base.removeDuplicates",
-                      "typeVersion":  1.1,
-                      "position":  [
-                                       5072,
-                                       880
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "mode":  "insert",
-                                         "tableName":  {
-                                                           "__rl":  true,
-                                                           "mode":  "list",
-                                                           "value":  "documents",
-                                                           "cachedResultName":  "documents"
-                                                       },
-                                         "embeddingBatchSize":  5,
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "f8d939a8-1630-42be-b173-f733ca1f635b",
-                      "name":  "Insert Into Vector Store",
-                      "type":  "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
-                      "typeVersion":  1.3,
-                      "position":  [
-                                       5328,
-                                       960
-                                   ],
-                      "credentials":  {
-                                          "supabaseApi":  {
-                                                              "id":  "lfRTEqcP2QKagNi4",
-                                                              "name":  "Supabase account"
-                                                          }
-                                      }
-                  },
-                  {
-                      "parameters":  {
-                                         "url":  "https://www.trudkod.ru/",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "7ca79f53-b3cc-4630-b82f-974d4a4904d5",
-                      "name":  "Fetch Legal/HR Websites",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.4,
-                      "position":  [
-                                       1936,
-                                       864
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-
-                                     },
-                      "id":  "2027fb22-ea50-4289-8838-2c71746ab7ab",
-                      "name":  "Merge Document Sources",
-                      "type":  "n8n-nodes-base.merge",
-                      "typeVersion":  3.2,
-                      "position":  [
-                                       3280,
-                                       960
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "options":  {
-                                                         "systemMessage":  "=\u003crole\u003e\nYou are a specialized AI assistant for legal and HR departments. Your mission is to help users by providing accurate information from internal company documents, labor law regulations, and HR policies.\n\u003c/role\u003e\n\n\u003cinstructions\u003e\n\u003cgoal\u003e\nYour primary goal is to provide precise and factual answers to user questions about legal and HR matters, based **exclusively** on the documents in your knowledge base.\n\u003c/goal\u003e\n\n\u003ccontext\u003e\nYou operate according to a RAG (Retrieval-Augmented Generation) model. For each user question, use the appropriate tool to retrieve the necessary information from the legal/HR document database.\n\n**Mandatory rules:**\n\n1.  **Single source of truth:** Your answer MUST be entirely and solely derived from the information present in the provided documents.\n2.  **Accuracy and citation:** Base your answer as literally as possible on the document text. When possible, mention the source document name or URL.\n3.  **Transparency:** If the information is not found in your knowledge base, clearly state that you don\u0027t have this information in the available documents.\n4.  **Professional tone:** Maintain a helpful, professional tone appropriate for legal and HR matters.\n\u003c/context\u003e\n\n\u003coutput_format\u003e\n*   **Clarity:** Provide a clear, concise, and direct answer.\n*   **Structuring:** Use Markdown syntax for better readability (bullet points, numbered lists, etc.).\n*   **Sources:** When relevant, mention which document or source the information comes from.\n*   **Language:** Respond in Russian for Russian questions, in English for English questions.\n\u003c/output_format\u003e\n\u003c/instructions\u003e"
-                                                     }
-                                     },
-                      "id":  "6c96b8cb-3fd5-4d6f-83c8-bf6334ea2670",
-                      "name":  "Legal/HR AI Agent",
-                      "type":  "@n8n/n8n-nodes-langchain.agent",
-                      "typeVersion":  2.1,
-                      "position":  [
-                                       2000,
-                                       1600
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "mode":  "retrieve-as-tool",
-                                         "toolDescription":  "Retrieve relevant information from legal and HR documents, including internal policies, regulations, and labor law resources.",
-                                         "tableName":  {
-                                                           "__rl":  true,
-                                                           "value":  "documents",
-                                                           "mode":  "list",
-                                                           "cachedResultName":  "documents"
-                                                       },
-                                         "topK":  10,
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "5b842cee-64e8-429e-922e-6d713f3463ee",
-                      "name":  "Legal/HR Knowledge Base",
-                      "type":  "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
-                      "typeVersion":  1.3,
-                      "position":  [
-                                       2192,
-                                       1824
-                                   ],
-                      "credentials":  {
-                                          "supabaseApi":  {
-                                                              "id":  "lfRTEqcP2QKagNi4",
-                                                              "name":  "Supabase account"
-                                                          }
-                                      }
-                  },
-                  {
-                      "parameters":  {
-                                         "operation":  "delete",
-                                         "tableId":  "documents",
-                                         "filters":  {
-                                                         "conditions":  [
-                                                                            {
-                                                                                "keyName":  "id",
-                                                                                "condition":  "gte",
-                                                                                "keyValue":  "0"
-                                                                            }
-                                                                        ]
-                                                     }
-                                     },
-                      "id":  "e898889c-7f2a-4783-a7a6-8ca81f40f486",
-                      "name":  "Clear Old Documents",
-                      "type":  "n8n-nodes-base.supabase",
-                      "typeVersion":  1,
-                      "position":  [
-                                       1712,
-                                       960
-                                   ],
-                      "alwaysOutputData":  true,
-                      "credentials":  {
-                                          "supabaseApi":  {
-                                                              "id":  "lfRTEqcP2QKagNi4",
-                                                              "name":  "Supabase account"
-                                                          }
-                                      }
-                  },
-                  {
-                      "parameters":  {
-                                         "operation":  "extractHtmlContent",
-                                         "extractionValues":  {
-                                                                  "values":  [
-                                                                                 {
-                                                                                     "key":  "links",
-                                                                                     "cssSelector":  "a",
-                                                                                     "returnValue":  "attribute",
-                                                                                     "attribute":  "href",
-                                                                                     "returnArray":  true
-                                                                                 }
-                                                                             ]
-                                                              },
-                                         "options":  {
-                                                         "trimValues":  true
-                                                     }
-                                     },
-                      "id":  "0f5fe6e1-78c8-4cbb-adab-c86f61ee6cde",
-                      "name":  "Extract Links From HTML",
-                      "type":  "n8n-nodes-base.html",
-                      "typeVersion":  1.2,
-                      "position":  [
-                                       2160,
-                                       864
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "fieldToSplitOut":  "links",
-                                         "options":  {
-                                                         "destinationFieldName":  "link"
-                                                     }
-                                     },
-                      "id":  "1b6d3e25-4eee-4bcc-a775-f34950ad026b",
-                      "name":  "Split Out Links",
-                      "type":  "n8n-nodes-base.splitOut",
-                      "typeVersion":  1,
-                      "position":  [
-                                       2384,
-                                       864
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "compare":  "selectedFields",
-                                         "fieldsToCompare":  "link",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "b2a880a2-0048-4891-814b-d64b7d009dcd",
-                      "name":  "Remove Duplicate Links",
-                      "type":  "n8n-nodes-base.removeDuplicates",
-                      "typeVersion":  1.1,
-                      "position":  [
-                                       2608,
-                                       864
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "conditions":  {
-                                                            "options":  {
-                                                                            "caseSensitive":  true,
-                                                                            "leftValue":  "",
-                                                                            "typeValidation":  "strict",
-                                                                            "version":  3
-                                                                        },
-                                                            "conditions":  [
-                                                                               {
-                                                                                   "id":  "1",
-                                                                                   "leftValue":  "={{ $json.link }}",
-                                                                                   "operator":  {
-                                                                                                    "type":  "string",
-                                                                                                    "operation":  "startsWith"
-                                                                                                },
-                                                                                   "rightValue":  "/chast-"
-                                                                               },
-                                                                               {
-                                                                                   "id":  "2",
-                                                                                   "leftValue":  "={{ $json.link }}",
-                                                                                   "operator":  {
-                                                                                                    "type":  "string",
-                                                                                                    "operation":  "contains"
-                                                                                                },
-                                                                                   "rightValue":  "-tk-rf"
-                                                                               },
-                                                                               {
-                                                                                   "id":  "3",
-                                                                                   "leftValue":  "={{ $json.link }}",
-                                                                                   "operator":  {
-                                                                                                    "type":  "string",
-                                                                                                    "operation":  "contains"
-                                                                                                },
-                                                                                   "rightValue":  ".pdf"
-                                                                               },
-                                                                               {
-                                                                                   "id":  "4",
-                                                                                   "leftValue":  "={{ $json.link }}",
-                                                                                   "operator":  {
-                                                                                                    "type":  "string",
-                                                                                                    "operation":  "contains"
-                                                                                                },
-                                                                                   "rightValue":  ".doc"
-                                                                               }
-                                                                           ],
-                                                            "combinator":  "or"
-                                                        },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "74872b64-e3b8-442e-aa38-46652ded0576",
-                      "name":  "Filter Valid Document Links",
-                      "type":  "n8n-nodes-base.filter",
-                      "typeVersion":  2.3,
-                      "position":  [
-                                       2832,
-                                       864
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "assignments":  {
-                                                             "assignments":  [
-                                                                                 {
-                                                                                     "id":  "1",
-                                                                                     "name":  "document",
-                                                                                     "type":  "object",
-                                                                                     "value":  "={{ { \"id\": \"web_\" + $json.link.replace(/[^a-zA-Z0-9]/g, \"_\"), \"url\": $json.link.startsWith(\"http\") ? $json.link : \"https://www.trudkod.ru\" + $json.link, \"source\": \"web\" } }}"
-                                                                                 }
-                                                                             ]
-                                                         },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "ab1e1aff-eb1b-491d-90a8-3e3781f8246e",
-                      "name":  "Prepare Web Document For Processing",
-                      "type":  "n8n-nodes-base.set",
-                      "typeVersion":  3.4,
-                      "position":  [
-                                       3056,
-                                       864
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "url":  "={{ $json.document.url }}",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "5ea2687c-c1a0-48e5-b6a0-3b31ecb285d3",
-                      "name":  "Fetch Web Page",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.4,
-                      "position":  [
-                                       4176,
-                                       976
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "operation":  "extractHtmlContent",
-                                         "extractionValues":  {
-                                                                  "values":  [
-                                                                                 {
-                                                                                     "key":  "content",
-                                                                                     "cssSelector":  "body",
-                                                                                     "skipSelectors":  "script,style"
-                                                                                 }
-                                                                             ]
-                                                              },
-                                         "options":  {
-                                                         "trimValues":  true,
-                                                         "cleanUpText":  true
-                                                     }
-                                     },
-                      "id":  "2ad74fa5-7631-479a-8972-c7fba14e7144",
-                      "name":  "Extract Text From Web Page",
-                      "type":  "n8n-nodes-base.html",
-                      "typeVersion":  1.2,
-                      "position":  [
-                                       4400,
-                                       976
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "mode":  "runOnceForEachItem",
-                                         "jsCode":  "const agentOutput = $input.item.json;\n\nlet minScore = 1.0;\nlet maxScore = 0.0;\nlet avgScore = 0.0;\nlet scoreCount = 0;\n\nif (agentOutput.output \u0026\u0026 typeof agentOutput.output === \"string\") {\n  const outputText = agentOutput.output;\n  \n  const scorePattern = /similarity[:\\s]+([0-9.]+)|score[:\\s]+([0-9.]+)|confidence[:\\s]+([0-9.]+)/gi;\n  const matches = [...outputText.matchAll(scorePattern)];\n  \n  if (matches.length \u003e 0) {\n    const scores = matches.map(m =\u003e parseFloat(m[1] || m[2] || m[3])).filter(s =\u003e !isNaN(s) \u0026\u0026 s \u003e= 0 \u0026\u0026 s \u003c= 1);\n    \n    if (scores.length \u003e 0) {\n      minScore = Math.min(...scores);\n      maxScore = Math.max(...scores);\n      avgScore = scores.reduce((a, b) =\u003e a + b, 0) / scores.length;\n      scoreCount = scores.length;\n    }\n  }\n}\n\nconst hasLowConfidenceIndicators = \n  agentOutput.output \u0026\u0026 (\n    agentOutput.output.includes(\"?? ???????\") ||\n    agentOutput.output.includes(\"??? ??????????\") ||\n    agentOutput.output.includes(\"not found\") ||\n    agentOutput.output.includes(\"no information\") ||\n    agentOutput.output.length \u003c 50\n  );\n\nconst estimatedConfidence = hasLowConfidenceIndicators ? 0.3 : (scoreCount \u003e 0 ? avgScore : 0.75);\n\nreturn {\n  ...agentOutput,\n  confidenceScore: estimatedConfidence,\n  minSimilarity: minScore,\n  maxSimilarity: maxScore,\n  avgSimilarity: avgScore,\n  documentCount: scoreCount\n};"
-                                     },
-                      "id":  "b3b0d4f7-f3ca-449b-8025-c123d908ba0c",
-                      "name":  "Extract Similarity Scores",
-                      "type":  "n8n-nodes-base.code",
-                      "typeVersion":  2,
-                      "position":  [
-                                       2560,
-                                       1600
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "conditions":  {
-                                                            "options":  {
-                                                                            "caseSensitive":  true,
-                                                                            "leftValue":  "",
-                                                                            "typeValidation":  "strict",
-                                                                            "version":  3
-                                                                        },
-                                                            "conditions":  [
-                                                                               {
-                                                                                   "id":  "1",
-                                                                                   "leftValue":  "={{ $json.confidenceScore }}",
-                                                                                   "operator":  {
-                                                                                                    "type":  "number",
-                                                                                                    "operation":  "gte"
-                                                                                                },
-                                                                                   "rightValue":  0.6
-                                                                               }
-                                                                           ],
-                                                            "combinator":  "and"
-                                                        },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "4154d591-1dfb-4f86-801f-42a58d386331",
-                      "name":  "Check Confidence Threshold",
-                      "type":  "n8n-nodes-base.if",
-                      "typeVersion":  2.3,
-                      "position":  [
-                                       2784,
-                                       1600
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "assignments":  {
-                                                             "assignments":  [
-                                                                                 {
-                                                                                     "id":  "1",
-                                                                                     "name":  "output",
-                                                                                     "type":  "string",
-                                                                                     "value":  "={{ $json.output }}"
-                                                                                 },
-                                                                                 {
-                                                                                     "id":  "2",
-                                                                                     "name":  "sessionId",
-                                                                                     "type":  "string",
-                                                                                     "value":  "={{ $json.sessionId }}"
-                                                                                 }
-                                                                             ]
-                                                         },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "30c72758-e851-42dc-ba8f-f7e358f9cfbb",
-                      "name":  "Format High Confidence Response",
-                      "type":  "n8n-nodes-base.set",
-                      "typeVersion":  3.4,
-                      "position":  [
-                                       3008,
-                                       1504
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "assignments":  {
-                                                             "assignments":  [
-                                                                                 {
-                                                                                     "id":  "1",
-                                                                                     "name":  "output",
-                                                                                     "type":  "string",
-                                                                                     "value":  "={{ \"? ?????????, ? ?? ???? ????? ?????????? ???????? ?????????? ?? ?????? ??????? ? ????????? ??????????.\\n\\n\" + ($json.confidenceScore \u003e 0.4 ? \"????????, ????????? ?????????? ????? ???? ??????? (?????? ???????????):\\n\\n\" + $json.output : \"??????????, ???????? ??? ?????? ??? ?????????? ? ??????????? ?????? ?????? ??? ???????????? ??????.\") }}"
-                                                                                 },
-                                                                                 {
-                                                                                     "id":  "2",
-                                                                                     "name":  "sessionId",
-                                                                                     "type":  "string",
-                                                                                     "value":  "={{ $json.sessionId }}"
-                                                                                 }
-                                                                             ]
-                                                         },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "3265feda-249f-4425-b45e-3a991139c85d",
-                      "name":  "Format Low Confidence Response",
-                      "type":  "n8n-nodes-base.set",
-                      "typeVersion":  3.4,
-                      "position":  [
-                                       3008,
-                                       1696
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "fileSelector":  "/docs/*",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "396763c3-16af-40ed-8fea-93a5bb5da4a7",
-                      "name":  "Read Local Documents",
-                      "type":  "n8n-nodes-base.readWriteFile",
-                      "typeVersion":  1,
-                      "position":  [
-                                       2608,
-                                       1056
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "operation":  "pdf",
-                                         "options":  {
-                                                         "joinPages":  true
-                                                     }
-                                     },
-                      "id":  "9ca13f2b-eb9e-46fb-96a4-8a9101c2f78f",
-                      "name":  "Extract PDF Content",
-                      "type":  "n8n-nodes-base.extractFromFile",
-                      "typeVersion":  1,
-                      "position":  [
-                                       2832,
-                                       1056
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "inputText":  "={{ $json.chatInput }}",
-                                         "categories":  {
-                                                            "categories":  [
-                                                                               {
-                                                                                   "category":  "hr",
-                                                                                   "description":  "HR-related questions: vacation, hiring, personnel, employees, recruitment, dismissal"
-                                                                               },
-                                                                               {
-                                                                                   "category":  "legal",
-                                                                                   "description":  "Legal questions: contracts, laws, regulations, labor code, rights"
-                                                                               },
-                                                                               {
-                                                                                   "category":  "general",
-                                                                                   "description":  "General questions not specific to HR or legal domains"
-                                                                               }
-                                                                           ]
-                                                        },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "ae80d924-c262-4108-88af-be3646a20d61",
-                      "name":  "AI Text Classifier",
-                      "type":  "@n8n/n8n-nodes-langchain.textClassifier",
-                      "typeVersion":  1.1,
-                      "position":  [
-                                       1552,
-                                       1616
-                                   ]
-                  }
-              ],
-    "connections":  {
-                        "RAG Chatbot":  {
-                                            "main":  [
-                                                         [
-                                                             {
-                                                                 "node":  "AI Text Classifier",
-                                                                 "type":  "main",
-                                                                 "index":  0
-                                                             }
-                                                         ]
-                                                     ]
-                                        },
-                        "Every 6 Days":  {
-                                             "main":  [
-                                                          [
-                                                              {
-                                                                  "node":  "Keep Supabase Instance Alive",
-                                                                  "type":  "main",
-                                                                  "index":  0
-                                                              }
-                                                          ]
-                                                      ]
-                                         },
-                        "Simple Memory":  {
-                                              "ai_memory":  [
-                                                                [
-                                                                    {
-                                                                        "node":  "Legal/HR AI Agent",
-                                                                        "type":  "ai_memory",
-                                                                        "index":  0
-                                                                    }
-                                                                ]
-                                                            ]
-                                          },
-                        "Start Indexing":  {
-                                               "main":  [
-                                                            [
-                                                                {
-                                                                    "node":  "Clear Old Documents",
-                                                                    "type":  "main",
-                                                                    "index":  0
-                                                                }
-                                                            ]
-                                                        ]
-                                           },
-                        "Gemini 2.5 Flash":  {
-                                                 "ai_languageModel":  [
-                                                                          [
-                                                                              {
-                                                                                  "node":  "Legal/HR AI Agent",
-                                                                                  "type":  "ai_languageModel",
-                                                                                  "index":  0
-                                                                              },
-                                                                              {
-                                                                                  "node":  "AI Text Classifier",
-                                                                                  "type":  "ai_languageModel",
-                                                                                  "index":  0
-                                                                              }
-                                                                          ]
-                                                                      ]
-                                             },
-                        "Default Data Loader":  {
-                                                    "ai_document":  [
-                                                                        [
-                                                                            {
-                                                                                "node":  "Insert Into Vector Store",
-                                                                                "type":  "ai_document",
-                                                                                "index":  0
-                                                                            }
-                                                                        ]
-                                                                    ]
-                                                },
-                        "Gemini Chunk Embedding":  {
-                                                       "ai_embedding":  [
-                                                                            [
-                                                                                {
-                                                                                    "node":  "Insert Into Vector Store",
-                                                                                    "type":  "ai_embedding",
-                                                                                    "index":  0
-                                                                                }
-                                                                            ]
-                                                                        ]
-                                                   },
-                        "Gemini Query Embedding":  {
-                                                       "ai_embedding":  [
-                                                                            [
-                                                                                {
-                                                                                    "node":  "Legal/HR Knowledge Base",
-                                                                                    "type":  "ai_embedding",
-                                                                                    "index":  0
-                                                                                }
-                                                                            ]
-                                                                        ]
-                                                   },
-                        "Recursive Character Text Splitter":  {
-                                                                  "ai_textSplitter":  [
-                                                                                          [
-                                                                                              {
-                                                                                                  "node":  "Default Data Loader",
-                                                                                                  "type":  "ai_textSplitter",
-                                                                                                  "index":  0
-                                                                                              }
-                                                                                          ]
-                                                                                      ]
-                                                              },
-                        "Search Google Drive Folder":  {
-                                                           "main":  [
-                                                                        [
-                                                                            {
-                                                                                "node":  "Split Out Google Docs",
-                                                                                "type":  "main",
-                                                                                "index":  0
-                                                                            }
-                                                                        ]
-                                                                    ]
-                                                       },
-                        "Remove Duplicate Documents":  {
-                                                           "main":  [
-                                                                        [
-                                                                            {
-                                                                                "node":  "Loop Over Documents",
-                                                                                "type":  "main",
-                                                                                "index":  0
-                                                                            }
-                                                                        ]
-                                                                    ]
-                                                       },
-                        "Loop Over Documents":  {
-                                                    "main":  [
-                                                                 [
-                                                                     {
-                                                                         "node":  "Route Document By Source",
-                                                                         "type":  "main",
-                                                                         "index":  0
-                                                                     }
-                                                                 ]
-                                                             ]
-                                                },
-                        "Prepare Document Metadata":  {
-                                                          "main":  [
-                                                                       [
-                                                                           {
-                                                                               "node":  "Clean Document Content",
-                                                                               "type":  "main",
-                                                                               "index":  0
-                                                                           }
-                                                                       ]
-                                                                   ]
-                                                      },
-                        "Clean Document Content":  {
-                                                       "main":  [
-                                                                    [
-                                                                        {
-                                                                            "node":  "Remove Duplicate Content",
-                                                                            "type":  "main",
-                                                                            "index":  0
-                                                                        }
-                                                                    ]
-                                                                ]
-                                                   },
-                        "Remove Duplicate Content":  {
-                                                         "main":  [
-                                                                      [
-                                                                          {
-                                                                              "node":  "Insert Into Vector Store",
-                                                                              "type":  "main",
-                                                                              "index":  0
-                                                                          }
-                                                                      ]
-                                                                  ]
-                                                     },
-                        "Fetch Legal/HR Websites":  {
-                                                        "main":  [
-                                                                     [
-                                                                         {
-                                                                             "node":  "Extract Links From HTML",
-                                                                             "type":  "main",
-                                                                             "index":  0
-                                                                         }
-                                                                     ]
-                                                                 ]
-                                                    },
-                        "Merge Document Sources":  {
-                                                       "main":  [
-                                                                    [
-                                                                        {
-                                                                            "node":  "Remove Duplicate Documents",
-                                                                            "type":  "main",
-                                                                            "index":  0
-                                                                        }
-                                                                    ]
-                                                                ]
-                                                   },
-                        "Legal/HR Knowledge Base":  {
-                                                        "ai_tool":  [
-                                                                        [
-                                                                            {
-                                                                                "node":  "Legal/HR AI Agent",
-                                                                                "type":  "ai_tool",
-                                                                                "index":  0
-                                                                            }
-                                                                        ]
-                                                                    ]
-                                                    },
-                        "Clear Old Documents":  {
-                                                    "main":  [
-                                                                 [
-                                                                     {
-                                                                         "node":  "Read Local Documents",
-                                                                         "type":  "main",
-                                                                         "index":  0
-                                                                     },
-                                                                     {
-                                                                         "node":  "Fetch Legal/HR Websites",
-                                                                         "type":  "main",
-                                                                         "index":  0
-                                                                     }
-                                                                 ]
-                                                             ]
-                                                },
-                        "Split Out Google Docs":  {
-                                                      "main":  [
-                                                                   [
-                                                                       {
-                                                                           "node":  "Prepare Google Doc For Processing",
-                                                                           "type":  "main",
-                                                                           "index":  0
-                                                                       }
-                                                                   ]
-                                                               ]
-                                                  },
-                        "Extract Links From HTML":  {
-                                                        "main":  [
-                                                                     [
-                                                                         {
-                                                                             "node":  "Split Out Links",
-                                                                             "type":  "main",
-                                                                             "index":  0
-                                                                         }
-                                                                     ]
-                                                                 ]
-                                                    },
-                        "Split Out Links":  {
-                                                "main":  [
-                                                             [
-                                                                 {
-                                                                     "node":  "Remove Duplicate Links",
-                                                                     "type":  "main",
-                                                                     "index":  0
-                                                                 }
-                                                             ]
-                                                         ]
-                                            },
-                        "Remove Duplicate Links":  {
-                                                       "main":  [
-                                                                    [
-                                                                        {
-                                                                            "node":  "Filter Valid Document Links",
-                                                                            "type":  "main",
-                                                                            "index":  0
-                                                                        }
-                                                                    ]
-                                                                ]
-                                                   },
-                        "Filter Valid Document Links":  {
-                                                            "main":  [
-                                                                         [
-                                                                             {
-                                                                                 "node":  "Prepare Web Document For Processing",
-                                                                                 "type":  "main",
-                                                                                 "index":  0
-                                                                             }
-                                                                         ]
-                                                                     ]
-                                                        },
-                        "Prepare Web Document For Processing":  {
-                                                                    "main":  [
-                                                                                 [
-                                                                                     {
-                                                                                         "node":  "Merge Document Sources",
-                                                                                         "type":  "main",
-                                                                                         "index":  0
-                                                                                     }
-                                                                                 ]
-                                                                             ]
-                                                                },
-                        "Fetch Web Page":  {
-                                               "main":  [
-                                                            [
-                                                                {
-                                                                    "node":  "Extract Text From Web Page",
-                                                                    "type":  "main",
-                                                                    "index":  0
-                                                                }
-                                                            ]
-                                                        ]
-                                           },
-                        "Extract Text From Web Page":  {
-                                                           "main":  [
-                                                                        [
-                                                                            {
-                                                                                "node":  "Prepare Document Metadata",
-                                                                                "type":  "main",
-                                                                                "index":  0
-                                                                            }
-                                                                        ]
-                                                                    ]
-                                                       },
-                        "Route Document By Source":  {
-                                                         "main":  [
-                                                                      [
-                                                                          {
-                                                                              "node":  "Fetch Google Doc",
-                                                                              "type":  "main",
-                                                                              "index":  0
-                                                                          }
-                                                                      ],
-                                                                      [
-                                                                          {
-                                                                              "node":  "Fetch Web Page",
-                                                                              "type":  "main",
-                                                                              "index":  0
-                                                                          }
-                                                                      ]
-                                                                  ]
-                                                     },
-                        "Insert Into Vector Store":  {
-                                                         "main":  [
-                                                                      [
-                                                                          {
-                                                                              "node":  "Loop Over Documents",
-                                                                              "type":  "main",
-                                                                              "index":  0
-                                                                          }
-                                                                      ]
-                                                                  ]
-                                                     },
-                        "Classify Query":  {
-                                               "main":  [
-                                                            [
-                                                                {
-                                                                    "node":  "Legal/HR AI Agent",
-                                                                    "type":  "main",
-                                                                    "index":  0
-                                                                }
-                                                            ]
-                                                        ]
-                                           },
-                        "Legal/HR AI Agent":  {
-                                                  "main":  [
-                                                               [
-                                                                   {
-                                                                       "node":  "Extract Similarity Scores",
-                                                                       "type":  "main",
-                                                                       "index":  0
-                                                                   }
-                                                               ]
-                                                           ]
-                                              },
-                        "Extract Similarity Scores":  {
-                                                          "main":  [
-                                                                       [
-                                                                           {
-                                                                               "node":  "Check Confidence Threshold",
-                                                                               "type":  "main",
-                                                                               "index":  0
-                                                                           }
-                                                                       ]
-                                                                   ]
-                                                      },
-                        "Check Confidence Threshold":  {
-                                                           "main":  [
-                                                                        [
-                                                                            {
-                                                                                "node":  "Format High Confidence Response",
-                                                                                "type":  "main",
-                                                                                "index":  0
-                                                                            }
-                                                                        ],
-                                                                        [
-                                                                            {
-                                                                                "node":  "Format Low Confidence Response",
-                                                                                "type":  "main",
-                                                                                "index":  0
-                                                                            }
-                                                                        ]
-                                                                    ]
-                                                       },
-                        "Read Local Documents":  {
-                                                     "main":  [
-                                                                  [
-                                                                      {
-                                                                          "node":  "Extract PDF Content",
-                                                                          "type":  "main",
-                                                                          "index":  0
-                                                                      }
-                                                                  ]
-                                                              ]
-                                                 },
-                        "Extract PDF Content":  {
-                                                    "main":  [
-                                                                 [
-                                                                     {
-                                                                         "node":  "Merge Document Sources",
-                                                                         "type":  "main",
-                                                                         "index":  0
-                                                                     }
-                                                                 ]
-                                                             ]
-                                                },
-                        "AI Text Classifier":  {
-                                                   "main":  [
-                                                                [
-                                                                    {
-                                                                        "node":  "Legal/HR AI Agent",
-                                                                        "type":  "main",
-                                                                        "index":  0
-                                                                    }
-                                                                ],
-                                                                [
-                                                                    {
-                                                                        "node":  "Legal/HR AI Agent",
-                                                                        "type":  "main",
-                                                                        "index":  0
-                                                                    }
-                                                                ],
-                                                                [
-                                                                    {
-                                                                        "node":  "Legal/HR AI Agent",
-                                                                        "type":  "main",
-                                                                        "index":  0
-                                                                    }
-                                                                ]
-                                                            ],
-                                                   "ai_languageModel":  [
-                                                                            [
-
-                                                                            ]
-                                                                        ]
-                                               }
-                    },
-    "settings":  {
-                     "executionOrder":  "v1",
-                     "binaryMode":  "separate"
-                 },
-    "staticData":  null,
-    "meta":  null,
-    "pinData":  {
-
-                },
-    "activeVersionId":  null,
-    "versionCounter":  11,
-    "triggerCount":  0,
-    "shared":  [
-                   {
-                       "updatedAt":  "2026-05-10T22:55:41.708Z",
-                       "createdAt":  "2026-05-10T22:55:41.708Z",
-                       "role":  "workflow:owner",
-                       "workflowId":  "vonKtk32bMVn0Iw4",
-                       "projectId":  "Mv7hZHLCG35XX5pL",
-                       "project":  {
-                                       "updatedAt":  "2026-05-10T22:00:20.839Z",
-                                       "createdAt":  "2026-05-10T21:56:48.417Z",
-                                       "id":  "Mv7hZHLCG35XX5pL",
-                                       "name":  "Artem arterm.sedov@gmail.com \u003carterm.sedov@gmail.com\u003e",
-                                       "type":  "personal",
-                                       "icon":  null,
-                                       "description":  null,
-                                       "creatorId":  "c9ab87a9-eb6b-42cb-91f1-da45d686ad29"
-                                   }
-                   }
-               ],
-    "tags":  [
-
-             ],
-    "activeVersion":  null
+{
+  "name": "aviastar-test v2 (file-based + AI classifier)",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "cbb4cdc3-4c51-442e-a6d2-37407d54453d",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        2064,
+        1824
+      ],
+      "typeVersion": 1.3,
+      "notes": "? arterm-sedov"
+    },
+    {
+      "parameters": {
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "id": "8398f926-d1b8-435e-be06-9610dcf96a22",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        5424,
+        1184
+      ],
+      "typeVersion": 1.1,
+      "notes": "? arterm-sedov"
+    },
+    {
+      "parameters": {
+        "chunkSize": 500,
+        "chunkOverlap": 50,
+        "options": {}
+      },
+      "id": "13731313-af7f-4b20-80b9-cee005f918c1",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "position": [
+        5504,
+        1392
+      ],
+      "typeVersion": 1,
+      "notes": "? arterm-sedov"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-flash-preview",
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "dc50134c-6a66-4144-8cc7-453eccdbedc5",
+      "name": "Gemini 2.5 Flash",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        1936,
+        1824
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ShEZYQLJQGGRzpFF",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "notes": "? arterm-sedov"
+    },
+    {
+      "parameters": {},
+      "id": "1de80d54-bd97-4109-8295-2e2eeeba3481",
+      "name": "Gemini Query Embedding",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "position": [
+        2272,
+        2032
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ShEZYQLJQGGRzpFF",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "notes": "? arterm-sedov"
+    },
+    {
+      "parameters": {},
+      "id": "269c92b8-b277-4160-a332-de8cade0c212",
+      "name": "Gemini Chunk Embedding",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "position": [
+        5296,
+        1184
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ShEZYQLJQGGRzpFF",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "notes": "? arterm-sedov"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "documents",
+        "limit": 1
+      },
+      "id": "d480c904-8e75-4166-bbf0-d8cb3a4a8efe",
+      "name": "Keep Supabase Instance Alive",
+      "type": "n8n-nodes-base.supabase",
+      "position": [
+        1712,
+        2032
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "supabaseApi": {
+          "id": "lfRTEqcP2QKagNi4",
+          "name": "Supabase account"
+        }
+      },
+      "notes": "? arterm-sedov"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "26badb62-c7b3-4633-8854-0ef14a9860f1",
+      "name": "Every 6 Days",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        1488,
+        2032
+      ],
+      "typeVersion": 1.2,
+      "notes": "? arterm-sedov"
+    },
+    {
+      "parameters": {},
+      "id": "86668008-4656-4c36-a8a3-5ebbb24df683",
+      "name": "Start Indexing",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        1488,
+        960
+      ],
+      "typeVersion": 1,
+      "notes": "? arterm-sedov"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "????????????! ? AI-????????? ?? ???????? ? ??????????? ????????.\n?? ?????? ?????? ??? ??????? ?? ????????? ????????????????, ?????????? ????????? ???????? ? HR-??????????. ????????:\n\"????? ??????? ?????????? ????????\"\n\"????? ????????? ????? ??? ?????? ?? ???????\"",
+        "options": {
+          "inputPlaceholder": "??????? ?????? ?? ???????? ??? ??????????? ????????...",
+          "subtitle": "",
+          "title": "",
+          "customCss": "/* === THEME OVERRIDE: n8n Glass & Glow (Revised) === */\n\n/*\n  This theme is built upon the default n8n chat CSS variables.\n  We'll use your desired branding and layout, and then add\n  the \"glass\" effect using a semi-transparent background\n  and a backdrop-filter on the main window class.\n*/\n\n:root {\n  /* --- 1. CORE BRANDING & FONTS --- */\n  /* Your choices for font and primary color are applied here. */\n  --chat--font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\n  --chat--color-primary: #EA4B71; /* n8n Red */\n  --chat--color-primary-shade-50: #D93A60;\n  --chat--color-primary-shade-100: #C82A50;\n  --chat--color-secondary: #20b69e; /* Kept default secondary for things like file uploads */\n  --chat--color-secondary-shade-50: #1ca08a;\n  --chat--color-white: #ffffff;\n  --chat--color-light: #f2f4f8;\n  --chat--color-dark: #1F2937; /* Darker, more modern text color */\n  --chat--color-disabled: #9CA3AF;\n  --chat--color-typing: #404040;\n\n  /* --- 2. WINDOW & LAYOUT --- */\n  /* Your dimensions and rounded corners. The actual glass effect is handled in the class override below. */\n  --chat--window--width: 430px;\n  --chat--window--height: 80vh;\n  --chat--window--border-radius: 16px;\n  --chat--window--border: 1px solid rgba(255, 255, 255, 0.3);\n  --chat--spacing: 1rem; /* 16px base spacing */\n  --chat--window--z-index: 9999;\n  --chat--window--bottom: var(--chat--spacing);\n  --chat--window--right: var(--chat--spacing);\n  --chat--window--margin-bottom: var(--chat--spacing);\n\n  /* --- 3. GLASSMORPHISM BACKGROUNDS --- */\n  /* We make the main sections transparent to let the glass window show through. */\n  --chat--header--background: transparent;\n  --chat--body--background: transparent;\n  --chat--footer--background: transparent;\n\n  /* --- 4. HEADER STYLING (REMOVED) --- */\n  /* The header is removed by setting its height, padding, and border to 0/none. */\n  --chat--header-height: 0;\n  --chat--header--padding: 0;\n  --chat--header--border-bottom: none;\n  /* The rest of the header variables are now irrelevant. */\n  --chat--header--color: var(--chat--color-dark);\n  --chat--heading--font-size: 1.5rem;\n  --chat--subtitle--font-size: 0.875rem;\n  --chat--subtitle--line-height: 1.4;\n  --chat--close--button--color-hover: var(--chat--color-primary);\n\n  /* --- 5. MESSAGE BUBBLES --- */\n  --chat--message--font-size: 0.875rem;\n  --chat--message--padding: 12px 16px;\n  --chat--message--border-radius: 12px;\n  --chat--message-line-height: 1.6;\n  --chat--message--margin-bottom: calc(var(--chat--spacing) * 0.75);\n  /* Adjusted padding: Top is 0, sides and bottom use the base spacing. */\n  --chat--messages-list--padding: 0 var(--chat--spacing) var(--chat--spacing);\n  --chat--message--bot--background: var(--chat--color-white);\n  --chat--message--bot--color: #111827;\n  --chat--message--bot--border: none;\n  --chat--message--user--background: var(--chat--color-primary);\n  --chat--message--user--color: var(--chat--color-white);\n  --chat--message--user--border: none;\n\n  /* --- 6. INPUT AREA --- */\n  --chat--textarea--height: 50px;\n  --chat--textarea--max-height: 10rem;\n  --chat--input--font-size: 0.9rem;\n  --chat--input--border: 0;\n  --chat--input--border-radius: 12px; /* Rounded input field */\n  --chat--input--padding: 12px 16px;\n  --chat--input--background: rgba(255, 255, 255, 0.5); /* Semi-transparent input */\n  --chat--input--text-color: #111827;\n  --chat--input--line-height: 1.5;\n  --chat--input--border-active: 0;\n\n  /* --- 7. SEND & FILE BUTTONS --- */\n  --chat--input--send--button--background: transparent;\n  --chat--input--send--button--color: var(--chat--color-primary);\n  --chat--input--send--button--background-hover: transparent;\n  --chat--input--send--button--color-hover: var(--chat--color-primary-shade-50);\n  --chat--input--file--button--background: transparent;\n  --chat--input--file--button--color: var(--chat--color-secondary);\n  --chat--input--file--button--background-hover: transparent;\n  --chat--input--file--button--color-hover: var(--chat--color-secondary-shade-50);\n\n  /* --- 8. TOGGLE BUTTON & OTHERS --- */\n  /* Using your primary brand color for the main toggle button */\n  --chat--toggle--size: 64px;\n  --chat--toggle--width: var(--chat--toggle--size);\n  --chat--toggle--height: var(--chat--toggle--size);\n  --chat--toggle--border-radius: 50%;\n  --chat--toggle--background: var(--chat--color-primary);\n  --chat--toggle--hover--background: var(--chat--color-primary-shade-50);\n  --chat--toggle--active--background: var(--chat--color-primary-shade-100);\n  --chat--toggle--color: var(--chat--color-white);\n}\n\n/* === CLASS OVERRIDES === */\n/*\n  These are essential for effects that CSS variables can't control,\n  like the glass blur, shadows, and max-height.\n*/\n\n.chat-window {\n  /* This is the magic for the glass effect! */\n  background-color: rgba(249, 243, 245, 0.6); /* A semi-transparent background color */\n  backdrop-filter: blur(20px);\n  -webkit-backdrop-filter: blur(20px); /* For Safari compatibility */\n\n  /* A subtle shadow helps lift the window off the page */\n  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);\n\n  /* Here we apply the max-height you wanted */\n  max-height: 750px;\n}\n\n/* Add top margin to the first message only for initial spacing */\n.chat-messages-list .chat-message:first-child {\n  margin-top: var(--chat--spacing);\n}\n\n/* Make user messages slightly wider for better balance */\n.chat-message.is-user {\n\tmax-width: 70%;\n}\n\n.chat-message.is-bot {\n\tmax-width: 80%;\n}\n\n/* Add a subtle glow to messages on hover */\n.chat-message {\n    transition: transform 0.2s ease, box-shadow 0.2s ease;\n}\n.chat-message:hover {\n    transform: translateY(-2px);\n    box-shadow: 0 0 25px 0 rgba(234, 75, 113, 0.2);\n}\n\n/* === PAGE BACKGROUND === */\n/* Your dotted background to simulate the n8n canvas. Perfect as is! */\nbody {\n    background-color: #FDFBFF;\n    background-image:\n        radial-gradient(circle at 1px 1px, rgba(0,0,0,0.07) 1px, transparent 0),\n        linear-gradient(135deg, #F9F3F5 0%, #EFF3FB 100%);\n    background-size: 25px 25px, 100% 100%;\n}"
+        }
+      },
+      "id": "c3b9723c-8b6b-4c2a-b5eb-259be8d29c02",
+      "name": "RAG Chatbot",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        1344,
+        1632
+      ],
+      "webhookId": "965843ea-8dc2-4760-b13a-b65b68e3e8aa",
+      "typeVersion": 1.1,
+      "notes": "? arterm-sedov"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "document.id",
+        "options": {}
+      },
+      "id": "0c8ef159-e312-4f45-9e54-a89c74ad3f99",
+      "name": "Remove Duplicate Documents",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 1.1,
+      "position": [
+        3504,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "id": "94a55d4d-466b-457a-851f-8126e48b53d3",
+      "name": "Loop Over Documents",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3728,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "content",
+              "type": "string",
+              "value": "={{ $json.content }}"
+            },
+            {
+              "id": "2",
+              "name": "documentId",
+              "type": "string",
+              "value": "={{ $json.documentId ?? $json.document.id }}"
+            },
+            {
+              "id": "3",
+              "name": "documentName",
+              "type": "string",
+              "value": "={{ $json.title ?? $json.document.url }}"
+            },
+            {
+              "id": "4",
+              "name": "processedDate",
+              "type": "string",
+              "value": "={{ $now.toISO() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b01cce59-fd3d-4a9c-a6b5-d5aa86c7e68f",
+      "name": "Prepare Document Metadata",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4624,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "pageContent",
+              "type": "string",
+              "value": "={{ $json.content.trim() }}"
+            },
+            {
+              "id": "2",
+              "name": "metadata",
+              "type": "object",
+              "value": "={{ { \"documentId\": $json.documentId, \"documentName\": $json.documentName, \"processedDate\": $json.processedDate } }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9e9ee9f9-c8ac-408f-9989-3c5f7bf7e3af",
+      "name": "Clean Document Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4848,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "metadata.documentId",
+        "options": {}
+      },
+      "id": "82df69bf-2393-4255-983e-624724c6fb4b",
+      "name": "Remove Duplicate Content",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 1.1,
+      "position": [
+        5072,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "documents",
+          "cachedResultName": "documents"
+        },
+        "embeddingBatchSize": 5,
+        "options": {}
+      },
+      "id": "f8d939a8-1630-42be-b173-f733ca1f635b",
+      "name": "Insert Into Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        5328,
+        960
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "lfRTEqcP2QKagNi4",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://www.trudkod.ru/",
+        "options": {}
+      },
+      "id": "7ca79f53-b3cc-4630-b82f-974d4a4904d5",
+      "name": "Fetch Legal/HR Websites",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1936,
+        864
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "2027fb22-ea50-4289-8838-2c71746ab7ab",
+      "name": "Merge Document Sources",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3280,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=<role>\nYou are a specialized AI assistant for legal and HR departments. Your mission is to help users by providing accurate information from internal company documents, labor law regulations, and HR policies.\n</role>\n\n<instructions>\n<goal>\nYour primary goal is to provide precise and factual answers to user questions about legal and HR matters, based **exclusively** on the documents in your knowledge base.\n</goal>\n\n<context>\nYou operate according to a RAG (Retrieval-Augmented Generation) model. For each user question, use the appropriate tool to retrieve the necessary information from the legal/HR document database.\n\n**Mandatory rules:**\n\n1.  **Single source of truth:** Your answer MUST be entirely and solely derived from the information present in the provided documents.\n2.  **Accuracy and citation:** Base your answer as literally as possible on the document text. When possible, mention the source document name or URL.\n3.  **Transparency:** If the information is not found in your knowledge base, clearly state that you don't have this information in the available documents.\n4.  **Professional tone:** Maintain a helpful, professional tone appropriate for legal and HR matters.\n</context>\n\n<output_format>\n*   **Clarity:** Provide a clear, concise, and direct answer.\n*   **Structuring:** Use Markdown syntax for better readability (bullet points, numbered lists, etc.).\n*   **Sources:** When relevant, mention which document or source the information comes from.\n*   **Language:** Respond in Russian for Russian questions, in English for English questions.\n</output_format>\n</instructions>"
+        }
+      },
+      "id": "6c96b8cb-3fd5-4d6f-83c8-bf6334ea2670",
+      "name": "Legal/HR AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        2000,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Retrieve relevant information from legal and HR documents, including internal policies, regulations, and labor law resources.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 10,
+        "options": {}
+      },
+      "id": "5b842cee-64e8-429e-922e-6d713f3463ee",
+      "name": "Legal/HR Knowledge Base",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        2192,
+        1824
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "lfRTEqcP2QKagNi4",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "documents",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "gte",
+              "keyValue": "0"
+            }
+          ]
+        }
+      },
+      "id": "e898889c-7f2a-4783-a7a6-8ca81f40f486",
+      "name": "Clear Old Documents",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        960
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "lfRTEqcP2QKagNi4",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "links",
+              "cssSelector": "a",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {
+          "trimValues": true
+        }
+      },
+      "id": "0f5fe6e1-78c8-4cbb-adab-c86f61ee6cde",
+      "name": "Extract Links From HTML",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        2160,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "links",
+        "options": {
+          "destinationFieldName": "link"
+        }
+      },
+      "id": "1b6d3e25-4eee-4bcc-a775-f34950ad026b",
+      "name": "Split Out Links",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2384,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "link",
+        "options": {}
+      },
+      "id": "b2a880a2-0048-4891-814b-d64b7d009dcd",
+      "name": "Remove Duplicate Links",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 1.1,
+      "position": [
+        2608,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.link }}",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              },
+              "rightValue": "/chast-"
+            },
+            {
+              "id": "2",
+              "leftValue": "={{ $json.link }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "rightValue": "-tk-rf"
+            },
+            {
+              "id": "3",
+              "leftValue": "={{ $json.link }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "rightValue": ".pdf"
+            },
+            {
+              "id": "4",
+              "leftValue": "={{ $json.link }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "rightValue": ".doc"
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "74872b64-e3b8-442e-aa38-46652ded0576",
+      "name": "Filter Valid Document Links",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        2832,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "document",
+              "type": "object",
+              "value": "={{ { \"id\": \"web_\" + $json.link.replace(/[^a-zA-Z0-9]/g, \"_\"), \"url\": $json.link.startsWith(\"http\") ? $json.link : \"https://www.trudkod.ru\" + $json.link, \"source\": \"web\" } }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ab1e1aff-eb1b-491d-90a8-3e3781f8246e",
+      "name": "Prepare Web Document For Processing",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3056,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.document.url }}",
+        "options": {}
+      },
+      "id": "5ea2687c-c1a0-48e5-b6a0-3b31ecb285d3",
+      "name": "Fetch Web Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4176,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "content",
+              "cssSelector": "body",
+              "skipSelectors": "script,style"
+            }
+          ]
+        },
+        "options": {
+          "trimValues": true,
+          "cleanUpText": true
+        }
+      },
+      "id": "2ad74fa5-7631-479a-8972-c7fba14e7144",
+      "name": "Extract Text From Web Page",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        4400,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const agentOutput = $input.item.json;\n\nlet minScore = 1.0;\nlet maxScore = 0.0;\nlet avgScore = 0.0;\nlet scoreCount = 0;\n\nif (agentOutput.output && typeof agentOutput.output === \"string\") {\n  const outputText = agentOutput.output;\n  \n  const scorePattern = /similarity[:\\s]+([0-9.]+)|score[:\\s]+([0-9.]+)|confidence[:\\s]+([0-9.]+)/gi;\n  const matches = [...outputText.matchAll(scorePattern)];\n  \n  if (matches.length > 0) {\n    const scores = matches.map(m => parseFloat(m[1] || m[2] || m[3])).filter(s => !isNaN(s) && s >= 0 && s <= 1);\n    \n    if (scores.length > 0) {\n      minScore = Math.min(...scores);\n      maxScore = Math.max(...scores);\n      avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;\n      scoreCount = scores.length;\n    }\n  }\n}\n\nconst hasLowConfidenceIndicators = \n  agentOutput.output && (\n    agentOutput.output.includes(\"?? ???????\") ||\n    agentOutput.output.includes(\"??? ??????????\") ||\n    agentOutput.output.includes(\"not found\") ||\n    agentOutput.output.includes(\"no information\") ||\n    agentOutput.output.length < 50\n  );\n\nconst estimatedConfidence = hasLowConfidenceIndicators ? 0.3 : (scoreCount > 0 ? avgScore : 0.75);\n\nreturn {\n  ...agentOutput,\n  confidenceScore: estimatedConfidence,\n  minSimilarity: minScore,\n  maxSimilarity: maxScore,\n  avgSimilarity: avgScore,\n  documentCount: scoreCount\n};"
+      },
+      "id": "b3b0d4f7-f3ca-449b-8025-c123d908ba0c",
+      "name": "Extract Similarity Scores",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2560,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.confidenceScore }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              },
+              "rightValue": 0.6
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4154d591-1dfb-4f86-801f-42a58d386331",
+      "name": "Check Confidence Threshold",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2784,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "output",
+              "type": "string",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "id": "2",
+              "name": "sessionId",
+              "type": "string",
+              "value": "={{ $json.sessionId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "30c72758-e851-42dc-ba8f-f7e358f9cfbb",
+      "name": "Format High Confidence Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3008,
+        1504
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "output",
+              "type": "string",
+              "value": "={{ \"? ?????????, ? ?? ???? ????? ?????????? ???????? ?????????? ?? ?????? ??????? ? ????????? ??????????.\\n\\n\" + ($json.confidenceScore > 0.4 ? \"????????, ????????? ?????????? ????? ???? ??????? (?????? ???????????):\\n\\n\" + $json.output : \"??????????, ???????? ??? ?????? ??? ?????????? ? ??????????? ?????? ?????? ??? ???????????? ??????.\") }}"
+            },
+            {
+              "id": "2",
+              "name": "sessionId",
+              "type": "string",
+              "value": "={{ $json.sessionId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3265feda-249f-4425-b45e-3a991139c85d",
+      "name": "Format Low Confidence Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3008,
+        1696
+      ]
+    },
+    {
+      "parameters": {
+        "fileSelector": "/docs/*",
+        "options": {}
+      },
+      "id": "396763c3-16af-40ed-8fea-93a5bb5da4a7",
+      "name": "Read Local Documents",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        1056
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {
+          "joinPages": true
+        }
+      },
+      "id": "9ca13f2b-eb9e-46fb-96a4-8a9101c2f78f",
+      "name": "Extract PDF Content",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        1056
+      ]
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.chatInput }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "hr",
+              "description": "HR-related questions: vacation, hiring, personnel, employees, recruitment, dismissal"
+            },
+            {
+              "category": "legal",
+              "description": "Legal questions: contracts, laws, regulations, labor code, rights"
+            },
+            {
+              "category": "general",
+              "description": "General questions not specific to HR or legal domains"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ae80d924-c262-4108-88af-be3646a20d61",
+      "name": "AI Text Classifier",
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        1552,
+        1616
+      ]
+    }
+  ],
+  "connections": {
+    "RAG Chatbot": {
+      "main": [
+        [
+          {
+            "node": "AI Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 6 Days": {
+      "main": [
+        [
+          {
+            "node": "Keep Supabase Instance Alive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Legal/HR AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Indexing": {
+      "main": [
+        [
+          {
+            "node": "Clear Old Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini 2.5 Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Legal/HR AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Insert Into Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Chunk Embedding": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Insert Into Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Query Embedding": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Legal/HR Knowledge Base",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Google Drive Folder": {
+      "main": [
+        [
+          {
+            "node": "Split Out Google Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicate Documents": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Documents": {
+      "main": [
+        [
+          {
+            "node": "Route Document By Source",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Document Metadata": {
+      "main": [
+        [
+          {
+            "node": "Clean Document Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Document Content": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicate Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicate Content": {
+      "main": [
+        [
+          {
+            "node": "Insert Into Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Legal/HR Websites": {
+      "main": [
+        [
+          {
+            "node": "Extract Links From HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Document Sources": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicate Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Legal/HR Knowledge Base": {
+      "ai_tool": [
+        [
+          {
+            "node": "Legal/HR AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear Old Documents": {
+      "main": [
+        [
+          {
+            "node": "Read Local Documents",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Legal/HR Websites",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Google Docs": {
+      "main": [
+        [
+          {
+            "node": "Prepare Google Doc For Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Links From HTML": {
+      "main": [
+        [
+          {
+            "node": "Split Out Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Links": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicate Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicate Links": {
+      "main": [
+        [
+          {
+            "node": "Filter Valid Document Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Valid Document Links": {
+      "main": [
+        [
+          {
+            "node": "Prepare Web Document For Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Web Document For Processing": {
+      "main": [
+        [
+          {
+            "node": "Merge Document Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Web Page": {
+      "main": [
+        [
+          {
+            "node": "Extract Text From Web Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text From Web Page": {
+      "main": [
+        [
+          {
+            "node": "Prepare Document Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Document By Source": {
+      "main": [
+        [
+          {
+            "node": "Fetch Google Doc",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Web Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Into Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Query": {
+      "main": [
+        [
+          {
+            "node": "Legal/HR AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Legal/HR AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Extract Similarity Scores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Similarity Scores": {
+      "main": [
+        [
+          {
+            "node": "Check Confidence Threshold",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Confidence Threshold": {
+      "main": [
+        [
+          {
+            "node": "Format High Confidence Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Low Confidence Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Local Documents": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF Content": {
+      "main": [
+        [
+          {
+            "node": "Merge Document Sources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Legal/HR AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Legal/HR AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Legal/HR AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "ai_languageModel": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 11,
+  "triggerCount": 0,
+  "tags": [],
+  "activeVersion": null
 }
