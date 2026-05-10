@@ -1,0 +1,5 @@
+.mcp.json
+node_modules/
+.env
+*.log
+n8n/n8n-mcp-wrapper.bat
