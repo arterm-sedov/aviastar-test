@@ -742,7 +742,7 @@
     },
     {
       "parameters": {
-        "fileSelector": "/docs/*",
+        "fileSelector": "/home/node/.n8n-files/docs/*",
         "options": {}
       },
       "id": "2186b6e6-fa19-447e-9a07-f59967f1508c",
@@ -750,7 +750,7 @@
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
       "position": [
-        2608,
+        1936,
         1056
       ]
     },
@@ -773,7 +773,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2832,
+        3056,
         1056
       ]
     },
@@ -799,19 +799,17 @@
         "categories": {
           "categories": [
             {
-              "name": "HR",
               "description": "HR-related: vacation, hiring, personnel, employees, recruitment, dismissal, staff policies"
             },
             {
-              "name": "Legal",
               "description": "Legal: contracts, laws, regulations, labor code, rights, agreements, compliance"
             },
             {
-              "name": "General",
               "description": "General questions not specific to HR or legal domains"
             }
           ]
-        }
+        },
+        "options": {}
       },
       "id": "46d7bcd2-935d-434b-877f-45c423c29107",
       "name": "AI Text Classifier",
@@ -964,6 +962,7 @@
     },
     "Loop Over Documents": {
       "main": [
+        [],
         [
           {
             "node": "Route Document By Source",
@@ -1281,14 +1280,13 @@
     }
   },
   "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate"
+    "executionOrder": "v1"
   },
   "staticData": null,
   "meta": null,
-  "pinData": {},
+  "pinData": null,
   "activeVersionId": null,
-  "versionCounter": 25,
+  "versionCounter": 1,
   "triggerCount": 0,
   "tags": [],
   "activeVersion": null
