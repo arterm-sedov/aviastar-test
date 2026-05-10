@@ -81,3 +81,61 @@ Invoke-RestMethod -Uri "http://localhost:5678/api/v1/workflows" -Headers $header
 - API: `POST /api/v1/workflows` accepts `{name, nodes, connections, settings}`.
 - Read/Write Files node looks relative to n8n container install path; use absolute paths.
 - Text Classifier needs `ai_languageModel` connection to a model node.
+
+## Two CLI Approaches
+
+### Server CLI (Docker, no API key needed)
+```powershell
+# Export workflow to JSON
+docker exec n8n n8n export:workflow --id=<ID> --output=/tmp/wf.json
+docker cp n8n:/tmp/wf.json .\n8n\legal-rag.json
+
+# Import workflow from JSON
+docker cp .\n8n\legal-rag.json n8n:/tmp/wf.json
+docker exec n8n n8n import:workflow --input=/tmp/wf.json
+
+# Export all workflows + credentials (backup)
+docker exec n8n n8n export:workflow --all --output=/tmp/backup.json
+docker exec n8n n8n export:credentials --all --output=/tmp/creds.json
+```
+Server CLI runs inside the container, bypasses API auth, works even if API key is lost.
+
+### Remote CLI (`@n8n/cli`, requires API key)
+```powershell
+# Install once
+npm install -g @n8n/cli
+
+# Configure
+n8n-cli config set-url http://localhost:5678
+n8n-cli config set-api-key $env:N8N_API_KEY
+
+# CRUD operations
+n8n-cli workflow list
+n8n-cli workflow get <ID>
+n8n-cli workflow create --stdin < workflow.json
+n8n-cli workflow update <ID> --stdin < workflow.json
+n8n-cli workflow delete <ID>
+n8n-cli workflow activate <ID>
+```
+Remote CLI talks to n8n REST API, respects RBAC, in beta.
+
+### REST API (our current approach)
+```powershell
+# Create workflow
+Invoke-RestMethod -Uri "$N8N_URL/api/v1/workflows" -Method Post -Headers $headers -Body $body
+
+# Get workflow
+Invoke-RestMethod -Uri "$N8N_URL/api/v1/workflows/<ID>" -Headers $headers
+
+# Update workflow
+Invoke-RestMethod -Uri "$N8N_URL/api/v1/workflows/<ID>" -Method Put -Headers $headers -Body $body
+```
+
+## Reference Repositories
+
+| Path | Content | Use |
+|------|---------|-----|
+| `C:\Repos\n8n` | n8n source (TypeScript) | Node implementations, type structures |
+| `C:\Repos\n8n-docs` | n8n documentation (MDX) | Node docs, API docs, guides |
+| `C:\Repos\n8n-skills` | Claude Code skills for n8n | Skill reference, MCP usage patterns |
+| `C:\Repos\n8n-mcp` | n8n-mcp MCP server source | MCP tool behavior, env config, API client code |
