@@ -175,7 +175,7 @@
       "name": "RAG Chatbot",
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "position": [
-        1488,
+        1264,
         1600
       ],
       "webhookId": "965843ea-8dc2-4760-b13a-b65b68e3e8aa",
@@ -742,8 +742,8 @@
     },
     {
       "parameters": {
-        "operation": "read",
-        "fileSelector": "/docs/*"
+        "fileSelector": "/docs/*",
+        "options": {}
       },
       "id": "2186b6e6-fa19-447e-9a07-f59967f1508c",
       "name": "Read Local Documents",
@@ -780,7 +780,6 @@
     {
       "parameters": {
         "operation": "pdf",
-        "binaryPropertyName": "data",
         "options": {
           "joinPages": true
         }
@@ -800,26 +799,27 @@
         "categories": {
           "categories": [
             {
-              "name": "HR",
+              "category": "hr",
               "description": "HR-related: vacation, hiring, personnel, employees, recruitment, dismissal"
             },
             {
-              "name": "Legal",
+              "category": "legal",
               "description": "Legal: contracts, laws, regulations, labor code, rights"
             },
             {
-              "name": "General",
+              "category": "general",
               "description": "General questions not specific to HR or legal domains"
             }
           ]
-        }
+        },
+        "options": {}
       },
       "id": "46d7bcd2-935d-434b-877f-45c423c29107",
       "name": "AI Text Classifier",
       "type": "@n8n/n8n-nodes-langchain.textClassifier",
       "typeVersion": 1.1,
       "position": [
-        1712,
+        1424,
         1584
       ]
     },
@@ -842,8 +842,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1856,
-        1584
+        1824,
+        1568
       ]
     }
   ],
@@ -897,6 +897,11 @@
         [
           {
             "node": "Legal/HR AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Text Classifier",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -1238,16 +1243,24 @@
             "type": "main",
             "index": 0
           }
-        ]
-      ],
-      "ai_languageModel": [
+        ],
         [
           {
-            "node": "Gemini 2.5 Flash",
-            "type": "ai_languageModel",
+            "node": "Enrich with Classification",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enrich with Classification",
+            "type": "main",
             "index": 0
           }
         ]
+      ],
+      "ai_languageModel": [
+        []
       ]
     },
     "Enrich with Classification": {
@@ -1270,7 +1283,7 @@
   "meta": null,
   "pinData": {},
   "activeVersionId": null,
-  "versionCounter": 13,
+  "versionCounter": 24,
   "triggerCount": 0,
   "tags": [],
   "activeVersion": null
