@@ -10,8 +10,8 @@
       "name": "Simple Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "position": [
-        3168,
-        4128
+        3328,
+        4000
       ],
       "typeVersion": 1.3,
       "notes": "Session memory"
@@ -41,7 +41,7 @@
       "name": "Recursive Character Text Splitter",
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "position": [
-        5920,
+        6128,
         3696
       ],
       "typeVersion": 1,
@@ -53,8 +53,8 @@
       "name": "Gemini Query Embedding",
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "position": [
-        3344,
-        4304
+        3504,
+        4176
       ],
       "typeVersion": 1,
       "credentials": {
@@ -97,7 +97,7 @@
       "type": "n8n-nodes-base.supabase",
       "position": [
         2224,
-        4480
+        4336
       ],
       "typeVersion": 1,
       "credentials": {
@@ -123,7 +123,7 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "position": [
         2000,
-        4480
+        4336
       ],
       "typeVersion": 1.2,
       "notes": "� arterm-sedov"
@@ -148,8 +148,8 @@
       "name": "RAG Chatbot",
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "position": [
-        2048,
-        4096
+        2000,
+        3968
       ],
       "webhookId": "965843ea-8dc2-4760-b13a-b65b68e3e8aa",
       "typeVersion": 1.1,
@@ -337,8 +337,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.1,
       "position": [
-        3280,
-        3904
+        3440,
+        3776
       ]
     },
     {
@@ -359,8 +359,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        3344,
-        4128
+        3504,
+        4000
       ],
       "credentials": {
         "supabaseApi": {
@@ -678,8 +678,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        3744,
-        3904
+        3904,
+        3776
       ]
     },
     {
@@ -691,8 +691,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4096,
-        3904
+        4256,
+        3776
       ]
     },
     {
@@ -703,8 +703,8 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        3888,
-        4128
+        4048,
+        4000
       ],
       "id": "dd410880-5ac1-44a6-8078-eae8b1c8a069",
       "name": "Structured Output Parser"
@@ -717,8 +717,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        2992,
-        4128
+        3152,
+        4000
       ],
       "id": "50c8840c-7028-4dae-a5a6-f9bd9f9d598b",
       "name": "OpenRouter Chat Model",
@@ -737,8 +737,8 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        2800,
-        4128
+        2960,
+        4000
       ],
       "id": "23ab07d8-9b1a-415b-9569-281a7541e319",
       "name": "Structured Output Parser1"
@@ -753,8 +753,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        2656,
-        3904
+        2816,
+        3776
       ],
       "id": "52f4fdb8-4b0b-4b4d-bd17-79c1de845a42",
       "name": "Categorize"
@@ -776,8 +776,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3024,
-        3904
+        3184,
+        3776
       ],
       "id": "1b96d13e-e788-4042-a298-51fcedddd978",
       "name": "Category human-readable"
@@ -792,8 +792,8 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        2048,
-        3904
+        2000,
+        3776
       ],
       "id": "f87350de-2092-44a1-b145-5593b5ad4e83",
       "name": "Telegram Trigger",
@@ -846,8 +846,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2448,
-        3904
+        2608,
+        3776
       ],
       "id": "de7b36e4-a026-44a6-a4ae-4f2e119e52d1",
       "name": "Chat unify"
@@ -881,8 +881,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        4320,
-        4048
+        4480,
+        3920
       ],
       "id": "e8eaf0e8-f211-447e-8da1-3fa50d9e331c",
       "name": "Route to Telegram"
@@ -897,7 +897,7 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        3104,
+        2432,
         3472
       ],
       "id": "7b036ca9-637b-497c-b217-d7339c5ce849",
@@ -921,7 +921,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        3328,
+        2896,
         3472
       ]
     },
@@ -1057,8 +1057,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        4320,
-        3856
+        4480,
+        3728
       ]
     },
     {
@@ -1138,8 +1138,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        4544,
-        3856
+        4704,
+        3728
       ],
       "credentials": {
         "supabaseApi": {
@@ -1166,9 +1166,18 @@
                 "operation": "equals"
               },
               "rightValue": "=bober_ostrozub"
+            },
+            {
+              "id": "ef7f71e7-f5e7-4f6f-a7f0-760038ad80db",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "aviastar-test-access",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
             }
           ],
-          "combinator": "and"
+          "combinator": "or"
         },
         "looseTypeValidation": true,
         "options": {}
@@ -1178,8 +1187,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2208,
-        3904
+        2160,
+        3776
       ]
     },
     {
@@ -1193,8 +1202,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2672,
-        4288
+        2624,
+        4160
       ],
       "webhookId": "e083ec37-f76b-4acf-b560-d96de74bbbeb",
       "credentials": {
@@ -1307,8 +1316,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2864,
-        4288
+        2816,
+        4160
       ]
     },
     {
@@ -1384,8 +1393,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        3040,
-        4288
+        2992,
+        4160
       ],
       "credentials": {
         "supabaseApi": {
@@ -1426,8 +1435,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        4544,
-        4048
+        4704,
+        3920
       ],
       "id": "5ddc488e-b1e9-4af6-8f0b-09d74382af8b",
       "name": "Send reply with like/dislike buttons",
@@ -1465,8 +1474,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        4976,
-        3936
+        2160,
+        3600
       ],
       "id": "895b9bde-d55c-4f97-b14e-577398f231f5",
       "name": "Update a row",
@@ -1490,10 +1499,10 @@
           "conditions": [
             {
               "id": "whitelist-check",
-              "leftValue": "={{ $json.update_id }}",
+              "leftValue": "={{ $('Telegram Trigger').item.json.callback_query }}",
               "operator": {
-                "type": "number",
-                "operation": "exists",
+                "type": "object",
+                "operation": "notExists",
                 "singleValue": true
               },
               "rightValue": "=bober_ostrozub"
@@ -1509,8 +1518,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2432,
-        4288
+        2384,
+        4160
       ]
     },
     {
@@ -1523,12 +1532,34 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        4768,
-        3936
+        2000,
+        3600
       ],
       "id": "a67e269c-c80c-453d-b1d4-236b48751ab5",
       "name": "Telegram fetch button click",
       "webhookId": "c529dfba-ea19-4bd3-9d79-92f401f56bf1",
+      "credentials": {
+        "telegramApi": {
+          "id": "wToY4L9HvJWmqfwB",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "Работаю над вашим вопросом.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2384,
+        3776
+      ],
+      "id": "767e32b9-ba2e-49cd-8782-436038a9f39b",
+      "name": "Send confirmation",
+      "webhookId": "b585eacd-38ce-443c-93f2-3e54bb8dd42c",
       "credentials": {
         "telegramApi": {
           "id": "wToY4L9HvJWmqfwB",
@@ -2060,7 +2091,7 @@
       "main": [
         [
           {
-            "node": "Chat unify",
+            "node": "Send confirmation",
             "type": "main",
             "index": 0
           }
@@ -2117,6 +2148,17 @@
           }
         ]
       ]
+    },
+    "Send confirmation": {
+      "main": [
+        [
+          {
+            "node": "Chat unify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -2125,7 +2167,7 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "9df25263-d17d-4902-a920-da338fc12cb7",
+  "versionId": "fd413aad-507e-4e62-8c74-8ca6a6fbc290",
   "meta": {
     "templateId": "5993",
     "templateCredsSetupCompleted": true,
