@@ -10,8 +10,8 @@
       "name": "Simple Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "position": [
-        2048,
-        1824
+        2208,
+        1520
       ],
       "typeVersion": 1.3,
       "notes": "Session memory"
@@ -41,8 +41,8 @@
       "name": "Recursive Character Text Splitter",
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "position": [
-        5504,
-        1392
+        5424,
+        1344
       ],
       "typeVersion": 1,
       "notes": "� arterm-sedov"
@@ -58,8 +58,8 @@
       "name": "Gemini 2.5 Flash",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "position": [
-        1824,
-        1824
+        1984,
+        1520
       ],
       "typeVersion": 1,
       "credentials": {
@@ -76,8 +76,8 @@
       "name": "Gemini Query Embedding",
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "position": [
-        2160,
-        1984
+        2320,
+        1680
       ],
       "typeVersion": 1,
       "credentials": {
@@ -116,8 +116,8 @@
       "name": "Keep Supabase Instance Alive",
       "type": "n8n-nodes-base.supabase",
       "position": [
-        1712,
-        2032
+        1616,
+        1552
       ],
       "typeVersion": 1,
       "credentials": {
@@ -142,8 +142,8 @@
       "name": "Every 6 Days",
       "type": "n8n-nodes-base.scheduleTrigger",
       "position": [
-        1488,
-        2032
+        1392,
+        1552
       ],
       "typeVersion": 1.2,
       "notes": "� arterm-sedov"
@@ -175,8 +175,8 @@
       "name": "RAG Chatbot",
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "position": [
-        1216,
-        1600
+        1376,
+        1296
       ],
       "webhookId": "965843ea-8dc2-4760-b13a-b65b68e3e8aa",
       "typeVersion": 1.1,
@@ -360,8 +360,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.1,
       "position": [
-        2000,
-        1600
+        2160,
+        1296
       ]
     },
     {
@@ -382,8 +382,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        2160,
-        1824
+        2320,
+        1520
       ],
       "credentials": {
         "supabaseApi": {
@@ -646,8 +646,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2672,
-        1600
+        2832,
+        1296
       ]
     },
     {
@@ -731,8 +731,8 @@
       "type": "@n8n/n8n-nodes-langchain.textClassifier",
       "typeVersion": 1.1,
       "position": [
-        1392,
-        1584
+        1552,
+        1280
       ]
     },
     {
@@ -766,14 +766,14 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1808,
-        1600
+        1968,
+        1296
       ]
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer and output a valid JSON object with score and reasoning.\nScore criteria:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nIf the answer states information was not found, score MUST be 0.0.\nScore scale:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, significant gaps\n- 0.3-0.49: Limited sources, mostly generic\n- 0.0-0.29: No meaningful sources, not found or irrelevant\n</task>\n\nQuestion: {{ $('Enrich with Classification').first().json.chatInput }}\n\nAnswer to evaluate:\n{{ $json.output }}",
+        "text": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer and output a valid JSON object with score and reasoning.\nScore criteria:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nIf the answer states information was not found, score MUST be 0.0.\nScore scale:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, significant gaps\n- 0.3-0.49: Limited sources, mostly generic\n- 0.0-0.29: No meaningful sources, not found or irrelevant\n</task>\n\nQuestion: {{ $json.chatInput }}\n\nAnswer to evaluate:\n{{ $json.output }}",
         "hasOutputParser": true
       },
       "id": "9911fe9787d24d",
@@ -781,8 +781,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        2320,
-        1600
+        2480,
+        1296
       ]
     },
     {
@@ -795,8 +795,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2896,
-        1600
+        3056,
+        1296
       ]
     },
     {
@@ -807,11 +807,34 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        2464,
-        1840
+        2624,
+        1536
       ],
       "id": "ea791a09-0c7e-485d-92ce-f6c31da9d7a2",
       "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "chatInput",
+              "type": "string",
+              "value": "={{ $('Enrich with Classification').first().json.chatInput }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bb89c3971f3c4c",
+      "name": "Add Chat Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2024,
+        1568
+      ]
     }
   ],
   "connections": {
@@ -1145,7 +1168,7 @@
       "main": [
         [
           {
-            "node": "LLM Answer Judge",
+            "node": "Add Chat Input",
             "type": "main",
             "index": 0
           }
@@ -1259,6 +1282,17 @@
           }
         ]
       ]
+    },
+    "Add Chat Input": {
+      "main": [
+        [
+          {
+            "node": "LLM Answer Judge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1269,7 +1303,7 @@
   "meta": null,
   "pinData": {},
   "activeVersionId": null,
-  "versionCounter": 65,
+  "versionCounter": 69,
   "triggerCount": 0,
   "tags": [],
   "activeVersion": null
