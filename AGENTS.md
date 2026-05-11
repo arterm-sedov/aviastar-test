@@ -136,3 +136,36 @@ Invoke-RestMethod -Uri "$N8N_URL/api/v1/workflows/<ID>" -Method Put -Headers $he
 | `..\n8n-docs` | n8n documentation (MDX) | Node docs, API docs, guides |
 | `..\n8n-skills` | Claude Code skills for n8n | Skill reference, MCP usage patterns |
 | `..\n8n-mcp` | n8n-mcp MCP server source | MCP tool behavior, env config, API client code |
+
+## n8n CLI Quick Reference
+
+```powershell
+# Export (pull) — no API key needed
+docker exec n8n n8n export:workflow --id=<ID> --output=/tmp/wf.json
+docker cp n8n:/tmp/wf.json .\n8n\legal-rag.json
+
+# Import (push, CREATE only — does NOT update existing)
+docker cp .\n8n\legal-rag.json n8n:/tmp/wf.json
+docker exec n8n n8n import:workflow --input=/tmp/wf.json
+
+# For updates, use REST API (PUT) or push.py
+```
+
+## n8n Node Implementation Notes
+
+### Chain LLM (`@n8n/n8n-nodes-langchain.chainLlm`) Parameters
+- **typeVersion 1.3**: `prompt` (string, required) — simple text prompt
+- **typeVersion 1.6**: `promptType` (options) + `text` field when promptType='define'
+- Default prompt value: `={{ $json.chatInput }}` (v1.3) or `={{ $json.chat_input }}` (v1.1-1.2)
+- Requires `ai_languageModel` connection
+
+### Vector Store Tools: Scores Unavailable
+- Both `ToolVectorStore` (legacy) and `retrieve-as-tool` (new) drop similarity scores from output
+- `similaritySearchVectorWithScore` is called internally, but scores are discarded in formatting
+- Confidence must come from: classifier confidence + LLM judge, not retrieval scores
+
+### Reranker Availability
+- `@n8n/n8n-nodes-langchain.rerankerCohere` — Cohere Rerank sub-node
+- Connects via `ai_reranker` to vector store nodes
+- Needs Cohere API key credential
+- Improves retrieval precision but scores still not in tool output

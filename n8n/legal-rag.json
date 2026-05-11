@@ -10,7 +10,7 @@
       "name": "Simple Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "position": [
-        2064,
+        2048,
         1824
       ],
       "typeVersion": 1.3,
@@ -58,7 +58,7 @@
       "name": "Gemini 2.5 Flash",
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "position": [
-        1936,
+        1824,
         1824
       ],
       "typeVersion": 1,
@@ -76,8 +76,8 @@
       "name": "Gemini Query Embedding",
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "position": [
-        2272,
-        2032
+        2160,
+        1984
       ],
       "typeVersion": 1,
       "credentials": {
@@ -175,7 +175,7 @@
       "name": "RAG Chatbot",
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "position": [
-        1264,
+        1216,
         1600
       ],
       "webhookId": "965843ea-8dc2-4760-b13a-b65b68e3e8aa",
@@ -382,7 +382,7 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        2192,
+        2160,
         1824
       ],
       "credentials": {
@@ -646,7 +646,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2560,
+        2672,
         1600
       ]
     },
@@ -731,8 +731,8 @@
       "type": "@n8n/n8n-nodes-langchain.textClassifier",
       "typeVersion": 1.1,
       "position": [
-        1408,
-        1552
+        1392,
+        1584
       ]
     },
     {
@@ -766,37 +766,35 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1824,
-        1568
+        1808,
+        1600
       ]
     },
     {
       "parameters": {
-        "text": "<role>\nYou are a strict quality evaluator for RAG (Retrieval-Augmented Generation) answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer on a scale of 0.0 to 1.0 based on:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nScore interpretation:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers the question\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, some inference needed, significant gaps\n- 0.3-0.49: Limited sources, mostly generic answer\n- Below 0.3: No meaningful sources, answer not found or irrelevant\n\nOUTPUT ONLY THE NUMERIC SCORE (e.g., \"0.75\"). No other text.\n</task>\n\n<question>\n{{ $json.chatInput }}\n</question>\n\n<answer_to_evaluate>\n{{ $json.output }}\n</answer_to_evaluate>",
+        "prompt": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer on a scale of 0.0 to 1.0 based on:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nScore interpretation:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers the question\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, some inference needed, significant gaps\n- 0.3-0.49: Limited sources, mostly generic answer\n- Below 0.3: No meaningful sources, answer not found or irrelevant\n\nOUTPUT ONLY THE NUMERIC SCORE (e.g. \"0.75\"). No other text.\n</task>\n\n<question>\n{{ $json.chatInput }}\n</question>\n\n<answer_to_evaluate>\n{{ $json.output }}\n</answer_to_evaluate>",
         "options": {}
       },
       "id": "9911fe9787d24d",
       "name": "LLM Answer Judge",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.6,
+      "typeVersion": 1.3,
       "position": [
-        2224,
-        1568
+        2336,
+        1600
       ]
     },
     {
       "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "// Template Response — applies rigid category templates per spec.\n// \"LLM для поиска и ответов, шаблоны - через код с заполнением полей\"\n// Confidence from: AI classifier + LLM Answer Judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\nconst category = inputItem.classificationCategory || 'General';\nconst sessionId = inputItem.sessionId || '';\nconst agentOutput = inputItem.output || '';\n\n// ---- Confidence: AI classifier + LLM judge ----\nconst classifierConf = parseFloat(inputItem.classificationConfidence) || 0.5;\n\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  const judgeText = judgeData.text || judgeData.output || '';\n  const m = judgeText.match(/([0-9.]+)/);\n  if (m) {\n    judgeScore = parseFloat(m[1]);\n    if (judgeScore > 1) judgeScore = judgeScore / 100; // normalize percentage\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) { /* judge data unavailable */ }\n\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7   // weigh independent judge more\n  : classifierConf;\n\nconst confidencePct = (Math.min(Math.max(confidenceScore, 0), 1) * 100).toFixed(0);\nconst now = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });\n\nconst sourceMatches = agentOutput.match(/источник:|source:/gi);\nconst sourceCount = sourceMatches ? sourceMatches.length : 0;\n\n// ---- Low confidence (below 60%) ----\nif (confidenceScore < 0.6) {\n  const catLabel = category === 'HR' ? 'Кадровый вопрос' :\n                   category === 'Legal' ? 'Юридический вопрос' : 'Общий вопрос';\n\n  return [{\n    json: {\n      output: (\n        '## ⚠️ Ответ с пониженной уверенностью\\n\\n' +\n        `**Категория:** ${catLabel}\\n` +\n        `**Уверенность:** ${confidencePct}% (ниже порога 60%)\\n` +\n        `**Найдено источников:** ${sourceCount}\\n\\n` +\n        '---\\n\\n' +\n        `${agentOutput}\\n\\n` +\n        '---\\n\\n' +\n        '⚠️ *Точность данного ответа ниже установленного порога. Рекомендуется проверка специалистом.*\\n' +\n        '📅 ' + now\n      ),\n      sessionId\n    }\n  }];\n}\n\n// ---- High confidence: category-specific rigid templates ----\nconst templates = {\n  HR: {\n    heading: '## 🏢 Ответ HR-ассистента\\n\\n**Категория:** Кадровый вопрос',\n    disclaimer: '*Ответ основан на внутренних HR-документах и политиках компании. Источники документов имеют приоритет над формулировками ИИ-ассистента.*'\n  },\n  Legal: {\n    heading: '## ⚖️ Ответ Юридического ассистента\\n\\n**Категория:** Юридический вопрос',\n    disclaimer: '⚠️ *Данный ответ носит информационный характер. Нормативные документы и источники имеют приоритет над формулировками ИИ-ассистента. Для подготовки финальных юридических документов требуется проверка квалифицированным специалистом.*'\n  },\n  General: {\n    heading: '## 📋 Ответ Ассистента\\n\\n**Категория:** Общий вопрос',\n    disclaimer: '*Ответ основан на доступных документах базы знаний. Первоисточники имеют приоритет над формулировками ИИ-ассистента.*'\n  }\n};\n\nconst t = templates[category] || templates.General;\n\nreturn [{\n  json: {\n    output: (\n      `${t.heading}\\n` +\n      `**Уверенность:** ${confidencePct}%\\n` +\n      `**Найдено источников:** ${sourceCount}\\n\\n` +\n      '---\\n\\n' +\n      `${agentOutput}\\n\\n` +\n      '---\\n\\n' +\n      `${t.disclaimer}\\n` +\n      '📅 ' + now\n    ),\n    sessionId\n  }\n}];\n",
-        "language": "javaScript"
+        "jsCode": "// Template Response — applies rigid category templates per spec.\n// \"LLM для поиска и ответов, шаблоны - через код с заполнением полей\"\n// Confidence from: AI classifier + LLM Answer Judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\nconst category = inputItem.classificationCategory || 'General';\nconst sessionId = inputItem.sessionId || '';\nconst agentOutput = inputItem.output || '';\n\n// ---- Confidence: AI classifier + LLM judge ----\nconst classifierConf = parseFloat(inputItem.classificationConfidence) || 0.5;\n\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  const judgeText = judgeData.text || judgeData.output || '';\n  const m = judgeText.match(/([0-9.]+)/);\n  if (m) {\n    judgeScore = parseFloat(m[1]);\n    if (judgeScore > 1) judgeScore = judgeScore / 100; // normalize percentage\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) { /* judge data unavailable */ }\n\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7   // weigh independent judge more\n  : classifierConf;\n\nconst confidencePct = (Math.min(Math.max(confidenceScore, 0), 1) * 100).toFixed(0);\nconst now = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });\n\nconst sourceMatches = agentOutput.match(/источник:|source:/gi);\nconst sourceCount = sourceMatches ? sourceMatches.length : 0;\n\n// ---- Low confidence (below 60%) ----\nif (confidenceScore < 0.6) {\n  const catLabel = category === 'HR' ? 'Кадровый вопрос' :\n                   category === 'Legal' ? 'Юридический вопрос' : 'Общий вопрос';\n\n  return [{\n    json: {\n      output: (\n        '## ⚠️ Ответ с пониженной уверенностью\\n\\n' +\n        `**Категория:** ${catLabel}\\n` +\n        `**Уверенность:** ${confidencePct}% (ниже порога 60%)\\n` +\n        `**Найдено источников:** ${sourceCount}\\n\\n` +\n        '---\\n\\n' +\n        `${agentOutput}\\n\\n` +\n        '---\\n\\n' +\n        '⚠️ *Точность данного ответа ниже установленного порога. Рекомендуется проверка специалистом.*\\n' +\n        '📅 ' + now\n      ),\n      sessionId\n    }\n  }];\n}\n\n// ---- High confidence: category-specific rigid templates ----\nconst templates = {\n  HR: {\n    heading: '## 🏢 Ответ HR-ассистента\\n\\n**Категория:** Кадровый вопрос',\n    disclaimer: '*Ответ основан на внутренних HR-документах и политиках компании. Источники документов имеют приоритет над формулировками ИИ-ассистента.*'\n  },\n  Legal: {\n    heading: '## ⚖️ Ответ Юридического ассистента\\n\\n**Категория:** Юридический вопрос',\n    disclaimer: '⚠️ *Данный ответ носит информационный характер. Нормативные документы и источники имеют приоритет над формулировками ИИ-ассистента. Для подготовки финальных юридических документов требуется проверка квалифицированным специалистом.*'\n  },\n  General: {\n    heading: '## 📋 Ответ Ассистента\\n\\n**Категория:** Общий вопрос',\n    disclaimer: '*Ответ основан на доступных документах базы знаний. Первоисточники имеют приоритет над формулировками ИИ-ассистента.*'\n  }\n};\n\nconst t = templates[category] || templates.General;\n\nreturn [{\n  json: {\n    output: (\n      `${t.heading}\\n` +\n      `**Уверенность:** ${confidencePct}%\\n` +\n      `**Найдено источников:** ${sourceCount}\\n\\n` +\n      '---\\n\\n' +\n      `${agentOutput}\\n\\n` +\n      '---\\n\\n' +\n      `${t.disclaimer}\\n` +\n      '📅 ' + now\n    ),\n    sessionId\n  }\n}];\n"
       },
       "id": "8875ccc12f354f",
       "name": "Template Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2624,
-        1568
+        2896,
+        1600
       ]
     }
   ],
@@ -856,6 +854,11 @@
           },
           {
             "node": "AI Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "LLM Answer Judge",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -1227,13 +1230,7 @@
         ]
       ],
       "ai_languageModel": [
-        [
-          {
-            "node": "Gemini 2.5 Flash",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
+        []
       ]
     }
   },
@@ -1245,7 +1242,7 @@
   "meta": null,
   "pinData": {},
   "activeVersionId": null,
-  "versionCounter": 19,
+  "versionCounter": 36,
   "triggerCount": 0,
   "tags": [],
   "activeVersion": null

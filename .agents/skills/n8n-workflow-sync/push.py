@@ -1,5 +1,12 @@
-"""Push n8n workflow JSON to n8n via REST API (reads keys from process env or Windows registry)."""
-import json, os, sys, urllib.request, urllib.error
+"""Push n8n workflow JSON via REST API or n8n CLI (docker exec).
+
+Modes:
+  python push.py          REST API (default, supports update)
+  python push.py --cli    n8n CLI via docker exec (no API key needed, creates new)
+
+Env vars / Windows registry: N8N_API_KEY, N8N_API_URL, N8N_WORKFLOW_ID, N8N_WORKFLOW_PATH
+"""
+import json, os, sys, subprocess, urllib.request, urllib.error
 
 def _env(key, default=None):
     for src in [os.environ.get(key), _from_winreg(key)]:
@@ -19,13 +26,28 @@ N8N_KEY = _env("N8N_API_KEY")
 WF_PATH = os.environ.get("N8N_WORKFLOW_PATH",
     os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "n8n", "legal-rag.json")))
 WF_ID = _env("N8N_WORKFLOW_ID", "")
+USE_CLI = "--cli" in sys.argv
+
+with open(WF_PATH, encoding="utf-8-sig") as f:
+    wf = json.load(f)
+
+if USE_CLI:
+    # n8n CLI: docker cp → docker exec import:workflow (creates only, no update)
+    subprocess.run(["docker", "cp", WF_PATH, "n8n:/tmp/wf.json"], check=True)
+    result = subprocess.run(
+        ["docker", "exec", "n8n", "n8n", "import:workflow", "--input=/tmp/wf.json"],
+        capture_output=True, text=True
+    )
+    print(result.stdout or result.stderr)
+    sys.exit(0)
 
 if not N8N_KEY:
     print("ERROR: N8N_API_KEY not set in environment", file=sys.stderr)
     sys.exit(1)
 
-with open(WF_PATH, encoding="utf-8-sig") as f:
-    wf = json.load(f)
+# Strip ID fields so PUT/POST payload is clean
+for key in ("id", "versionId", "meta", "tags"):
+    wf.pop(key, None)
 
 body = json.dumps({
     "name": wf["name"],
