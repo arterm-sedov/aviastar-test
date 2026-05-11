@@ -639,7 +639,7 @@
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "// Confidence: AI classifier + LLM judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\n\n// 1. Classifier confidence\nlet classifierConf = 0.5;\ntry {\n  classifierConf = parseFloat($('Enrich with Classification').first().json.classificationConfidence) || 0.5;\n} catch(e) {}\n\n// 2. LLM Judge score (from separate LLM Answer Judge node)\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  const judgeText = judgeData.text || '';\n  const m = judgeText.match(/([0-9.]+)/);\n  if (m) {\n    judgeScore = parseFloat(m[1]);\n    if (judgeScore > 1) judgeScore = judgeScore / 100;\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) {}\n\n// 3. Fallback: agent self-assessment tags\nlet selfScore = null;\nif (judgeScore === null) {\n  const agentOutput = inputItem.output || '';\n  const sm = agentOutput.match(/<confidence_assessment>\\s*([0-9.]+)\\s*<\\/confidence_assessment>/);\n  if (sm) {\n    selfScore = parseFloat(sm[1]);\n    if (selfScore >= 0 && selfScore <= 1) judgeScore = selfScore;\n  }\n}\n\n// Combined confidence\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7\n  : classifierConf;\n\n// Source count for display\nconst sourceCount = (inputItem.output || '').match(/источник:|source:/gi)?.length || 0;\n\nreturn [{\n  json: {\n    ...inputItem,\n    confidenceScore: Math.min(Math.max(confidenceScore, 0), 1),\n    documentCount: sourceCount\n  }\n}];\n"
+        "jsCode": "// Confidence: AI classifier + LLM judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\n\n// 1. Classifier confidence\nlet classifierConf = 0.5;\ntry {\n  const enrich = $('Enrich with Classification').first().json;\n  classifierConf = parseFloat(enrich.classificationConfidence) || 0.5;\n} catch(e) {}\n\n// 2. LLM Judge score (parses JSON output via Structured Output Parser)\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  if (judgeData.score !== undefined) {\n    judgeScore = parseFloat(judgeData.score);\n  } else if (judgeData.text) {\n    const parsed = JSON.parse(judgeData.text);\n    judgeScore = parseFloat(parsed.score);\n  }\n  if (judgeScore !== null && !isNaN(judgeScore)) {\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) {}\n\n// Combined: judge weighted higher\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7\n  : classifierConf;\n\nconst agentOutput = inputItem.output || \"\";\nconst sourceCount = (agentOutput.match(/источник:|source:/gi) || []).length;\n\nreturn [{\n  json: {\n    ...inputItem,\n    confidenceScore: Math.min(Math.max(confidenceScore, 0), 1),\n    documentCount: sourceCount\n  }\n}];\n"
       },
       "id": "b3b0d4f7-f3ca-449b-8025-c123d908ba0c",
       "name": "Extract Similarity Scores",
@@ -772,7 +772,7 @@
     },
     {
       "parameters": {
-        "prompt": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer on a scale of 0.0 to 1.0 based on:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nScore interpretation:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers the question\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, some inference needed, significant gaps\n- 0.3-0.49: Limited sources, mostly generic answer\n- Below 0.3: No meaningful sources, answer not found or irrelevant\n\nOUTPUT ONLY THE NUMERIC SCORE (e.g. \"0.75\"). No other text.\n</task>\n\n<question>\n{{ $json.chatInput }}\n</question>\n\n<answer_to_evaluate>\n{{ $json.output }}\n</answer_to_evaluate>"
+        "prompt": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer and output a JSON object with score and reasoning.\nScore criteria:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nScore scale:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, significant gaps\n- 0.3-0.49: Limited sources, mostly generic\n- Below 0.3: No meaningful sources, not found or irrelevant\n</task>\n\n<question>\n{{ $json.chatInput }}\n</question>\n\n<answer_to_evaluate>\n{{ $json.output }}\n</answer_to_evaluate>"
       },
       "id": "9911fe9787d24d",
       "name": "LLM Answer Judge",
@@ -798,7 +798,10 @@
       ]
     },
     {
-      "parameters": {},
+      "parameters": {
+        "schema": "={\"type\": \"object\", \"properties\": {\"score\": {\"type\": \"number\", \"minimum\": 0, \"maximum\": 1}, \"reasoning\": {\"type\": \"string\", \"maxLength\": 200}}, \"required\": [\"score\"]}",
+        "options": {}
+      },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
@@ -807,19 +810,6 @@
       ],
       "id": "ea791a09-0c7e-485d-92ce-f6c31da9d7a2",
       "name": "Structured Output Parser"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.outputParserItemList",
-      "typeVersion": 1,
-      "position": [
-        2624,
-        1760
-      ],
-      "id": "57bb4145-d849-4ee1-9f3e-21cdcad42856",
-      "name": "Item List Output Parser"
     }
   ],
   "connections": {
@@ -1277,7 +1267,7 @@
   "meta": null,
   "pinData": {},
   "activeVersionId": null,
-  "versionCounter": 42,
+  "versionCounter": 43,
   "triggerCount": 0,
   "tags": [],
   "activeVersion": null
