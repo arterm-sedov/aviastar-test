@@ -2,13 +2,16 @@
   "name": "aviastar-test v2 (file-based + AI classifier)",
   "nodes": [
     {
-      "parameters": {},
-      "id": "cbb4cdc3-4c51-442e-a6d2-37407d54453d",
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Chat unify').item.json.sessionId }}"
+      },
+      "id": "1552945a-e554-4e2a-9a01-5c4054944d73",
       "name": "Simple Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "position": [
-        2160,
-        1584
+        -2592,
+        2048
       ],
       "typeVersion": 1.3,
       "notes": "Session memory"
@@ -18,12 +21,12 @@
         "textSplittingMode": "custom",
         "options": {}
       },
-      "id": "8398f926-d1b8-435e-be06-9610dcf96a22",
+      "id": "794964b4-342d-4715-8098-96c3affd3a03",
       "name": "Default Data Loader",
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "position": [
-        5424,
-        1184
+        176,
+        1456
       ],
       "typeVersion": 1.1,
       "notes": "� arterm-sedov"
@@ -34,47 +37,31 @@
         "chunkOverlap": 50,
         "options": {}
       },
-      "id": "13731313-af7f-4b20-80b9-cee005f918c1",
+      "id": "53e43540-3e08-4761-8329-6698c39c92d7",
       "name": "Recursive Character Text Splitter",
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "position": [
-        5424,
-        1344
+        176,
+        1616
       ],
       "typeVersion": 1,
       "notes": "� arterm-sedov"
     },
     {
-      "parameters": {},
-      "id": "1de80d54-bd97-4109-8295-2e2eeeba3481",
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "id": "2e3f2168-38e6-41fd-8e5d-80d317282600",
       "name": "Gemini Query Embedding",
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "position": [
-        2320,
-        1712
+        -2432,
+        2176
       ],
       "typeVersion": 1,
       "credentials": {
         "googlePalmApi": {
-          "id": "ShEZYQLJQGGRzpFF",
-          "name": "Google Gemini(PaLM) Api account"
-        }
-      },
-      "notes": "� arterm-sedov"
-    },
-    {
-      "parameters": {},
-      "id": "269c92b8-b277-4160-a332-de8cade0c212",
-      "name": "Gemini Chunk Embedding",
-      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
-      "position": [
-        5296,
-        1184
-      ],
-      "typeVersion": 1,
-      "credentials": {
-        "googlePalmApi": {
-          "id": "ShEZYQLJQGGRzpFF",
+          "id": "bEmfhodW8MSJyTCk",
           "name": "Google Gemini(PaLM) Api account"
         }
       },
@@ -82,21 +69,42 @@
     },
     {
       "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "id": "ddf42c61-1a1f-4644-a8f8-263efca182b9",
+      "name": "Gemini Chunk Embedding",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "position": [
+        48,
+        1456
+      ],
+      "typeVersion": 1,
+      "notesInFlow": false,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "bEmfhodW8MSJyTCk",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "notes": "© arterm-sedov"
+    },
+    {
+      "parameters": {
         "operation": "getAll",
         "tableId": "documents",
         "limit": 1
       },
-      "id": "d480c904-8e75-4166-bbf0-d8cb3a4a8efe",
+      "id": "d94ccdfb-afb1-42cd-8294-a12caae3061d",
       "name": "Keep Supabase Instance Alive",
       "type": "n8n-nodes-base.supabase",
       "position": [
-        1536,
-        1584
+        -3216,
+        2048
       ],
       "typeVersion": 1,
       "credentials": {
         "supabaseApi": {
-          "id": "lfRTEqcP2QKagNi4",
+          "id": "JTGuwt2KKbraDdDg",
           "name": "Supabase account"
         }
       },
@@ -112,24 +120,24 @@
           ]
         }
       },
-      "id": "26badb62-c7b3-4633-8854-0ef14a9860f1",
+      "id": "3ffa4cb3-4a1f-4a3b-90a0-cdb422f7ccb3",
       "name": "Every 6 Days",
       "type": "n8n-nodes-base.scheduleTrigger",
       "position": [
-        1312,
-        1584
+        -3440,
+        2048
       ],
       "typeVersion": 1.2,
       "notes": "� arterm-sedov"
     },
     {
       "parameters": {},
-      "id": "86668008-4656-4c36-a8a3-5ebbb24df683",
+      "id": "8e7af1b9-6329-4913-9535-51766bf58d40",
       "name": "Start Indexing",
       "type": "n8n-nodes-base.manualTrigger",
       "position": [
-        1488,
-        960
+        -3584,
+        1216
       ],
       "typeVersion": 1,
       "notes": "� arterm-sedov"
@@ -137,24 +145,18 @@
     {
       "parameters": {
         "public": true,
-        "initialMessages": "Здравствуйте! Я AI-ассистент по вопросам юридического и кадрового департамента.\nВы можете задать мне вопрос по внутренним регламентам, трудовому законодательству и HR-политикам. Например:\n\"Какая процедура увольнения сотрудника?\"\n\"Какие правила перевозки опасных грузов?\"",
-        "options": {
-          "inputPlaceholder": "Задайте вопрос по юридическим или кадровым документам...",
-          "subtitle": "",
-          "title": "",
-          "customCss": "/* === THEME OVERRIDE: n8n Glass & Glow (Revised) === */\n\n/*\n  This theme is built upon the default n8n chat CSS variables.\n  We'll use your desired branding and layout, and then add\n  the \"glass\" effect using a semi-transparent background\n  and a backdrop-filter on the main window class.\n*/\n\n:root {\n  /* --- 1. CORE BRANDING & FONTS --- */\n  /* Your choices for font and primary color are applied here. */\n  --chat--font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\n  --chat--color-primary: #EA4B71; /* n8n Red */\n  --chat--color-primary-shade-50: #D93A60;\n  --chat--color-primary-shade-100: #C82A50;\n  --chat--color-secondary: #20b69e; /* Kept default secondary for things like file uploads */\n  --chat--color-secondary-shade-50: #1ca08a;\n  --chat--color-white: #ffffff;\n  --chat--color-light: #f2f4f8;\n  --chat--color-dark: #1F2937; /* Darker, more modern text color */\n  --chat--color-disabled: #9CA3AF;\n  --chat--color-typing: #404040;\n\n  /* --- 2. WINDOW & LAYOUT --- */\n  /* Your dimensions and rounded corners. The actual glass effect is handled in the class override below. */\n  --chat--window--width: 430px;\n  --chat--window--height: 80vh;\n  --chat--window--border-radius: 16px;\n  --chat--window--border: 1px solid rgba(255, 255, 255, 0.3);\n  --chat--spacing: 1rem; /* 16px base spacing */\n  --chat--window--z-index: 9999;\n  --chat--window--bottom: var(--chat--spacing);\n  --chat--window--right: var(--chat--spacing);\n  --chat--window--margin-bottom: var(--chat--spacing);\n\n  /* --- 3. GLASSMORPHISM BACKGROUNDS --- */\n  /* We make the main sections transparent to let the glass window show through. */\n  --chat--header--background: transparent;\n  --chat--body--background: transparent;\n  --chat--footer--background: transparent;\n\n  /* --- 4. HEADER STYLING (REMOVED) --- */\n  /* The header is removed by setting its height, padding, and border to 0/none. */\n  --chat--header-height: 0;\n  --chat--header--padding: 0;\n  --chat--header--border-bottom: none;\n  /* The rest of the header variables are now irrelevant. */\n  --chat--header--color: var(--chat--color-dark);\n  --chat--heading--font-size: 1.5rem;\n  --chat--subtitle--font-size: 0.875rem;\n  --chat--subtitle--line-height: 1.4;\n  --chat--close--button--color-hover: var(--chat--color-primary);\n\n  /* --- 5. MESSAGE BUBBLES --- */\n  --chat--message--font-size: 0.875rem;\n  --chat--message--padding: 12px 16px;\n  --chat--message--border-radius: 12px;\n  --chat--message-line-height: 1.6;\n  --chat--message--margin-bottom: calc(var(--chat--spacing) * 0.75);\n  /* Adjusted padding: Top is 0, sides and bottom use the base spacing. */\n  --chat--messages-list--padding: 0 var(--chat--spacing) var(--chat--spacing);\n  --chat--message--bot--background: var(--chat--color-white);\n  --chat--message--bot--color: #111827;\n  --chat--message--bot--border: none;\n  --chat--message--user--background: var(--chat--color-primary);\n  --chat--message--user--color: var(--chat--color-white);\n  --chat--message--user--border: none;\n\n  /* --- 6. INPUT AREA --- */\n  --chat--textarea--height: 50px;\n  --chat--textarea--max-height: 10rem;\n  --chat--input--font-size: 0.9rem;\n  --chat--input--border: 0;\n  --chat--input--border-radius: 12px; /* Rounded input field */\n  --chat--input--padding: 12px 16px;\n  --chat--input--background: rgba(255, 255, 255, 0.5); /* Semi-transparent input */\n  --chat--input--text-color: #111827;\n  --chat--input--line-height: 1.5;\n  --chat--input--border-active: 0;\n\n  /* --- 7. SEND & FILE BUTTONS --- */\n  --chat--input--send--button--background: transparent;\n  --chat--input--send--button--color: var(--chat--color-primary);\n  --chat--input--send--button--background-hover: transparent;\n  --chat--input--send--button--color-hover: var(--chat--color-primary-shade-50);\n  --chat--input--file--button--background: transparent;\n  --chat--input--file--button--color: var(--chat--color-secondary);\n  --chat--input--file--button--background-hover: transparent;\n  --chat--input--file--button--color-hover: var(--chat--color-secondary-shade-50);\n\n  /* --- 8. TOGGLE BUTTON & OTHERS --- */\n  /* Using your primary brand color for the main toggle button */\n  --chat--toggle--size: 64px;\n  --chat--toggle--width: var(--chat--toggle--size);\n  --chat--toggle--height: var(--chat--toggle--size);\n  --chat--toggle--border-radius: 50%;\n  --chat--toggle--background: var(--chat--color-primary);\n  --chat--toggle--hover--background: var(--chat--color-primary-shade-50);\n  --chat--toggle--active--background: var(--chat--color-primary-shade-100);\n  --chat--toggle--color: var(--chat--color-white);\n}\n\n/* === CLASS OVERRIDES === */\n/*\n  These are essential for effects that CSS variables can't control,\n  like the glass blur, shadows, and max-height.\n*/\n\n.chat-window {\n  /* This is the magic for the glass effect! */\n  background-color: rgba(249, 243, 245, 0.6); /* A semi-transparent background color */\n  backdrop-filter: blur(20px);\n  -webkit-backdrop-filter: blur(20px); /* For Safari compatibility */\n\n  /* A subtle shadow helps lift the window off the page */\n  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);\n\n  /* Here we apply the max-height you wanted */\n  max-height: 750px;\n}\n\n/* Add top margin to the first message only for initial spacing */\n.chat-messages-list .chat-message:first-child {\n  margin-top: var(--chat--spacing);\n}\n\n/* Make user messages slightly wider for better balance */\n.chat-message.is-user {\n\tmax-width: 70%;\n}\n\n.chat-message.is-bot {\n\tmax-width: 80%;\n}\n\n/* Add a subtle glow to messages on hover */\n.chat-message {\n    transition: transform 0.2s ease, box-shadow 0.2s ease;\n}\n.chat-message:hover {\n    transform: translateY(-2px);\n    box-shadow: 0 0 25px 0 rgba(234, 75, 113, 0.2);\n}\n\n/* === PAGE BACKGROUND === */\n/* Your dotted background to simulate the n8n canvas. Perfect as is! */\nbody {\n    background-color: #FDFBFF;\n    background-image:\n        radial-gradient(circle at 1px 1px, rgba(0,0,0,0.07) 1px, transparent 0),\n        linear-gradient(135deg, #F9F3F5 0%, #EFF3FB 100%);\n    background-size: 25px 25px, 100% 100%;\n}"
-        }
+        "options": {}
       },
-      "id": "c3b9723c-8b6b-4c2a-b5eb-259be8d29c02",
+      "id": "e0fe3f3f-d8f2-42ec-8aa7-6f910319507d",
       "name": "RAG Chatbot",
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "position": [
-        1232,
-        1152
+        -3584,
+        1632
       ],
       "webhookId": "965843ea-8dc2-4760-b13a-b65b68e3e8aa",
       "typeVersion": 1.1,
-      "notes": "� arterm-sedov"
+      "notes": "© arterm-sedov"
     },
     {
       "parameters": {
@@ -162,13 +164,13 @@
         "fieldsToCompare": "document.id",
         "options": {}
       },
-      "id": "0c8ef159-e312-4f45-9e54-a89c74ad3f99",
+      "id": "971bb162-413c-4047-a191-abfd2eae1bd0",
       "name": "Remove Duplicate Documents",
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 1.1,
       "position": [
-        3504,
-        960
+        -1568,
+        1216
       ]
     },
     {
@@ -176,13 +178,13 @@
         "batchSize": 5,
         "options": {}
       },
-      "id": "94a55d4d-466b-457a-851f-8126e48b53d3",
+      "id": "a6b98a11-07b8-4d7b-b58d-2f9984a165d8",
       "name": "Loop Over Documents",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        3728,
-        960
+        -1344,
+        1216
       ]
     },
     {
@@ -217,13 +219,13 @@
         },
         "options": {}
       },
-      "id": "b01cce59-fd3d-4a9c-a6b5-d5aa86c7e68f",
+      "id": "3bacb275-086f-4f96-bf7f-dd5818db8c6c",
       "name": "Prepare Document Metadata",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        4624,
-        880
+        -496,
+        1216
       ]
     },
     {
@@ -246,13 +248,13 @@
         },
         "options": {}
       },
-      "id": "9e9ee9f9-c8ac-408f-9989-3c5f7bf7e3af",
+      "id": "a1d56d54-f87c-4f49-a4af-6f846b8eba67",
       "name": "Clean Document Content",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        4848,
-        880
+        -272,
+        1216
       ]
     },
     {
@@ -261,13 +263,13 @@
         "fieldsToCompare": "metadata.documentId",
         "options": {}
       },
-      "id": "82df69bf-2393-4255-983e-624724c6fb4b",
+      "id": "2fc88c40-36ca-4e8e-9de2-e6fc462cb099",
       "name": "Remove Duplicate Content",
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 1.1,
       "position": [
-        5072,
-        880
+        -48,
+        1216
       ]
     },
     {
@@ -282,17 +284,17 @@
         "embeddingBatchSize": 5,
         "options": {}
       },
-      "id": "f8d939a8-1630-42be-b173-f733ca1f635b",
+      "id": "c4800a58-916f-4c24-9981-2ee1afebda8f",
       "name": "Insert Into Vector Store",
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        5328,
-        960
+        208,
+        1216
       ],
       "credentials": {
         "supabaseApi": {
-          "id": "lfRTEqcP2QKagNi4",
+          "id": "JTGuwt2KKbraDdDg",
           "name": "Supabase account"
         }
       }
@@ -302,42 +304,44 @@
         "url": "https://www.trudkod.ru/",
         "options": {}
       },
-      "id": "7ca79f53-b3cc-4630-b82f-974d4a4904d5",
+      "id": "244180b9-5d79-4c7e-91a0-841fd1ff9885",
       "name": "Fetch Legal/HR Websites",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1936,
-        864
+        -3136,
+        1024
       ]
     },
     {
-      "parameters": {},
-      "id": "2027fb22-ea50-4289-8838-2c71746ab7ab",
+      "parameters": {
+        "numberInputs": 3
+      },
+      "id": "87c4a834-038d-4ffb-9cf0-8f40372152e0",
       "name": "Merge Document Sources",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        3280,
-        960
+        -1792,
+        1200
       ]
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "={{ $('RAG Chatbot').item.json.chatInput }}",
+        "text": "={{ $('Chat unify').item.json.chatInput }}",
         "options": {
           "systemMessage": "=<role>\nYou are a specialized AI assistant for Legal and HR departments.\nRetrieve relevant information from the knowledge base and provide a clear, factual answer.\n</role>\n\n<instructions>\n1. Answer ONLY from retrieved documents — never invent, guess, or extrapolate.\n2. ALWAYS include source references: \"Источник: [document name], раздел [section]\"\n3. Be to the point — the system wraps your answer in a template.\n4. DO NOT add confidence labels, disclaimers, or category framing.\n5. If no documents found: \"Информация по данному вопросу в доступных документах не найдена.\"\n6. For legal questions: mention applicable laws/regulations/articles/sections.\n7. For HR questions: mention applicable policies/document sections.\n8. Answer in Russian always.\n</instructions>\n\n<question_classification>\nUser's question category:\n{{ $json.category }}\n\nAnswer only legal and HR-related questions.\n\nReject any other topics immediately.\n</question_classification>",
           "returnIntermediateSteps": true
         }
       },
-      "id": "6c96b8cb-3fd5-4d6f-83c8-bf6334ea2670",
+      "id": "16572ac1-1fe8-43b0-9a18-1e368bbf4149",
       "name": "Legal/HR AI Agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.1,
       "position": [
-        2144,
-        1248
+        -2608,
+        1712
       ]
     },
     {
@@ -353,17 +357,17 @@
         "topK": 10,
         "options": {}
       },
-      "id": "5b842cee-64e8-429e-922e-6d713f3463ee",
+      "id": "ec518d03-585c-4eaa-92e3-eb9e57a13318",
       "name": "Legal/HR Knowledge Base",
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        2320,
-        1568
+        -2432,
+        2032
       ],
       "credentials": {
         "supabaseApi": {
-          "id": "lfRTEqcP2QKagNi4",
+          "id": "JTGuwt2KKbraDdDg",
           "name": "Supabase account"
         }
       }
@@ -382,18 +386,18 @@
           ]
         }
       },
-      "id": "e898889c-7f2a-4783-a7a6-8ca81f40f486",
+      "id": "c640c129-0343-42f3-8350-d9e7efa36fcd",
       "name": "Clear Old Documents",
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        1712,
-        960
+        -3360,
+        1216
       ],
       "alwaysOutputData": true,
       "credentials": {
         "supabaseApi": {
-          "id": "lfRTEqcP2QKagNi4",
+          "id": "JTGuwt2KKbraDdDg",
           "name": "Supabase account"
         }
       }
@@ -416,13 +420,13 @@
           "trimValues": true
         }
       },
-      "id": "0f5fe6e1-78c8-4cbb-adab-c86f61ee6cde",
+      "id": "555a0020-e0b4-41e6-8d89-5d0e11156472",
       "name": "Extract Links From HTML",
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        2160,
-        864
+        -2912,
+        1024
       ]
     },
     {
@@ -432,13 +436,13 @@
           "destinationFieldName": "link"
         }
       },
-      "id": "1b6d3e25-4eee-4bcc-a775-f34950ad026b",
+      "id": "bc89997a-ae07-45a3-811a-6b7c011344e8",
       "name": "Split Out Links",
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        2384,
-        864
+        -2688,
+        1024
       ]
     },
     {
@@ -447,13 +451,13 @@
         "fieldsToCompare": "link",
         "options": {}
       },
-      "id": "b2a880a2-0048-4891-814b-d64b7d009dcd",
+      "id": "d2ddcab4-e0d0-4e84-9c6f-fd4f961ca9ba",
       "name": "Remove Duplicate Links",
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 1.1,
       "position": [
-        2608,
-        864
+        -2464,
+        1024
       ]
     },
     {
@@ -507,13 +511,13 @@
         },
         "options": {}
       },
-      "id": "74872b64-e3b8-442e-aa38-46652ded0576",
+      "id": "700a1aee-4262-4522-906c-9f50b3384edf",
       "name": "Filter Valid Document Links",
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.3,
       "position": [
-        2832,
-        864
+        -2240,
+        1024
       ]
     },
     {
@@ -530,13 +534,13 @@
         },
         "options": {}
       },
-      "id": "ab1e1aff-eb1b-491d-90a8-3e3781f8246e",
+      "id": "db477041-0e4d-49f5-b6cd-1eb6719442d3",
       "name": "Prepare Web Document For Processing",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3056,
-        864
+        -2016,
+        1024
       ]
     },
     {
@@ -544,13 +548,13 @@
         "url": "={{ $json.document.url }}",
         "options": {}
       },
-      "id": "5ea2687c-c1a0-48e5-b6a0-3b31ecb285d3",
+      "id": "e9a68f2e-0ae6-4ebf-98fd-7d53cb489d77",
       "name": "Fetch Web Page",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        4176,
-        976
+        -912,
+        1216
       ]
     },
     {
@@ -570,13 +574,13 @@
           "cleanUpText": true
         }
       },
-      "id": "2ad74fa5-7631-479a-8972-c7fba14e7144",
+      "id": "68e82b6f-58fa-4b23-aa66-27a65e0cbaa7",
       "name": "Extract Text From Web Page",
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        4400,
-        976
+        -688,
+        1216
       ]
     },
     {
@@ -603,13 +607,13 @@
         },
         "options": {}
       },
-      "id": "c54b8b33-bd58-4f1d-8a36-1fc8e73d7e02",
+      "id": "3a21f0f8-d17b-4725-86ba-a9b1b8508121",
       "name": "Route Document By Source",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        4000,
-        864
+        -1120,
+        1200
       ]
     },
     {
@@ -617,14 +621,15 @@
         "fileSelector": "/home/node/.n8n-files/docs/*",
         "options": {}
       },
-      "id": "2186b6e6-fa19-447e-9a07-f59967f1508c",
+      "id": "bd771f9b-6c10-47f9-a33e-04e9cd2d7545",
       "name": "Read Local Documents",
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
       "position": [
-        1936,
-        1056
-      ]
+        -3136,
+        1216
+      ],
+      "disabled": true
     },
     {
       "parameters": {
@@ -640,13 +645,13 @@
         },
         "options": {}
       },
-      "id": "a8599ee9-d9d6-4a5f-8de9-5c548f5cbe2e",
+      "id": "c3828343-c2be-4d92-87ae-3ab77a1177f2",
       "name": "Prepare Local Document",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3056,
-        1056
+        -2016,
+        1216
       ]
     },
     {
@@ -656,55 +661,55 @@
           "joinPages": true
         }
       },
-      "id": "0ccf8fbf-4fa2-4702-80b2-3e5ae88281ee",
+      "id": "b2a54194-794a-4d04-bcc0-cb246d5815c1",
       "name": "Extract Local PDF",
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        4400,
-        784
+        -688,
+        1056
       ]
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=<role>\nYou are a strict quality evaluator for assistant's RAG answers in a legal/HR department.\n</role>\n\n<task>\nEvaluate the answer below against the user question. Output valid JSON per the authorative schema.\n\nScoring criteria:\n\nScores range: 0.0-1.0\n\n1. Source citations: Does the answer cite specific documents, laws, articles? If answer cites specific laws (ТК РФ, статьи), set `true`. Otherwise set `false`.\n2. Relevance: Is the answer relevant to the question?\n3. Specificity: Detailed and specific, or vague?\n4. Completeness: Fully addresses the question?\n5. Confidence: Is the answer really based on the ground truth and valid?\n\n</task>\n\nUser question:\n{{ $('RAG Chatbot').item.json.chatInput }}\nUser question category:\n{{ $('Category human-readable').item.json.category }}\nAnswer to evaluate:\n{{ $json.output }}\n\n<question_classification>\nThe assistant must answer only legal and HR-related questions.\nThe assistant must reject any other topics immediately.\n</question_classification>",
+        "text": "=<role>\nYou are a strict quality evaluator for assistant's RAG answers in a legal/HR department.\n</role>\n\n<task>\nEvaluate the answer below against the user question. Output valid JSON per the authorative schema.\n\nScoring criteria:\n\nScores range: 0.0-1.0\n\n1. Source citations: Does the answer cite specific documents, laws, articles? If answer cites specific laws (ТК РФ, статьи), set `true`. Otherwise set `false`.\n2. Relevance: Is the answer relevant to the question?\n3. Specificity: Detailed and specific, or vague?\n4. Completeness: Fully addresses the question?\n5. Confidence: Is the answer really based on the ground truth and valid?\n\n</task>\n\nUser question:\n{{ $('Chat unify').item.json.chatInput }}\nUser question category:\n{{ $('Category human-readable').item.json.category }}\nAnswer to evaluate:\n{{ $json.output }}\n\n<question_classification>\nThe assistant must answer only legal and HR-related questions.\nThe assistant must reject any other topics immediately.\n</question_classification>",
         "hasOutputParser": true
       },
-      "id": "9911fe9787d24d",
+      "id": "fc71d94a-a096-4727-b4cf-0aa976d2d0bb",
       "name": "LLM Answer Judge",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        2528,
-        1248
+        -2304,
+        1712
       ]
     },
     {
       "parameters": {
-        "jsCode": "const inputItem = $input.all()[0].json;\nconst judgeScores = inputItem.output || {};\nconst hasCitations = judgeScores.hasCitations === true;\nconst relevance = parseFloat(judgeScores.relevance) || 0;\nconst specificity = parseFloat(judgeScores.specificity) || 0;\nconst completeness = parseFloat(judgeScores.completeness) || 0;\nconst confidence = parseFloat(judgeScores.confidence) || 0;\nconst compositeScore = (relevance + specificity + completeness + confidence) / 4;\nconst pct = (Math.min(Math.max(compositeScore, 0), 1) * 100).toFixed(0);\nconst sessionId = inputItem.sessionId || '';\nconst now = new Date().toLocaleString(\"ru-RU\", { timeZone: \"Europe/Moscow\" });\nconst category = $('Categorize').first().json.output.category || \"general\";\nconst agentOutput = String($('Legal/HR AI Agent').first().json.output || '');\nconst sourceCount = (agentOutput.match(/источник:|source:/gi) || []).length;\nconst lowConf = compositeScore < 0.6;\nvar catLabel = \"Общий вопрос\";\nvar disclaimer = \"\";\nif (category === \"hr\") {\n  catLabel = \"Кадровый вопрос\";\n  disclaimer = \"Ответ основан на внутренних HR-документах. Источники имеют приоритет.\";\n} else if (category === \"legal\") {\n  catLabel = \"Юридический вопрос\";\n  disclaimer = \"Данный ответ носит информационный характер. Для финальных документов требуется проверка специалистом.\";\n} else {\n  disclaimer = \"Ответ основан на доступных документах. Первоисточники имеют приоритет.\";\n}\nvar header = \"**Категория:** \" + catLabel;\nheader += \"\\n\\n**Общая уверенность:** \" + pct + \"%\";\nif (!hasCitations) header += \"  (нет источников)\";\nif (lowConf) header += \"  (ниже порога 60%)\";\nheader += \"\\n\\n**Найдено источников:** \" + sourceCount;\nheader += \"\\n\\n**Источники:** \" + (hasCitations ? \"ДА\" : \"НЕТ\");\nheader += \"\\n\\n**Релевантность:** \" + (relevance * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n**Специфичность:** \" + (specificity * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n**Полнота:** \" + (completeness * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n**Достоверность:** \" + (confidence * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n---\\n\\n\";\nvar footer = \"\\n\\n---\\n\\n\";\nif (!hasCitations) {\n  footer += \"**Ответ без источников. Требуется проверка специалистом.**\\n\";\n} else if (lowConf) {\n  footer += \"**Точность ниже порога. Рекомендуется проверка специалистом.**\\n\";\n} else {\n  footer += disclaimer + \"\\n\";\n}\nfooter += now;\nreturn [{ json: { output: header + agentOutput + footer, sessionId: sessionId } }];\n"
+        "jsCode": "const inputItem = $input.all()[0].json;\nconst judgeScores = inputItem.output || {};\nconst hasCitations = judgeScores.hasCitations === true;\nconst relevance = parseFloat(judgeScores.relevance) || 0;\nconst specificity = parseFloat(judgeScores.specificity) || 0;\nconst completeness = parseFloat(judgeScores.completeness) || 0;\nconst confidence = parseFloat(judgeScores.confidence) || 0;\nconst compositeScore = (relevance + specificity + completeness + confidence) / 4;\nconst pct = (Math.min(Math.max(compositeScore, 0), 1) * 100).toFixed(0);\nconst sessionId = inputItem.sessionId || '';\nconst now = new Date().toLocaleString(\"ru-RU\", { timeZone: \"Europe/Moscow\" });\nconst category = $('Categorize').first().json.output.category || \"general\";\nconst agentOutput = String($('Legal/HR AI Agent').first().json.output || '');\nconst sourceCount = judgeScores.sourceCount;\nconst lowConf = compositeScore < 0.6;\nvar catLabel = \"Общий вопрос\";\nvar disclaimer = \"\";\nif (category === \"hr\") {\n  catLabel = \"Кадровый вопрос\";\n  disclaimer = \"Ответ основан на внутренних HR-документах. Источники имеют приоритет.\";\n} else if (category === \"legal\") {\n  catLabel = \"Юридический вопрос\";\n  disclaimer = \"Данный ответ носит информационный характер. Для финальных документов требуется проверка специалистом.\";\n} else {\n  disclaimer = \"Ответ основан на доступных документах. Первоисточники имеют приоритет.\";\n}\nvar header = \"**Категория:** \" + catLabel;\nheader += \"\\n\\n**Общая уверенность:** \" + pct + \"%\";\nif (!hasCitations) header += \"  (нет источников)\";\nif (lowConf) header += \"  (ниже порога 60%)\";\nheader += \"\\n\\n**Найдено источников:** \" + sourceCount;\nheader += \"\\n\\n**Источники:** \" + (hasCitations ? \"ДА\" : \"НЕТ\");\nheader += \"\\n\\n**Релевантность:** \" + (relevance * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n**Специфичность:** \" + (specificity * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n**Полнота:** \" + (completeness * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n**Достоверность:** \" + (confidence * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n---\\n\\n\";\nvar footer = \"\\n\\n---\\n\\n\";\nif (!hasCitations) {\n  footer += \"**Ответ без источников. Требуется проверка специалистом.**\\n\";\n} else if (lowConf) {\n  footer += \"**Точность ниже порога. Рекомендуется проверка специалистом.**\\n\";\n} else {\n  footer += disclaimer + \"\\n\";\n}\nfooter += now;\nreturn [{ json: { output: header + agentOutput + footer, sessionId: sessionId } }];\n"
       },
-      "id": "8875ccc12f354f",
+      "id": "171c9348-d303-457b-91df-d935c5470dc2",
       "name": "Template Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2896,
-        1248
+        -2016,
+        1712
       ]
     },
     {
       "parameters": {
         "schemaType": "manual",
-        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"hasCitations\": {\n      \"type\": \"boolean\",\n      \"description\": \"Does the answer cite specific documents, laws, or articles? If false, answer MUST NOT be shown.\"\n    },\n    \"relevance\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Is the answer relevant to the question?\"\n    },\n    \"specificity\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Detailed and specific, or vague?\"\n    },\n    \"completeness\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Fully addresses the question?\"\n    },\n    \"confidence\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Is the answer really based on the ground truth and valid?\"\n    }\n  },\n  \"required\": [\"hasCitations\", \"relevance\", \"specificity\", \"completeness\", \"confidence\"]\n}"
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"hasCitations\": {\n      \"type\": \"boolean\",\n      \"description\": \"Does the answer cite specific documents, laws, or articles? If false, answer MUST NOT be shown.\"\n    },\n    \"sourceCount\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"description\": \"How many sources are cited? Count actual sources: doc/doc_section/section_article - counts as a single source if related to the same doc.\"\n    },\n    \"relevance\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Is the answer relevant to the question?\"\n    },\n    \"specificity\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Detailed and specific, or vague?\"\n    },\n    \"completeness\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Fully addresses the question?\"\n    },\n    \"confidence\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Is the answer really based on the ground truth and valid?\"\n    }\n  },\n  \"required\": [\"hasCitations\", \"sourceCount\", \"relevance\", \"specificity\", \"completeness\", \"confidence\"]\n}"
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        2672,
-        1408
+        -2160,
+        1872
       ],
-      "id": "ea791a09-0c7e-485d-92ce-f6c31da9d7a2",
+      "id": "7b6699fd-078f-4945-806a-d3e88bd88478",
       "name": "Structured Output Parser"
     },
     {
@@ -715,14 +720,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        1904,
-        1584
+        -2848,
+        2048
       ],
-      "id": "e5efc8ab-9f87-4210-a5b6-7d4d8238a876",
+      "id": "e9033d95-4156-4f5d-800d-dd851f5c7473",
       "name": "OpenRouter Chat Model",
       "credentials": {
         "openRouterApi": {
-          "id": "TXTp036qjEqbSXUL",
+          "id": "iuRroAJb7mgDzSMk",
           "name": "OpenRouter account"
         }
       }
@@ -735,10 +740,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        1744,
-        1408
+        -3008,
+        1872
       ],
-      "id": "cf734808-73ac-4b65-9c2f-9f5158eef595",
+      "id": "ccb46be8-5d7b-4c33-a0f3-4b122bc59ed1",
       "name": "Structured Output Parser1"
     },
     {
@@ -751,10 +756,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        1600,
-        1248
+        -3152,
+        1712
       ],
-      "id": "1ff3d8d0-fb19-47c6-a047-ecc2625e04e0",
+      "id": "23ccdd01-8fca-4d2b-a289-56a476fcb026",
       "name": "Categorize"
     },
     {
@@ -774,10 +779,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        1248
+        -2816,
+        1712
       ],
-      "id": "f268c3a8-14da-4c8d-999c-0d36cf024ba6",
+      "id": "c6424b94-94e6-4ee5-babe-01595280f48f",
       "name": "Category human-readable"
     },
     {
@@ -790,31 +795,164 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        1232,
-        1328
+        -3584,
+        1808
       ],
-      "id": "4512684b-25bb-4043-99ae-86c4b7dabf3b",
+      "id": "4be71a95-f903-4a0d-9bef-f36c484d09df",
       "name": "Telegram Trigger",
       "webhookId": "0ed541bd-5b85-4be0-b01a-103c9a6f424e",
       "credentials": {
         "telegramApi": {
-          "id": "YuPdUWrsEoobqERl",
+          "id": "wToY4L9HvJWmqfwB",
           "name": "Telegram account"
         }
       }
     },
     {
       "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d767600b-85c3-4ac1-a047-e9b4d37751b7",
+              "name": "chatInput",
+              "value": "={{ $if($('RAG Chatbot').isExecuted, $json.chatInput, $json.message.text ) }}\n",
+              "type": "string"
+            },
+            {
+              "id": "c61061b3-51fd-4bb7-a0af-f50e6a95df8c",
+              "name": "sessionId",
+              "value": "={{ $if($('RAG Chatbot').isExecuted, $json.sessionId, $json.message.chat.id ) }}",
+              "type": "string"
+            }
+          ]
+        },
         "options": {}
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1424,
-        1248
+        -3376,
+        1712
       ],
-      "id": "58e6c43b-cb37-4575-b4b4-731c8d2ecf9b",
-      "name": "Edit Fields"
+      "id": "f3c680c4-537c-44ba-b869-4550fb3ce379",
+      "name": "Chat unify"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1632,
+        1712
+      ],
+      "id": "3f714d1d-2954-492c-b496-f12896cb4906",
+      "name": "Send a text message",
+      "webhookId": "9d25b479-5ba0-43d8-9fc7-df3f52157abc",
+      "credentials": {
+        "telegramApi": {
+          "id": "wToY4L9HvJWmqfwB",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d8d3fad6-a19a-4bf8-96c3-d41275b482df",
+              "leftValue": "=$('Telegram Trigger').isExecuted",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1856,
+        1712
+      ],
+      "id": "204d0a21-8e2d-4438-bcd5-d1504afdf752",
+      "name": "Route to Telegram"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "aviastar-sample-docs",
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3136,
+        1392
+      ],
+      "id": "d9338d70-e34b-420d-ac22-35b5f8fb0688",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9Rw7OKmS4usZkWZz",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "files",
+        "options": {
+          "destinationFieldName": "file"
+        }
+      },
+      "id": "3b7c0805-b03f-4399-a982-fb2168d13eba",
+      "name": "Split Out Google Docs",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -2688,
+        1392
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "document",
+              "type": "object",
+              "value": "={{ { \"id\": $json.file.id, \"name\": $json.file.name, \"source\": \"google\" } }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "85dc3115-1703-478d-ab0a-3606144b269c",
+      "name": "Prepare Google Doc For Processing",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2016,
+        1392
+      ]
     }
   ],
   "pinData": {},
@@ -823,7 +961,7 @@
       "main": [
         [
           {
-            "node": "Edit Fields",
+            "node": "Chat unify",
             "type": "main",
             "index": 0
           }
@@ -850,8 +988,7 @@
             "index": 0
           }
         ]
-      ],
-      "main": []
+      ]
     },
     "Start Indexing": {
       "main": [
@@ -873,8 +1010,7 @@
             "index": 0
           }
         ]
-      ],
-      "main": []
+      ]
     },
     "Gemini Chunk Embedding": {
       "ai_embedding": [
@@ -885,8 +1021,7 @@
             "index": 0
           }
         ]
-      ],
-      "main": []
+      ]
     },
     "Gemini Query Embedding": {
       "ai_embedding": [
@@ -897,8 +1032,7 @@
             "index": 0
           }
         ]
-      ],
-      "main": []
+      ]
     },
     "Recursive Character Text Splitter": {
       "ai_textSplitter": [
@@ -909,8 +1043,7 @@
             "index": 0
           }
         ]
-      ],
-      "main": []
+      ]
     },
     "Remove Duplicate Documents": {
       "main": [
@@ -999,8 +1132,7 @@
             "index": 0
           }
         ]
-      ],
-      "main": []
+      ]
     },
     "Clear Old Documents": {
       "main": [
@@ -1012,6 +1144,11 @@
           },
           {
             "node": "Fetch Legal/HR Websites",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Search files and folders",
             "type": "main",
             "index": 0
           }
@@ -1177,9 +1314,6 @@
             "index": 0
           }
         ]
-      ],
-      "ai_languageModel": [
-        []
       ]
     },
     "Structured Output Parser": {
@@ -1212,11 +1346,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Template Response": {
-      "main": [
-        []
       ]
     },
     "Structured Output Parser1": {
@@ -1256,20 +1385,75 @@
       "main": [
         [
           {
-            "node": "Edit Fields",
+            "node": "Chat unify",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Edit Fields": {
+    "Chat unify": {
       "main": [
         [
           {
             "node": "Categorize",
             "type": "main",
             "index": 0
+          }
+        ]
+      ]
+    },
+    "Template Response": {
+      "main": [
+        [
+          {
+            "node": "Route to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route to Telegram": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Google Docs": {
+      "main": [
+        [
+          {
+            "node": "Prepare Google Doc For Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Split Out Google Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Google Doc For Processing": {
+      "main": [
+        [
+          {
+            "node": "Merge Document Sources",
+            "type": "main",
+            "index": 2
           }
         ]
       ]
@@ -1281,11 +1465,12 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "6e440e81-711a-402a-a6a4-c81548365eb5",
+  "versionId": "c9c4ca63-1fa5-429d-ac1d-60e506e18112",
   "meta": {
+    "templateId": "5993",
     "templateCredsSetupCompleted": true,
-    "instanceId": "ab8a07d2b692d5341ee84514c51cbc763550aefa32d8142b49ff4b768c362524"
+    "instanceId": "acbcd11ee1f38bf7cfe7480a69cf6cceb791930348ebb6813da8f34c00974864"
   },
-  "id": "UQ32XEuvDAc9MNer",
+  "id": "NQtq7Uu2q5KUNPpx",
   "tags": []
 }
