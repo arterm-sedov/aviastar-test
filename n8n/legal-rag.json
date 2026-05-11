@@ -639,7 +639,8 @@
     {
       "parameters": {
         "jsCode": "// Confidence: AI classifier + LLM judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\n\n// Agent output (read directly from AI Agent node, always a string)\nlet agentOutput = \"\";\ntry {\n  agentOutput = String($('Legal/HR AI Agent').first().json.output || '');\n} catch(e) {}\n\n// 1. Classifier confidence\nlet classifierConf = 0.5;\ntry {\n  const enrich = $('Enrich with Classification').first().json;\n  classifierConf = parseFloat(enrich.classificationConfidence) || 0.5;\n} catch(e) {}\n\n// 2. LLM Judge score (Structured Output Parser returns parsed JSON)\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  // Parser outputs score directly on json\n  if (judgeData.score !== undefined) {\n    judgeScore = parseFloat(judgeData.score);\n  }\n  // Or nested in output\n  if (judgeScore === null || isNaN(judgeScore)) {\n    const out = judgeData.output;\n    if (out && typeof out === \"object\" && out.score !== undefined) {\n      judgeScore = parseFloat(out.score);\n    }\n  }\n  // Or text field\n  if ((judgeScore === null || isNaN(judgeScore)) && judgeData.text) {\n    try {\n      const parsed = JSON.parse(judgeData.text);\n      judgeScore = parseFloat(parsed.score);\n    } catch(e) {}\n  }\n  if (judgeScore !== null && !isNaN(judgeScore)) {\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) {}\n\n// Combined: judge weighted higher\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7\n  : classifierConf;\n\nconst sourceCount = (agentOutput.match(/источник:|source:/gi) || []).length;\n\nreturn [{\n  json: {\n    ...inputItem,\n    output: agentOutput,\n    confidenceScore: Math.min(Math.max(confidenceScore, 0), 1),\n    documentCount: sourceCount\n  }\n}];\n",
-        "mode": "runOnceForAllItems"
+        "mode": "runOnceForAllItems",
+        "language": "javaScript"
       },
       "id": "b3b0d4f7-f3ca-449b-8025-c123d908ba0c",
       "name": "Extract Similarity Scores",
@@ -788,7 +789,8 @@
     {
       "parameters": {
         "jsCode": "// Template Response — applies rigid category templates per spec.\n// \"LLM для поиска и ответов, шаблоны - через код с заполнением полей\"\n// Confidence from: AI classifier + LLM Answer Judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\nconst category = inputItem.classificationCategory || \"General\";\nconst sessionId = inputItem.sessionId || \"\";\nconst agentOutput = String(inputItem.output || \"\");\nconst confidenceScore = parseFloat(inputItem.confidenceScore) || 0.5;\nconst sourceCount = parseInt(inputItem.documentCount) || 0;\n\nconst confidencePct = (Math.min(Math.max(confidenceScore, 0), 1) * 100).toFixed(0);\nconst now = new Date().toLocaleString(\"ru-RU\", { timeZone: \"Europe/Moscow\" });\n\nif (confidenceScore < 0.6) {\n  const catLabel = category === \"HR\" ? \"Кадровый вопрос\" :\n                   category === \"Legal\" ? \"Юридический вопрос\" : \"Общий вопрос\";\n  return [{ json: {\n    output: (\n      \"## ⚠️ Ответ с пониженной уверенностью\\n\\n\"\n      + \"**Категория:** \" + catLabel + \"\\n\"\n      + \"**Уверенность:** \" + confidencePct + \"% (ниже порога 60%)\\n\"\n      + \"**Найдено источников:** \" + sourceCount + \"\\n\\n\"\n      + \"---\\n\\n\"\n      + agentOutput + \"\\n\\n\"\n      + \"---\\n\\n\"\n      + \"⚠️ *Точность данного ответа ниже установленного порога. Рекомендуется проверка специалистом.*\\n\"\n      + \"📅 \" + now\n    ),\n    sessionId\n  } }];\n}\n\nconst templates = {\n  HR: {\n    heading: \"## 🏢 Ответ HR-ассистента\\n\\n**Категория:** Кадровый вопрос\",\n    disclaimer: \"*Ответ основан на внутренних HR-документах и политиках компании. Источники документов имеют приоритет над формулировками ИИ-ассистента.*\"\n  },\n  Legal: {\n    heading: \"## ⚖️ Ответ Юридического ассистента\\n\\n**Категория:** Юридический вопрос\",\n    disclaimer: \"⚠️ *Данный ответ носит информационный характер. Нормативные документы и источники имеют приоритет над формулировками ИИ-ассистента. Для подготовки финальных юридических документов требуется проверка квалифицированным специалистом.*\"\n  },\n  General: {\n    heading: \"## 📋 Ответ Ассистента\\n\\n**Категория:** Общий вопрос\",\n    disclaimer: \"*Ответ основан на доступных документах базы знаний. Первоисточники имеют приоритет над формулировками ИИ-ассистента.*\"\n  }\n};\n\nconst t = templates[category] || templates.General;\n\nreturn [{ json: {\n  output: (\n    t.heading + \"\\n\"\n    + \"**Уверенность:** \" + confidencePct + \"%\\n\"\n    + \"**Найдено источников:** \" + sourceCount + \"\\n\\n\"\n    + \"---\\n\\n\"\n    + agentOutput + \"\\n\\n\"\n    + \"---\\n\\n\"\n    + t.disclaimer + \"\\n\"\n    + \"📅 \" + now\n  ),\n  sessionId\n} }];\n",
-        "mode": "runOnceForAllItems"
+        "mode": "runOnceForAllItems",
+        "language": "javaScript"
       },
       "id": "8875ccc12f354f",
       "name": "Template Response",
@@ -815,8 +817,8 @@
     },
     {
       "parameters": {
-        "mode": "runOnceForAllItems",
         "jsCode": "const agentItem = $input.first().json;\nlet chatInput = '';\ntry {\n  chatInput = $('Enrich with Classification').first().json.chatInput || '';\n} catch(e) {}\nreturn [{\n  json: {\n    ...agentItem,\n    chatInput: chatInput\n  }\n}];\n",
+        "mode": "runOnceForAllItems",
         "language": "javaScript"
       },
       "id": "ccb7fda6fcf84d",
@@ -824,8 +826,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2024,
-        1568
+        2464,
+        1296
       ]
     }
   ],
@@ -1299,14 +1301,14 @@
   },
   "meta": null,
   "pinData": {},
-  "activeVersionId": "a5a9d6cf-26de-4c7f-9c06-514d49b0da94",
-  "versionCounter": 81,
+  "activeVersionId": "00171f9f-3677-42e2-a3aa-7120d230a268",
+  "versionCounter": 90,
   "triggerCount": 2,
   "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-05-11T02:19:22.197Z",
-    "createdAt": "2026-05-11T02:19:22.197Z",
-    "versionId": "a5a9d6cf-26de-4c7f-9c06-514d49b0da94",
+    "updatedAt": "2026-05-11T02:37:15.907Z",
+    "createdAt": "2026-05-11T02:37:15.907Z",
+    "versionId": "00171f9f-3677-42e2-a3aa-7120d230a268",
     "workflowId": "UQ32XEuvDAc9MNer",
     "nodes": [
       {
@@ -1944,7 +1946,8 @@
       {
         "parameters": {
           "jsCode": "// Confidence: AI classifier + LLM judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\n\n// Agent output (read directly from AI Agent node, always a string)\nlet agentOutput = \"\";\ntry {\n  agentOutput = String($('Legal/HR AI Agent').first().json.output || '');\n} catch(e) {}\n\n// 1. Classifier confidence\nlet classifierConf = 0.5;\ntry {\n  const enrich = $('Enrich with Classification').first().json;\n  classifierConf = parseFloat(enrich.classificationConfidence) || 0.5;\n} catch(e) {}\n\n// 2. LLM Judge score (Structured Output Parser returns parsed JSON)\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  // Parser outputs score directly on json\n  if (judgeData.score !== undefined) {\n    judgeScore = parseFloat(judgeData.score);\n  }\n  // Or nested in output\n  if (judgeScore === null || isNaN(judgeScore)) {\n    const out = judgeData.output;\n    if (out && typeof out === \"object\" && out.score !== undefined) {\n      judgeScore = parseFloat(out.score);\n    }\n  }\n  // Or text field\n  if ((judgeScore === null || isNaN(judgeScore)) && judgeData.text) {\n    try {\n      const parsed = JSON.parse(judgeData.text);\n      judgeScore = parseFloat(parsed.score);\n    } catch(e) {}\n  }\n  if (judgeScore !== null && !isNaN(judgeScore)) {\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) {}\n\n// Combined: judge weighted higher\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7\n  : classifierConf;\n\nconst sourceCount = (agentOutput.match(/источник:|source:/gi) || []).length;\n\nreturn [{\n  json: {\n    ...inputItem,\n    output: agentOutput,\n    confidenceScore: Math.min(Math.max(confidenceScore, 0), 1),\n    documentCount: sourceCount\n  }\n}];\n",
-          "mode": "runOnceForAllItems"
+          "mode": "runOnceForAllItems",
+          "language": "javaScript"
         },
         "id": "b3b0d4f7-f3ca-449b-8025-c123d908ba0c",
         "name": "Extract Similarity Scores",
@@ -2093,7 +2096,8 @@
       {
         "parameters": {
           "jsCode": "// Template Response — applies rigid category templates per spec.\n// \"LLM для поиска и ответов, шаблоны - через код с заполнением полей\"\n// Confidence from: AI classifier + LLM Answer Judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\nconst category = inputItem.classificationCategory || \"General\";\nconst sessionId = inputItem.sessionId || \"\";\nconst agentOutput = String(inputItem.output || \"\");\nconst confidenceScore = parseFloat(inputItem.confidenceScore) || 0.5;\nconst sourceCount = parseInt(inputItem.documentCount) || 0;\n\nconst confidencePct = (Math.min(Math.max(confidenceScore, 0), 1) * 100).toFixed(0);\nconst now = new Date().toLocaleString(\"ru-RU\", { timeZone: \"Europe/Moscow\" });\n\nif (confidenceScore < 0.6) {\n  const catLabel = category === \"HR\" ? \"Кадровый вопрос\" :\n                   category === \"Legal\" ? \"Юридический вопрос\" : \"Общий вопрос\";\n  return [{ json: {\n    output: (\n      \"## ⚠️ Ответ с пониженной уверенностью\\n\\n\"\n      + \"**Категория:** \" + catLabel + \"\\n\"\n      + \"**Уверенность:** \" + confidencePct + \"% (ниже порога 60%)\\n\"\n      + \"**Найдено источников:** \" + sourceCount + \"\\n\\n\"\n      + \"---\\n\\n\"\n      + agentOutput + \"\\n\\n\"\n      + \"---\\n\\n\"\n      + \"⚠️ *Точность данного ответа ниже установленного порога. Рекомендуется проверка специалистом.*\\n\"\n      + \"📅 \" + now\n    ),\n    sessionId\n  } }];\n}\n\nconst templates = {\n  HR: {\n    heading: \"## 🏢 Ответ HR-ассистента\\n\\n**Категория:** Кадровый вопрос\",\n    disclaimer: \"*Ответ основан на внутренних HR-документах и политиках компании. Источники документов имеют приоритет над формулировками ИИ-ассистента.*\"\n  },\n  Legal: {\n    heading: \"## ⚖️ Ответ Юридического ассистента\\n\\n**Категория:** Юридический вопрос\",\n    disclaimer: \"⚠️ *Данный ответ носит информационный характер. Нормативные документы и источники имеют приоритет над формулировками ИИ-ассистента. Для подготовки финальных юридических документов требуется проверка квалифицированным специалистом.*\"\n  },\n  General: {\n    heading: \"## 📋 Ответ Ассистента\\n\\n**Категория:** Общий вопрос\",\n    disclaimer: \"*Ответ основан на доступных документах базы знаний. Первоисточники имеют приоритет над формулировками ИИ-ассистента.*\"\n  }\n};\n\nconst t = templates[category] || templates.General;\n\nreturn [{ json: {\n  output: (\n    t.heading + \"\\n\"\n    + \"**Уверенность:** \" + confidencePct + \"%\\n\"\n    + \"**Найдено источников:** \" + sourceCount + \"\\n\\n\"\n    + \"---\\n\\n\"\n    + agentOutput + \"\\n\\n\"\n    + \"---\\n\\n\"\n    + t.disclaimer + \"\\n\"\n    + \"📅 \" + now\n  ),\n  sessionId\n} }];\n",
-          "mode": "runOnceForAllItems"
+          "mode": "runOnceForAllItems",
+          "language": "javaScript"
         },
         "id": "8875ccc12f354f",
         "name": "Template Response",
@@ -2120,8 +2124,8 @@
       },
       {
         "parameters": {
-          "mode": "runOnceForAllItems",
           "jsCode": "const agentItem = $input.first().json;\nlet chatInput = '';\ntry {\n  chatInput = $('Enrich with Classification').first().json.chatInput || '';\n} catch(e) {}\nreturn [{\n  json: {\n    ...agentItem,\n    chatInput: chatInput\n  }\n}];\n",
+          "mode": "runOnceForAllItems",
           "language": "javaScript"
         },
         "id": "ccb7fda6fcf84d",
@@ -2129,8 +2133,8 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          2024,
-          1568
+          2464,
+          1296
         ]
       }
     ],
@@ -2598,18 +2602,18 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-05-11T02:19:22.349Z",
-        "id": 3,
+        "createdAt": "2026-05-11T02:37:16.039Z",
+        "id": 9,
         "workflowId": "UQ32XEuvDAc9MNer",
-        "versionId": "a5a9d6cf-26de-4c7f-9c06-514d49b0da94",
+        "versionId": "00171f9f-3677-42e2-a3aa-7120d230a268",
         "event": "activated",
         "userId": "c9ab87a9-eb6b-42cb-91f1-da45d686ad29"
       },
       {
-        "createdAt": "2026-05-11T02:19:22.297Z",
-        "id": 2,
+        "createdAt": "2026-05-11T02:37:15.990Z",
+        "id": 8,
         "workflowId": "UQ32XEuvDAc9MNer",
-        "versionId": "a5a9d6cf-26de-4c7f-9c06-514d49b0da94",
+        "versionId": "00171f9f-3677-42e2-a3aa-7120d230a268",
         "event": "deactivated",
         "userId": "c9ab87a9-eb6b-42cb-91f1-da45d686ad29"
       }
