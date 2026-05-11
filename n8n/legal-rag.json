@@ -6,12 +6,12 @@
         "sessionIdType": "customKey",
         "sessionKey": "={{ $('Chat unify').item.json.sessionId }}"
       },
-      "id": "1552945a-e554-4e2a-9a01-5c4054944d73",
+      "id": "6f534d85-ed38-4542-bc1a-b616fd733609",
       "name": "Simple Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "position": [
-        -2592,
-        2048
+        3168,
+        4128
       ],
       "typeVersion": 1.3,
       "notes": "Session memory"
@@ -21,12 +21,12 @@
         "textSplittingMode": "custom",
         "options": {}
       },
-      "id": "794964b4-342d-4715-8098-96c3affd3a03",
+      "id": "52c9c04b-4b8e-4b00-a933-eda72cbc7c88",
       "name": "Default Data Loader",
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "position": [
-        176,
-        1456
+        5920,
+        3504
       ],
       "typeVersion": 1.1,
       "notes": "� arterm-sedov"
@@ -37,26 +37,24 @@
         "chunkOverlap": 50,
         "options": {}
       },
-      "id": "53e43540-3e08-4761-8329-6698c39c92d7",
+      "id": "fe4c1c67-581e-4d07-851a-b70c81d815b4",
       "name": "Recursive Character Text Splitter",
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "position": [
-        176,
-        1616
+        5920,
+        3696
       ],
       "typeVersion": 1,
       "notes": "� arterm-sedov"
     },
     {
-      "parameters": {
-        "modelName": "models/gemini-embedding-001"
-      },
-      "id": "2e3f2168-38e6-41fd-8e5d-80d317282600",
+      "parameters": {},
+      "id": "30717dee-1c1b-4c50-9839-b100badad3a6",
       "name": "Gemini Query Embedding",
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "position": [
-        -2432,
-        2176
+        3344,
+        4304
       ],
       "typeVersion": 1,
       "credentials": {
@@ -71,12 +69,12 @@
       "parameters": {
         "modelName": "models/gemini-embedding-001"
       },
-      "id": "ddf42c61-1a1f-4644-a8f8-263efca182b9",
+      "id": "9df024d3-6cb8-4a10-957e-297cf4dea94a",
       "name": "Gemini Chunk Embedding",
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "position": [
-        48,
-        1456
+        5792,
+        3504
       ],
       "typeVersion": 1,
       "notesInFlow": false,
@@ -94,12 +92,12 @@
         "tableId": "documents",
         "limit": 1
       },
-      "id": "d94ccdfb-afb1-42cd-8294-a12caae3061d",
+      "id": "0779b162-7655-4a9e-9844-66a0e026c29a",
       "name": "Keep Supabase Instance Alive",
       "type": "n8n-nodes-base.supabase",
       "position": [
-        -3216,
-        2048
+        2224,
+        4480
       ],
       "typeVersion": 1,
       "credentials": {
@@ -120,39 +118,38 @@
           ]
         }
       },
-      "id": "3ffa4cb3-4a1f-4a3b-90a0-cdb422f7ccb3",
+      "id": "b96aa3a3-2f9f-4f2b-9954-e9adc43372e7",
       "name": "Every 6 Days",
       "type": "n8n-nodes-base.scheduleTrigger",
       "position": [
-        -3440,
-        2048
+        2000,
+        4480
       ],
       "typeVersion": 1.2,
       "notes": "� arterm-sedov"
     },
     {
       "parameters": {},
-      "id": "8e7af1b9-6329-4913-9535-51766bf58d40",
+      "id": "b5c3b8a5-35c0-4c32-84cb-8c9ffecb873f",
       "name": "Start Indexing",
       "type": "n8n-nodes-base.manualTrigger",
       "position": [
-        -3584,
-        1216
+        1984,
+        3280
       ],
       "typeVersion": 1,
       "notes": "� arterm-sedov"
     },
     {
       "parameters": {
-        "public": true,
         "options": {}
       },
-      "id": "e0fe3f3f-d8f2-42ec-8aa7-6f910319507d",
+      "id": "a946548d-11c7-4f75-9f19-c786fd3831bc",
       "name": "RAG Chatbot",
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "position": [
-        -3584,
-        1632
+        2048,
+        4096
       ],
       "webhookId": "965843ea-8dc2-4760-b13a-b65b68e3e8aa",
       "typeVersion": 1.1,
@@ -164,13 +161,13 @@
         "fieldsToCompare": "document.id",
         "options": {}
       },
-      "id": "971bb162-413c-4047-a191-abfd2eae1bd0",
+      "id": "981b0db6-93c6-421b-8bc9-e3add98f25ea",
       "name": "Remove Duplicate Documents",
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 1.1,
       "position": [
-        -1568,
-        1216
+        4000,
+        3280
       ]
     },
     {
@@ -178,13 +175,13 @@
         "batchSize": 5,
         "options": {}
       },
-      "id": "a6b98a11-07b8-4d7b-b58d-2f9984a165d8",
+      "id": "120e357e-0cd2-4918-81c8-64db927aab65",
       "name": "Loop Over Documents",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -1344,
-        1216
+        4224,
+        3280
       ]
     },
     {
@@ -219,13 +216,13 @@
         },
         "options": {}
       },
-      "id": "3bacb275-086f-4f96-bf7f-dd5818db8c6c",
+      "id": "a8dac4e8-9f44-4808-8192-ca0871c7920a",
       "name": "Prepare Document Metadata",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -496,
-        1216
+        5120,
+        3200
       ]
     },
     {
@@ -248,13 +245,13 @@
         },
         "options": {}
       },
-      "id": "a1d56d54-f87c-4f49-a4af-6f846b8eba67",
+      "id": "9361b9c4-d345-46f2-b35b-1570901116b3",
       "name": "Clean Document Content",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -272,
-        1216
+        5344,
+        3200
       ]
     },
     {
@@ -263,13 +260,13 @@
         "fieldsToCompare": "metadata.documentId",
         "options": {}
       },
-      "id": "2fc88c40-36ca-4e8e-9de2-e6fc462cb099",
+      "id": "0ee8d735-43c5-4742-9b47-db21d9114427",
       "name": "Remove Duplicate Content",
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 1.1,
       "position": [
-        -48,
-        1216
+        5568,
+        3200
       ]
     },
     {
@@ -284,13 +281,13 @@
         "embeddingBatchSize": 5,
         "options": {}
       },
-      "id": "c4800a58-916f-4c24-9981-2ee1afebda8f",
+      "id": "97ecc3aa-f489-43d8-82f4-3e3e27b34649",
       "name": "Insert Into Vector Store",
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        208,
-        1216
+        5824,
+        3280
       ],
       "credentials": {
         "supabaseApi": {
@@ -304,26 +301,26 @@
         "url": "https://www.trudkod.ru/",
         "options": {}
       },
-      "id": "244180b9-5d79-4c7e-91a0-841fd1ff9885",
+      "id": "59e7f594-497b-4db6-a9ae-62d3e26f7a74",
       "name": "Fetch Legal/HR Websites",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -3136,
-        1024
+        2432,
+        3088
       ]
     },
     {
       "parameters": {
         "numberInputs": 3
       },
-      "id": "87c4a834-038d-4ffb-9cf0-8f40372152e0",
+      "id": "a08b0c1d-9cb6-4cf2-944e-11be12e4426c",
       "name": "Merge Document Sources",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -1792,
-        1200
+        3776,
+        3264
       ]
     },
     {
@@ -335,13 +332,13 @@
           "returnIntermediateSteps": true
         }
       },
-      "id": "16572ac1-1fe8-43b0-9a18-1e368bbf4149",
+      "id": "50397904-b298-4bec-91b5-8dac15c45d17",
       "name": "Legal/HR AI Agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.1,
       "position": [
-        -2608,
-        1712
+        3280,
+        3904
       ]
     },
     {
@@ -357,13 +354,13 @@
         "topK": 10,
         "options": {}
       },
-      "id": "ec518d03-585c-4eaa-92e3-eb9e57a13318",
+      "id": "e9185f9a-6cb3-41c2-a8cc-9def81a06bd6",
       "name": "Legal/HR Knowledge Base",
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        -2432,
-        2032
+        3344,
+        4128
       ],
       "credentials": {
         "supabaseApi": {
@@ -386,13 +383,13 @@
           ]
         }
       },
-      "id": "c640c129-0343-42f3-8350-d9e7efa36fcd",
+      "id": "58007251-3734-4fce-bb74-5e54f5043198",
       "name": "Clear Old Documents",
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -3360,
-        1216
+        2208,
+        3280
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -420,13 +417,13 @@
           "trimValues": true
         }
       },
-      "id": "555a0020-e0b4-41e6-8d89-5d0e11156472",
+      "id": "2f4187dd-13c9-45d9-ad28-2f809dcab70f",
       "name": "Extract Links From HTML",
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        -2912,
-        1024
+        2656,
+        3088
       ]
     },
     {
@@ -436,13 +433,13 @@
           "destinationFieldName": "link"
         }
       },
-      "id": "bc89997a-ae07-45a3-811a-6b7c011344e8",
+      "id": "1585decc-58dc-4ae8-baf7-d180180b8b36",
       "name": "Split Out Links",
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        -2688,
-        1024
+        2880,
+        3088
       ]
     },
     {
@@ -451,13 +448,13 @@
         "fieldsToCompare": "link",
         "options": {}
       },
-      "id": "d2ddcab4-e0d0-4e84-9c6f-fd4f961ca9ba",
+      "id": "7cc591a2-f9da-4d32-aba8-71e2d8f8be96",
       "name": "Remove Duplicate Links",
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 1.1,
       "position": [
-        -2464,
-        1024
+        3104,
+        3088
       ]
     },
     {
@@ -511,13 +508,13 @@
         },
         "options": {}
       },
-      "id": "700a1aee-4262-4522-906c-9f50b3384edf",
+      "id": "4c9f6aa9-34e8-498c-b0bb-29a6af7b47eb",
       "name": "Filter Valid Document Links",
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.3,
       "position": [
-        -2240,
-        1024
+        3328,
+        3088
       ]
     },
     {
@@ -534,13 +531,13 @@
         },
         "options": {}
       },
-      "id": "db477041-0e4d-49f5-b6cd-1eb6719442d3",
+      "id": "56404eef-99df-4a37-aa52-b18c17316565",
       "name": "Prepare Web Document For Processing",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2016,
-        1024
+        3552,
+        3088
       ]
     },
     {
@@ -548,13 +545,13 @@
         "url": "={{ $json.document.url }}",
         "options": {}
       },
-      "id": "e9a68f2e-0ae6-4ebf-98fd-7d53cb489d77",
+      "id": "27dec930-06dc-4f4d-b716-ce02a56346b2",
       "name": "Fetch Web Page",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -912,
-        1216
+        4672,
+        3296
       ]
     },
     {
@@ -574,13 +571,13 @@
           "cleanUpText": true
         }
       },
-      "id": "68e82b6f-58fa-4b23-aa66-27a65e0cbaa7",
+      "id": "21c1d4a4-fc3e-4026-9e28-32acdf3762b2",
       "name": "Extract Text From Web Page",
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        -688,
-        1216
+        4896,
+        3296
       ]
     },
     {
@@ -607,13 +604,13 @@
         },
         "options": {}
       },
-      "id": "3a21f0f8-d17b-4725-86ba-a9b1b8508121",
+      "id": "1f50f6a9-2c96-4bec-9627-68904cd04bae",
       "name": "Route Document By Source",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -1120,
-        1200
+        4448,
+        3200
       ]
     },
     {
@@ -621,13 +618,13 @@
         "fileSelector": "/home/node/.n8n-files/docs/*",
         "options": {}
       },
-      "id": "bd771f9b-6c10-47f9-a33e-04e9cd2d7545",
+      "id": "137fd548-2936-476d-96d1-1793de64c23f",
       "name": "Read Local Documents",
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
       "position": [
-        -3136,
-        1216
+        3328,
+        3280
       ],
       "disabled": true
     },
@@ -645,13 +642,13 @@
         },
         "options": {}
       },
-      "id": "c3828343-c2be-4d92-87ae-3ab77a1177f2",
+      "id": "791705be-1b3c-4b57-a93c-a8023f7081d0",
       "name": "Prepare Local Document",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2016,
-        1216
+        3552,
+        3280
       ]
     },
     {
@@ -661,13 +658,13 @@
           "joinPages": true
         }
       },
-      "id": "b2a54194-794a-4d04-bcc0-cb246d5815c1",
+      "id": "7ec970c1-78c5-47cb-9546-75b4345401c9",
       "name": "Extract Local PDF",
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        -688,
-        1056
+        4896,
+        3104
       ]
     },
     {
@@ -676,40 +673,40 @@
         "text": "=<role>\nYou are a strict quality evaluator for assistant's RAG answers in a legal/HR department.\n</role>\n\n<task>\nEvaluate the answer below against the user question. Output valid JSON per the authorative schema.\n\nScoring criteria:\n\nScores range: 0.0-1.0\n\n1. Source citations: Does the answer cite specific documents, laws, articles? If answer cites specific laws (ТК РФ, статьи), set `true`. Otherwise set `false`.\n2. Relevance: Is the answer relevant to the question?\n3. Specificity: Detailed and specific, or vague?\n4. Completeness: Fully addresses the question?\n5. Confidence: Is the answer really based on the ground truth and valid?\n\n</task>\n\nUser question:\n{{ $('Chat unify').item.json.chatInput }}\nUser question category:\n{{ $('Category human-readable').item.json.category }}\nAnswer to evaluate:\n{{ $json.output }}\n\n<question_classification>\nThe assistant must answer only legal and HR-related questions.\nThe assistant must reject any other topics immediately.\n</question_classification>",
         "hasOutputParser": true
       },
-      "id": "fc71d94a-a096-4727-b4cf-0aa976d2d0bb",
+      "id": "0e1636f9-cd1c-4ea9-8822-6971a9263b56",
       "name": "LLM Answer Judge",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        -2304,
-        1712
+        3744,
+        3904
       ]
     },
     {
       "parameters": {
-        "jsCode": "const inputItem = $input.all()[0].json;\nconst judgeScores = inputItem.output || {};\nconst hasCitations = judgeScores.hasCitations === true;\nconst relevance = parseFloat(judgeScores.relevance) || 0;\nconst specificity = parseFloat(judgeScores.specificity) || 0;\nconst completeness = parseFloat(judgeScores.completeness) || 0;\nconst confidence = parseFloat(judgeScores.confidence) || 0;\nconst compositeScore = (relevance + specificity + completeness + confidence) / 4;\nconst pct = (Math.min(Math.max(compositeScore, 0), 1) * 100).toFixed(0);\nconst sessionId = inputItem.sessionId || '';\nconst now = new Date().toLocaleString(\"ru-RU\", { timeZone: \"Europe/Moscow\" });\nconst category = $('Categorize').first().json.output.category || \"general\";\nconst agentOutput = String($('Legal/HR AI Agent').first().json.output || '');\nconst sourceCount = judgeScores.sourceCount;\nconst lowConf = compositeScore < 0.6;\nvar catLabel = \"Общий вопрос\";\nvar disclaimer = \"\";\nif (category === \"hr\") {\n  catLabel = \"Кадровый вопрос\";\n  disclaimer = \"Ответ основан на внутренних HR-документах. Источники имеют приоритет.\";\n} else if (category === \"legal\") {\n  catLabel = \"Юридический вопрос\";\n  disclaimer = \"Данный ответ носит информационный характер. Для финальных документов требуется проверка специалистом.\";\n} else {\n  disclaimer = \"Ответ основан на доступных документах. Первоисточники имеют приоритет.\";\n}\nvar header = \"**Категория:** \" + catLabel;\nheader += \"\\n\\n**Общая уверенность:** \" + pct + \"%\";\nif (!hasCitations) header += \"  (нет источников)\";\nif (lowConf) header += \"  (ниже порога 60%)\";\nheader += \"\\n\\n**Найдено источников:** \" + sourceCount;\nheader += \"\\n\\n**Источники:** \" + (hasCitations ? \"ДА\" : \"НЕТ\");\nheader += \"\\n\\n**Релевантность:** \" + (relevance * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n**Специфичность:** \" + (specificity * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n**Полнота:** \" + (completeness * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n**Достоверность:** \" + (confidence * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n---\\n\\n\";\nvar footer = \"\\n\\n---\\n\\n\";\nif (!hasCitations) {\n  footer += \"**Ответ без источников. Требуется проверка специалистом.**\\n\";\n} else if (lowConf) {\n  footer += \"**Точность ниже порога. Рекомендуется проверка специалистом.**\\n\";\n} else {\n  footer += disclaimer + \"\\n\";\n}\nfooter += now;\nreturn [{ json: { output: header + agentOutput + footer, sessionId: sessionId } }];\n"
+        "jsCode": "const inputItem = $input.all()[0].json;\nconst judgeScores = inputItem.output || {};\nconst hasCitations = judgeScores.hasCitations === true;\nconst relevance = parseFloat(judgeScores.relevance) || 0;\nconst specificity = parseFloat(judgeScores.specificity) || 0;\nconst completeness = parseFloat(judgeScores.completeness) || 0;\nconst confidence = parseFloat(judgeScores.confidence) || 0;\nconst compositeScore = (relevance + specificity + completeness + confidence) / 4;\nconst pct = (Math.min(Math.max(compositeScore, 0), 1) * 100).toFixed(0);\nconst sessionId = inputItem.sessionId || '';\nconst now = new Date().toLocaleString(\"ru-RU\", { timeZone: \"Europe/Moscow\" });\nconst category = $('Categorize').first().json.output.category || \"general\";\nconst agentOutput = String($('Legal/HR AI Agent').first().json.output || '');\nconst sourceCount = judgeScores.sourceCount;\nconst lowConf = compositeScore < 0.6;\nvar catLabel = \"Общий вопрос\";\nvar disclaimer = \"\";\nif (category === \"hr\") {\n  catLabel = \"Кадровый вопрос\";\n  disclaimer = \"Ответ основан на внутренних HR-документах. Источники имеют приоритет.\";\n} else if (category === \"legal\") {\n  catLabel = \"Юридический вопрос\";\n  disclaimer = \"Данный ответ носит информационный характер. Для финальных документов требуется проверка специалистом.\";\n} else {\n  disclaimer = \"Ответ основан на доступных документах. Первоисточники имеют приоритет.\";\n}\nvar header = \"**Категория:** \" + catLabel;\nheader += \"\\n\\n**Общая уверенность:** \" + pct + \"%\";\nif (!hasCitations) header += \"  (нет источников)\";\nif (lowConf) header += \"  (ниже порога 60%)\";\nheader += \"\\n\\n**Найдено источников:** \" + sourceCount;\nheader += \"\\n\\n**Источники:** \" + (hasCitations ? \"ДА\" : \"НЕТ\");\nheader += \"\\n\\n**Релевантность:** \" + (relevance * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n**Специфичность:** \" + (specificity * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n**Полнота:** \" + (completeness * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n**Достоверность:** \" + (confidence * 100).toFixed(0) + \"%\";\nheader += \"\\n\\n---\\n\\n\";\nvar footer = \"\\n\\n---\\n\\n\";\nif (!hasCitations) {\n  footer += \"**Ответ без источников. Требуется проверка специалистом.**\\n\";\n} else if (lowConf) {\n  footer += \"**Точность ниже порога. Рекомендуется проверка специалистом.**\\n\";\n} else {\n  footer += disclaimer + \"\\n\";\n}\nfooter += now;\nreturn [{ json: { output: header + agentOutput + footer, sessionId: sessionId, hasCitations: hasCitations, sourceCount: sourceCount, relevance: relevance, specificity: specificity, completeness: completeness, confidence: confidence, compositeScore: compositeScore } }];\n"
       },
-      "id": "171c9348-d303-457b-91df-d935c5470dc2",
+      "id": "3e23358a-7fc1-4611-94a0-87ecbfaa77fb",
       "name": "Template Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2016,
-        1712
+        4096,
+        3904
       ]
     },
     {
       "parameters": {
         "schemaType": "manual",
-        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"hasCitations\": {\n      \"type\": \"boolean\",\n      \"description\": \"Does the answer cite specific documents, laws, or articles? If false, answer MUST NOT be shown.\"\n    },\n    \"sourceCount\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"description\": \"How many sources are cited? Count actual sources: doc/doc_section/section_article - counts as a single source if related to the same doc.\"\n    },\n    \"relevance\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Is the answer relevant to the question?\"\n    },\n    \"specificity\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Detailed and specific, or vague?\"\n    },\n    \"completeness\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Fully addresses the question?\"\n    },\n    \"confidence\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Is the answer really based on the ground truth and valid?\"\n    }\n  },\n  \"required\": [\"hasCitations\", \"sourceCount\", \"relevance\", \"specificity\", \"completeness\", \"confidence\"]\n}"
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"hasCitations\": {\n      \"type\": \"boolean\",\n      \"description\": \"Does the answer cite specific documents, laws, or articles? If false, answer MUST NOT be shown.\"\n    },\n    \"sourceCount\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"description\": \"How many sources are cited? Count actual sources: doc/doc_section/section_article - counts as a single source if related to the same doc. Same source: count only once\"\n    },\n    \"relevance\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Is the answer relevant to the question?\"\n    },\n    \"specificity\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Detailed and specific, or vague?\"\n    },\n    \"completeness\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Fully addresses the question?\"\n    },\n    \"confidence\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Is the answer really based on the ground truth and valid?\"\n    }\n  },\n  \"required\": [\"hasCitations\", \"sourceCount\", \"relevance\", \"specificity\", \"completeness\", \"confidence\"]\n}"
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -2160,
-        1872
+        3888,
+        4128
       ],
-      "id": "7b6699fd-078f-4945-806a-d3e88bd88478",
+      "id": "dd410880-5ac1-44a6-8078-eae8b1c8a069",
       "name": "Structured Output Parser"
     },
     {
@@ -720,10 +717,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        -2848,
-        2048
+        2992,
+        4128
       ],
-      "id": "e9033d95-4156-4f5d-800d-dd851f5c7473",
+      "id": "50c8840c-7028-4dae-a5a6-f9bd9f9d598b",
       "name": "OpenRouter Chat Model",
       "credentials": {
         "openRouterApi": {
@@ -740,10 +737,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -3008,
-        1872
+        2800,
+        4128
       ],
-      "id": "ccb46be8-5d7b-4c33-a0f3-4b122bc59ed1",
+      "id": "23ab07d8-9b1a-415b-9569-281a7541e319",
       "name": "Structured Output Parser1"
     },
     {
@@ -756,10 +753,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        -3152,
-        1712
+        2656,
+        3904
       ],
-      "id": "23ccdd01-8fca-4d2b-a289-56a476fcb026",
+      "id": "52f4fdb8-4b0b-4b4d-bd17-79c1de845a42",
       "name": "Categorize"
     },
     {
@@ -779,10 +776,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2816,
-        1712
+        3024,
+        3904
       ],
-      "id": "c6424b94-94e6-4ee5-babe-01595280f48f",
+      "id": "1b96d13e-e788-4042-a298-51fcedddd978",
       "name": "Category human-readable"
     },
     {
@@ -795,10 +792,10 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        -3584,
-        1808
+        2048,
+        3904
       ],
-      "id": "4be71a95-f903-4a0d-9bef-f36c484d09df",
+      "id": "f87350de-2092-44a1-b145-5593b5ad4e83",
       "name": "Telegram Trigger",
       "webhookId": "0ed541bd-5b85-4be0-b01a-103c9a6f424e",
       "credentials": {
@@ -823,6 +820,24 @@
               "name": "sessionId",
               "value": "={{ $if($('RAG Chatbot').isExecuted, $json.sessionId, $json.message.chat.id ) }}",
               "type": "string"
+            },
+            {
+              "id": "source-field-id",
+              "name": "source",
+              "value": "={{ $if($('RAG Chatbot').isExecuted, \"chat\", \"telegram\") }}",
+              "type": "string"
+            },
+            {
+              "id": "telegram-user-id",
+              "name": "telegramUserId",
+              "value": "={{ $if($('Telegram Trigger').isExecuted, $json.message.from.id, null) }}",
+              "type": "string"
+            },
+            {
+              "id": "telegram-username",
+              "name": "telegramUsername",
+              "value": "={{ $if($('Telegram Trigger').isExecuted, $json.message.from.username ?? $json.message.from.first_name, null) }}",
+              "type": "string"
             }
           ]
         },
@@ -831,33 +846,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -3376,
-        1712
+        2448,
+        3904
       ],
-      "id": "f3c680c4-537c-44ba-b869-4550fb3ce379",
+      "id": "de7b36e4-a026-44a6-a4ae-4f2e119e52d1",
       "name": "Chat unify"
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "text": "={{ $json.output }}",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        -1632,
-        1712
-      ],
-      "id": "3f714d1d-2954-492c-b496-f12896cb4906",
-      "name": "Send a text message",
-      "webhookId": "9d25b479-5ba0-43d8-9fc7-df3f52157abc",
-      "credentials": {
-        "telegramApi": {
-          "id": "wToY4L9HvJWmqfwB",
-          "name": "Telegram account"
-        }
-      }
     },
     {
       "parameters": {
@@ -865,32 +858,33 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict",
+            "typeValidation": "loose",
             "version": 3
           },
           "conditions": [
             {
               "id": "d8d3fad6-a19a-4bf8-96c3-d41275b482df",
               "leftValue": "=$('Telegram Trigger').isExecuted",
-              "rightValue": "true",
+              "rightValue": "\"true\"",
               "operator": {
-                "type": "string",
-                "operation": "notEmpty",
+                "type": "boolean",
+                "operation": "true",
                 "singleValue": true
               }
             }
           ],
           "combinator": "and"
         },
+        "looseTypeValidation": true,
         "options": {}
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -1856,
-        1712
+        4320,
+        4048
       ],
-      "id": "204d0a21-8e2d-4438-bcd5-d1504afdf752",
+      "id": "e8eaf0e8-f211-447e-8da1-3fa50d9e331c",
       "name": "Route to Telegram"
     },
     {
@@ -903,10 +897,10 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        -3136,
-        1392
+        3104,
+        3472
       ],
-      "id": "d9338d70-e34b-420d-ac22-35b5f8fb0688",
+      "id": "7b036ca9-637b-497c-b217-d7339c5ce849",
       "name": "Search files and folders",
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -922,13 +916,13 @@
           "destinationFieldName": "file"
         }
       },
-      "id": "3b7c0805-b03f-4399-a982-fb2168d13eba",
+      "id": "5b9b7e52-78bc-40af-a9e6-e790cd2b3d9a",
       "name": "Split Out Google Docs",
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        -2688,
-        1392
+        3328,
+        3472
       ]
     },
     {
@@ -945,14 +939,602 @@
         },
         "options": {}
       },
-      "id": "85dc3115-1703-478d-ab0a-3606144b269c",
+      "id": "18cf99b3-bbb5-4c87-b315-c1a464e81a64",
       "name": "Prepare Google Doc For Processing",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2016,
-        1392
+        3552,
+        3472
       ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "log-timestamp",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "log-session-id",
+              "name": "session_id",
+              "value": "={{ $if($(\"Chat unify\").isExecuted, $(\"Chat unify\").item.json.sessionId, null) }}",
+              "type": "string"
+            },
+            {
+              "id": "log-source",
+              "name": "source",
+              "value": "={{ $if($(\"Chat unify\").isExecuted, $(\"Chat unify\").item.json.source, \"telegram\") }}",
+              "type": "string"
+            },
+            {
+              "id": "log-user-input",
+              "name": "user_input",
+              "value": "={{ $if($(\"Chat unify\").isExecuted, $(\"Chat unify\").item.json.chatInput, null) }}",
+              "type": "string"
+            },
+            {
+              "id": "log-category",
+              "name": "category",
+              "value": "={{ $if($(\"Categorize\").isExecuted, $(\"Categorize\").item.json.output.category, \"general\") }}",
+              "type": "string"
+            },
+            {
+              "id": "log-has-citations",
+              "name": "has_citations",
+              "value": "={{ $if($(\"Template Response\").isExecuted, $(\"Template Response\").item.json.hasCitations, false) }}",
+              "type": "boolean"
+            },
+            {
+              "id": "log-source-count",
+              "name": "source_count",
+              "value": "={{ $if($(\"Template Response\").isExecuted, $(\"Template Response\").item.json.sourceCount, 0) }}",
+              "type": "number"
+            },
+            {
+              "id": "log-relevance",
+              "name": "relevance",
+              "value": "={{ $if($(\"Template Response\").isExecuted, $(\"Template Response\").item.json.relevance, 0) }}",
+              "type": "number"
+            },
+            {
+              "id": "log-specificity",
+              "name": "specificity",
+              "value": "={{ $if($(\"Template Response\").isExecuted, $(\"Template Response\").item.json.specificity, 0) }}",
+              "type": "number"
+            },
+            {
+              "id": "log-completeness",
+              "name": "completeness",
+              "value": "={{ $if($(\"Template Response\").isExecuted, $(\"Template Response\").item.json.completeness, 0) }}",
+              "type": "number"
+            },
+            {
+              "id": "log-confidence",
+              "name": "confidence",
+              "value": "={{ $if($(\"Template Response\").isExecuted, $(\"Template Response\").item.json.confidence, 0) }}",
+              "type": "number"
+            },
+            {
+              "id": "log-composite-score",
+              "name": "composite_score",
+              "value": "={{ $if($(\"Template Response\").isExecuted, $(\"Template Response\").item.json.compositeScore, 0) }}",
+              "type": "number"
+            },
+            {
+              "id": "log-telegram-user-id",
+              "name": "telegram_user_id",
+              "value": "={{ $if($(\"Telegram Trigger\").isExecuted, $(\"Telegram Trigger\").item.json.message.from.id, null) }}",
+              "type": "string"
+            },
+            {
+              "id": "log-telegram-username",
+              "name": "telegram_username",
+              "value": "={{ $if($(\"Telegram Trigger\").isExecuted, $(\"Telegram Trigger\").item.json.message.from.username ?? $(\"Telegram Trigger\").item.json.message.from.first_name, null) }}",
+              "type": "string"
+            },
+            {
+              "id": "log-ai-response",
+              "name": "ai_response",
+              "value": "={{ $if($(\"Template Response\").isExecuted, $(\"Legal/HR AI Agent\").item.json.output, \"\") }}",
+              "type": "string"
+            },
+            {
+              "id": "57e4bae0-1479-40b4-a47f-9514aa494a18",
+              "name": "message_id",
+              "value": "={{ $if($(\"Telegram Trigger\").isExecuted, $('Telegram Trigger').item.json.message.message_id, null) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ac7678ca-4c11-4737-85e5-afdbaef18391",
+      "name": "Prepare Log Entry",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4320,
+        3856
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "chat_logs",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "timestamp",
+              "fieldValue": "={{ $json.timestamp }}"
+            },
+            {
+              "fieldId": "session_id",
+              "fieldValue": "={{ $json.session_id }}"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "={{ $json.source }}"
+            },
+            {
+              "fieldId": "user_input",
+              "fieldValue": "={{ $json.user_input }}"
+            },
+            {
+              "fieldId": "category",
+              "fieldValue": "={{ $json.category }}"
+            },
+            {
+              "fieldId": "has_citations",
+              "fieldValue": "={{ $json.has_citations }}"
+            },
+            {
+              "fieldId": "source_count",
+              "fieldValue": "={{ $json.source_count }}"
+            },
+            {
+              "fieldId": "relevance",
+              "fieldValue": "={{ $json.relevance }}"
+            },
+            {
+              "fieldId": "specificity",
+              "fieldValue": "={{ $json.specificity }}"
+            },
+            {
+              "fieldId": "completeness",
+              "fieldValue": "={{ $json.completeness }}"
+            },
+            {
+              "fieldId": "confidence",
+              "fieldValue": "={{ $json.confidence }}"
+            },
+            {
+              "fieldId": "composite_score",
+              "fieldValue": "={{ $json.composite_score }}"
+            },
+            {
+              "fieldId": "telegram_user_id",
+              "fieldValue": "={{ $json.telegram_user_id }}"
+            },
+            {
+              "fieldId": "telegram_username",
+              "fieldValue": "={{ $json.telegram_username }}"
+            },
+            {
+              "fieldId": "ai_response",
+              "fieldValue": "={{ $json.ai_response }}"
+            },
+            {
+              "fieldId": "message_id",
+              "fieldValue": "={{ $json.message_id }}"
+            }
+          ]
+        }
+      },
+      "id": "1bfe7663-4c1f-4270-b2af-f895da768150",
+      "name": "Log to Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        4544,
+        3856
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "JTGuwt2KKbraDdDg",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "whitelist-check",
+              "leftValue": "={{ $json.message.chat.username }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "=bober_ostrozub"
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "8236bc78-b5fd-41a9-aa38-9e8df1298f19",
+      "name": "Check Telegram Whitelist",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2208,
+        3904
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "Вам не разрешён доступ в этот чат",
+        "additionalFields": {}
+      },
+      "id": "31d6e07e-a6b4-41c9-9dc1-6c550da06109",
+      "name": "Unauthorized Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2672,
+        4288
+      ],
+      "webhookId": "e083ec37-f76b-4acf-b560-d96de74bbbeb",
+      "credentials": {
+        "telegramApi": {
+          "id": "wToY4L9HvJWmqfwB",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "log-timestamp",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "log-session-id",
+              "name": "session_id",
+              "value": "={{ $(\"Telegram Trigger\").item.json.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "log-source",
+              "name": "source",
+              "value": "telegram",
+              "type": "string"
+            },
+            {
+              "id": "log-user-input",
+              "name": "user_input",
+              "value": "={{ $(\"Telegram Trigger\").item.json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "log-category",
+              "name": "category",
+              "value": "unauthorized",
+              "type": "string"
+            },
+            {
+              "id": "log-has-citations",
+              "name": "has_citations",
+              "value": "false",
+              "type": "boolean"
+            },
+            {
+              "id": "log-source-count",
+              "name": "source_count",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "log-relevance",
+              "name": "relevance",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "log-specificity",
+              "name": "specificity",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "log-completeness",
+              "name": "completeness",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "log-confidence",
+              "name": "confidence",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "log-composite-score",
+              "name": "composite_score",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "log-telegram-user-id",
+              "name": "telegram_user_id",
+              "value": "={{ $(\"Telegram Trigger\").item.json.message.from.id }}",
+              "type": "string"
+            },
+            {
+              "id": "log-telegram-username",
+              "name": "telegram_username",
+              "value": "={{ $(\"Telegram Trigger\").item.json.message.from.username ?? $(\"Telegram Trigger\").item.json.message.from.first_name }}",
+              "type": "string"
+            },
+            {
+              "id": "log-ai-response",
+              "name": "ai_response",
+              "value": "Unauthorized access attempt",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c59425cb-4e14-415b-8ad0-8a6daf234658",
+      "name": "Prepare Unauthorized Log",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2864,
+        4288
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "chat_logs",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "timestamp",
+              "fieldValue": "={{ $json.timestamp }}"
+            },
+            {
+              "fieldId": "session_id",
+              "fieldValue": "={{ $json.session_id }}"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "={{ $json.source }}"
+            },
+            {
+              "fieldId": "user_input",
+              "fieldValue": "={{ $json.user_input }}"
+            },
+            {
+              "fieldId": "category",
+              "fieldValue": "={{ $json.category }}"
+            },
+            {
+              "fieldId": "has_citations",
+              "fieldValue": "={{ $json.has_citations }}"
+            },
+            {
+              "fieldId": "source_count",
+              "fieldValue": "={{ $json.source_count }}"
+            },
+            {
+              "fieldId": "relevance",
+              "fieldValue": "={{ $json.relevance }}"
+            },
+            {
+              "fieldId": "specificity",
+              "fieldValue": "={{ $json.specificity }}"
+            },
+            {
+              "fieldId": "completeness",
+              "fieldValue": "={{ $json.completeness }}"
+            },
+            {
+              "fieldId": "confidence",
+              "fieldValue": "={{ $json.confidence }}"
+            },
+            {
+              "fieldId": "composite_score",
+              "fieldValue": "={{ $json.composite_score }}"
+            },
+            {
+              "fieldId": "telegram_user_id",
+              "fieldValue": "={{ $json.telegram_user_id }}"
+            },
+            {
+              "fieldId": "telegram_username",
+              "fieldValue": "={{ $json.telegram_username }}"
+            },
+            {
+              "fieldId": "ai_response",
+              "fieldValue": "={{ $json.ai_response }}"
+            }
+          ]
+        }
+      },
+      "id": "247d6112-4363-4fbb-9beb-430a39816eba",
+      "name": "Log Unauthorized to Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3040,
+        4288
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "JTGuwt2KKbraDdDg",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Template Response').item.json.output }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Ответ был полезен",
+                    "additionalFields": {
+                      "callback_data": "useful_answer"
+                    }
+                  },
+                  {
+                    "text": "Ответ не помог",
+                    "additionalFields": {
+                      "callback_data": "useless_answer"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4544,
+        4048
+      ],
+      "id": "5ddc488e-b1e9-4af6-8f0b-09d74382af8b",
+      "name": "Send reply with like/dislike buttons",
+      "webhookId": "9d25b479-5ba0-43d8-9fc7-df3f52157abc",
+      "credentials": {
+        "telegramApi": {
+          "id": "wToY4L9HvJWmqfwB",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "chat_logs",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "message_id",
+              "condition": "eq",
+              "keyValue": "={{ $if($(\"Telegram fetch button click\").isExecuted, $(\"Telegram fetch button click\").item.json.callback_query.message.message_id-1, null) }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "useful",
+              "fieldValue": "={{ $if($(\"Telegram fetch button click\").isExecuted, $(\"Telegram fetch button click\").item.json.callback_query.data==\"useful_answer\", null) }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        4976,
+        3936
+      ],
+      "id": "895b9bde-d55c-4f97-b14e-577398f231f5",
+      "name": "Update a row",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "JTGuwt2KKbraDdDg",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "whitelist-check",
+              "leftValue": "={{ $json.update_id }}",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "rightValue": "=bober_ostrozub"
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "997a1bdd-5c7f-4567-b4dc-fa599396755a",
+      "name": "Check Telegram Whitelist1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2432,
+        4288
+      ]
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        4768,
+        3936
+      ],
+      "id": "a67e269c-c80c-453d-b1d4-236b48751ab5",
+      "name": "Telegram fetch button click",
+      "webhookId": "c529dfba-ea19-4bd3-9d79-92f401f56bf1",
+      "credentials": {
+        "telegramApi": {
+          "id": "wToY4L9HvJWmqfwB",
+          "name": "Telegram account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -1385,7 +1967,7 @@
       "main": [
         [
           {
-            "node": "Chat unify",
+            "node": "Check Telegram Whitelist",
             "type": "main",
             "index": 0
           }
@@ -1407,6 +1989,11 @@
       "main": [
         [
           {
+            "node": "Prepare Log Entry",
+            "type": "main",
+            "index": 0
+          },
+          {
             "node": "Route to Telegram",
             "type": "main",
             "index": 0
@@ -1418,7 +2005,7 @@
       "main": [
         [
           {
-            "node": "Send a text message",
+            "node": "Send reply with like/dislike buttons",
             "type": "main",
             "index": 0
           }
@@ -1457,6 +2044,79 @@
           }
         ]
       ]
+    },
+    "Prepare Log Entry": {
+      "main": [
+        [
+          {
+            "node": "Log to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Telegram Whitelist": {
+      "main": [
+        [
+          {
+            "node": "Chat unify",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check Telegram Whitelist1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unauthorized Message": {
+      "main": [
+        [
+          {
+            "node": "Prepare Unauthorized Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Unauthorized Log": {
+      "main": [
+        [
+          {
+            "node": "Log Unauthorized to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Telegram Whitelist1": {
+      "main": [
+        [
+          {
+            "node": "Unauthorized Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram fetch button click": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -1465,7 +2125,7 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "c9c4ca63-1fa5-429d-ac1d-60e506e18112",
+  "versionId": "9df25263-d17d-4902-a920-da338fc12cb7",
   "meta": {
     "templateId": "5993",
     "templateCredsSetupCompleted": true,
