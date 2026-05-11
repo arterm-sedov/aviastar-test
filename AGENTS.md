@@ -22,15 +22,31 @@ n8n workflow automation for Legal/HR RAG pipeline. Supabase pgvector + LLM.
 ## Dev Commands
 
 ```powershell
-# Validate workflow JSON before pushing
-# (uses n8n-mcp validate_workflow tool)
-
-# Push to local n8n
+# --- Push/pull (REST API, recommended for updates) ---
 python .agents/skills/n8n-workflow-sync/push.py
-
-# Pull from local n8n
-$env:N8N_WORKFLOW_ID="vonKtk32bMVn0Iw4"
 python .agents/skills/n8n-workflow-sync/pull.py
+python .agents/skills/n8n-workflow-sync/fix.py    # restore stripped fields
+
+# --- CLI via docker exec (no API key needed) ---
+# Export workflow
+docker exec n8n n8n export:workflow --id=UQ32XEuvDAc9MNer --output=/tmp/wf.json
+docker cp n8n:/tmp/wf.json .\n8n\legal-rag.json
+
+# Import (creates new, does NOT update existing)
+docker cp .\n8n\legal-rag.json n8n:/tmp/wf.json
+docker exec n8n n8n import:workflow --input=/tmp/wf.json
+
+# Publish workflow version
+docker exec n8n n8n publish:workflow --id=UQ32XEuvDAc9MNer
+
+# --- MCP (instance-level, requires access token) ---
+# Server: http://localhost:5678/mcp-server/http
+# Auth: Bearer <access_token>
+# Enable in n8n Settings → MCP → Instance-level MCP
+
+# --- Chat URL (when workflow active + chat published) ---
+# http://localhost:5678/webhook/<webhookId>/chat
+# webhookId = 965843ea-8dc2-4760-b13a-b65b68e3e8aa
 
 # Verify n8n container
 docker ps --filter "name=n8n"
