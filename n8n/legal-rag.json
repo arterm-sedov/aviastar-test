@@ -773,7 +773,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer and output a JSON object with score and reasoning.\nScore criteria:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nScore scale:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, significant gaps\n- 0.3-0.49: Limited sources, mostly generic\n- Below 0.3: No meaningful sources, not found or irrelevant\n</task>\n\nQuestion: {{ $json.chatInput }}\n\nAnswer to evaluate:\n{{ $json.output }}",
+        "text": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer and output a valid JSON object with score and reasoning.\nScore criteria:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nIf the answer states information was not found, score MUST be 0.0.\nScore scale:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, significant gaps\n- 0.3-0.49: Limited sources, mostly generic\n- 0.0-0.29: No meaningful sources, not found or irrelevant\n</task>\n\nQuestion: {{ $('Enrich with Classification').first().json.chatInput }}\n\nAnswer to evaluate:\n{{ $json.output }}",
         "hasOutputParser": true,
         "options": {}
       },
@@ -804,8 +804,7 @@
       "parameters": {
         "schemaType": "jsonSchema",
         "schema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"score\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"maxLength\": 200\n    }\n  },\n  \"required\": [\n    \"score\"\n  ]\n}",
-        "autoFix": false,
-        "options": {}
+        "autoFix": false
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
@@ -1272,7 +1271,7 @@
   "meta": null,
   "pinData": {},
   "activeVersionId": null,
-  "versionCounter": 57,
+  "versionCounter": 61,
   "triggerCount": 0,
   "tags": [],
   "activeVersion": null
