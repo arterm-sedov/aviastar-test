@@ -925,6 +925,7 @@
     },
     "Loop Over Documents": {
       "main": [
+        [],
         [
           {
             "node": "Route Document By Source",
@@ -1280,7 +1281,7 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "647ce83d-511a-4f49-8e54-16989eced517",
+  "versionId": "6e440e81-711a-402a-a6a4-c81548365eb5",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "ab8a07d2b692d5341ee84514c51cbc763550aefa32d8142b49ff4b768c362524"
