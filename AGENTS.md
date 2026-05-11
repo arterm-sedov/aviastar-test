@@ -169,3 +169,19 @@ docker exec n8n n8n import:workflow --input=/tmp/wf.json
 - Connects via `ai_reranker` to vector store nodes
 - Needs Cohere API key credential
 - Improves retrieval precision but scores still not in tool output
+
+## Critical: n8n UI Auto-Save Caveat
+
+The n8n editor auto-saves nodes with only visible parameters — it strips fields that aren't shown in the current editor panel:
+- Code node `mode: "runOnceForAllItems"` → stripped if not in the visible tab
+- Structured Output Parser `schema` → stripped if schemaType panel is closed
+- Chain LLM `options: {}` → stripped on resave
+
+**Always pull + git diff after UI edits** to detect stripped parameters.
+
+## Chain LLM Expression Caveat
+
+Chain LLM `{{ $json.field }}` expressions resolve against the node's direct input data. If the upstream node doesn't forward a field (e.g., AI Agent output lacks `chatInput`), reference it from the source node:
+```
+{{ $('Enrich with Classification').first().json.chatInput }}
+```
