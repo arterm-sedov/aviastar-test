@@ -31,6 +31,35 @@ USE_CLI = "--cli" in sys.argv
 with open(WF_PATH, encoding="utf-8-sig") as f:
     wf = json.load(f)
 
+# --- Auto-repair: restore fields stripped by n8n UI auto-save ---
+repaired = 0
+for n in wf['nodes']:
+    if n['type'] == 'n8n-nodes-base.code':
+        if n['parameters'].get('mode') != 'runOnceForAllItems':
+            n['parameters']['mode'] = 'runOnceForAllItems'
+            repaired += 1
+        if 'language' not in n['parameters'] and 'jsCode' in n['parameters']:
+            n['parameters']['language'] = 'javaScript'
+    # Structured Output Parser: restore schema if stripped
+    if n['type'] == '@n8n/n8n-nodes-langchain.outputParserStructured':
+        if n['parameters'].get('schemaType') == 'manual':
+            if 'inputSchema' not in n['parameters']:
+                n['parameters']['inputSchema'] = json.dumps({
+                    'type': 'object',
+                    'properties': {
+                        'score': {'type': 'number', 'minimum': 0, 'maximum': 1},
+                        'reasoning': {'type': 'string', 'maxLength': 200}
+                    },
+                    'required': ['score']
+                }, ensure_ascii=False, indent=2)
+                repaired += 1
+    # Chain LLM: restore options
+    if n['type'] == '@n8n/n8n-nodes-langchain.chainLlm':
+        if 'options' not in n['parameters']:
+            n['parameters']['options'] = {}
+if repaired:
+    print(f'Auto-repaired {repaired} stripped field(s) — n8n UI auto-save')
+
 if USE_CLI:
     # n8n CLI: docker cp → docker exec import:workflow (creates only, no update)
     subprocess.run(["docker", "cp", WF_PATH, "n8n:/tmp/wf.json"], check=True)

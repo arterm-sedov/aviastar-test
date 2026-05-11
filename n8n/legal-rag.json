@@ -638,7 +638,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Confidence: AI classifier + LLM judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\n\n// Agent output (read directly from AI Agent node, always a string)\nlet agentOutput = \"\";\ntry {\n  agentOutput = String($('Legal/HR AI Agent').first().json.output || '');\n} catch(e) {}\n\n// 1. Classifier confidence\nlet classifierConf = 0.5;\ntry {\n  const enrich = $('Enrich with Classification').first().json;\n  classifierConf = parseFloat(enrich.classificationConfidence) || 0.5;\n} catch(e) {}\n\n// 2. LLM Judge score (Structured Output Parser returns parsed JSON)\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  // Parser outputs score directly on json\n  if (judgeData.score !== undefined) {\n    judgeScore = parseFloat(judgeData.score);\n  }\n  // Or nested in output\n  if (judgeScore === null || isNaN(judgeScore)) {\n    const out = judgeData.output;\n    if (out && typeof out === \"object\" && out.score !== undefined) {\n      judgeScore = parseFloat(out.score);\n    }\n  }\n  // Or text field\n  if ((judgeScore === null || isNaN(judgeScore)) && judgeData.text) {\n    try {\n      const parsed = JSON.parse(judgeData.text);\n      judgeScore = parseFloat(parsed.score);\n    } catch(e) {}\n  }\n  if (judgeScore !== null && !isNaN(judgeScore)) {\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) {}\n\n// Combined: judge weighted higher\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7\n  : classifierConf;\n\nconst sourceCount = (agentOutput.match(/источник:|source:/gi) || []).length;\n\nreturn [{\n  json: {\n    ...inputItem,\n    output: agentOutput,\n    confidenceScore: Math.min(Math.max(confidenceScore, 0), 1),\n    documentCount: sourceCount\n  }\n}];\n",
+        "jsCode": "const inputItem = $input.all()[0].json;\nconst agentOutput = String(inputItem.output || '');\n\nlet classifierConf = 0.5;\ntry {\n  classifierConf = parseFloat($('Enrich with Classification').all()[0].json.classificationConfidence) || 0.5;\n} catch(e) {}\n\nlet judgeScore = null;\ntry {\n  const j = $('LLM Answer Judge').all()[0].json;\n  if (j.score !== undefined) judgeScore = parseFloat(j.score);\n  if ((judgeScore === null || isNaN(judgeScore)) && j.output && typeof j.output === 'object' && j.output.score !== undefined) judgeScore = parseFloat(j.output.score);\n  if ((judgeScore === null || isNaN(judgeScore)) && j.text) {\n    try { judgeScore = parseFloat(JSON.parse(j.text).score); } catch(e) {}\n  }\n  if (judgeScore !== null && !isNaN(judgeScore)) judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n} catch(e) {}\n\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7\n  : classifierConf;\n\nconst sourceCount = (agentOutput.match(/источник:|source:/gi) || []).length;\n\nreturn [{ json: { ...inputItem, output: agentOutput, confidenceScore: Math.min(Math.max(confidenceScore, 0), 1), documentCount: sourceCount } }];\n",
         "mode": "runOnceForAllItems",
         "language": "javaScript"
       },
@@ -774,8 +774,9 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer and output a valid JSON object with score and reasoning.\nScore criteria:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nIf the answer states information was not found, score MUST be 0.0.\nScore scale:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, significant gaps\n- 0.3-0.49: Limited sources, mostly generic\n- 0.0-0.29: No meaningful sources, not found or irrelevant\n</task>\n\nQuestion: {{ $json.chatInput }}\n\nAnswer to evaluate:\n{{ $json.output }}",
-        "hasOutputParser": true
+        "text": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the answer below against the user question. Output valid JSON.\n\nScore criteria:\n1. Source citations: Does the answer cite specific documents, laws, articles?\n2. Relevance: Is the answer relevant to the question?\n3. Specificity: Detailed and specific, or vague?\n4. Completeness: Fully addresses the question?\n\nIf answer says \"not found\" or \"не найдена\", score MUST be 0.0.\nIf answer cites specific laws (ТК РФ, статьи), score HIGH.\n\nScore: 0.0-1.0\n</task>\n\nUser question:\n{{ $json.question }}\n\nAnswer to evaluate:\n{{ $json.output }}",
+        "hasOutputParser": true,
+        "options": {}
       },
       "id": "9911fe9787d24d",
       "name": "LLM Answer Judge",
@@ -788,7 +789,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Template Response — applies rigid category templates per spec.\n// \"LLM для поиска и ответов, шаблоны - через код с заполнением полей\"\n// Confidence from: AI classifier + LLM Answer Judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\nconst category = inputItem.classificationCategory || \"General\";\nconst sessionId = inputItem.sessionId || \"\";\nconst agentOutput = String(inputItem.output || \"\");\nconst confidenceScore = parseFloat(inputItem.confidenceScore) || 0.5;\nconst sourceCount = parseInt(inputItem.documentCount) || 0;\n\nconst confidencePct = (Math.min(Math.max(confidenceScore, 0), 1) * 100).toFixed(0);\nconst now = new Date().toLocaleString(\"ru-RU\", { timeZone: \"Europe/Moscow\" });\n\nif (confidenceScore < 0.6) {\n  const catLabel = category === \"HR\" ? \"Кадровый вопрос\" :\n                   category === \"Legal\" ? \"Юридический вопрос\" : \"Общий вопрос\";\n  return [{ json: {\n    output: (\n      \"## ⚠️ Ответ с пониженной уверенностью\\n\\n\"\n      + \"**Категория:** \" + catLabel + \"\\n\"\n      + \"**Уверенность:** \" + confidencePct + \"% (ниже порога 60%)\\n\"\n      + \"**Найдено источников:** \" + sourceCount + \"\\n\\n\"\n      + \"---\\n\\n\"\n      + agentOutput + \"\\n\\n\"\n      + \"---\\n\\n\"\n      + \"⚠️ *Точность данного ответа ниже установленного порога. Рекомендуется проверка специалистом.*\\n\"\n      + \"📅 \" + now\n    ),\n    sessionId\n  } }];\n}\n\nconst templates = {\n  HR: {\n    heading: \"## 🏢 Ответ HR-ассистента\\n\\n**Категория:** Кадровый вопрос\",\n    disclaimer: \"*Ответ основан на внутренних HR-документах и политиках компании. Источники документов имеют приоритет над формулировками ИИ-ассистента.*\"\n  },\n  Legal: {\n    heading: \"## ⚖️ Ответ Юридического ассистента\\n\\n**Категория:** Юридический вопрос\",\n    disclaimer: \"⚠️ *Данный ответ носит информационный характер. Нормативные документы и источники имеют приоритет над формулировками ИИ-ассистента. Для подготовки финальных юридических документов требуется проверка квалифицированным специалистом.*\"\n  },\n  General: {\n    heading: \"## 📋 Ответ Ассистента\\n\\n**Категория:** Общий вопрос\",\n    disclaimer: \"*Ответ основан на доступных документах базы знаний. Первоисточники имеют приоритет над формулировками ИИ-ассистента.*\"\n  }\n};\n\nconst t = templates[category] || templates.General;\n\nreturn [{ json: {\n  output: (\n    t.heading + \"\\n\"\n    + \"**Уверенность:** \" + confidencePct + \"%\\n\"\n    + \"**Найдено источников:** \" + sourceCount + \"\\n\\n\"\n    + \"---\\n\\n\"\n    + agentOutput + \"\\n\\n\"\n    + \"---\\n\\n\"\n    + t.disclaimer + \"\\n\"\n    + \"📅 \" + now\n  ),\n  sessionId\n} }];\n",
+        "jsCode": "const inputItem = $input.all()[0].json;\nconst category = inputItem.classificationCategory || \"General\";\nconst agentOutput = String(inputItem.output || '');\nconst confidenceScore = parseFloat(inputItem.confidenceScore) || 0.5;\nconst sourceCount = parseInt(inputItem.documentCount) || 0;\nconst sessionId = inputItem.sessionId || '';\n\nconst pct = (Math.min(Math.max(confidenceScore, 0), 1) * 100).toFixed(0);\nconst now = new Date().toLocaleString(\"ru-RU\", { timeZone: \"Europe/Moscow\" });\n\nvar catLabel = \"Общий вопрос\";\nvar icon = \"\";\nvar disclaimer = \"\";\nvar lowConf = confidenceScore < 0.6;\n\nif (category === \"HR\") { catLabel = \"Кадровый вопрос\"; icon = \"HR\"; disclaimer = \"Ответ основан на внутренних HR-документах. Источники имеют приоритет.\"; }\nelse if (category === \"Legal\") { catLabel = \"Юридический вопрос\"; icon = \"Legal\"; disclaimer = \"Данный ответ носит информационный характер. Для финальных документов требуется проверка специалистом.\"; }\nelse { icon = \"General\"; disclaimer = \"Ответ основан на доступных документах. Первоисточники имеют приоритет.\"; }\n\nvar header = \"**Категория:** \" + catLabel + \"\\n**Уверенность:** \" + pct + \"%\";\nif (lowConf) header += \" (ниже порога 60%)\";\nheader += \"\\n**Найдено источников:** \" + sourceCount + \"\\n\\n---\\n\\n\";\n\nvar footer = \"\\n\\n---\\n\\n\";\nif (lowConf) footer += \"**Точность ниже порога. Рекомендуется проверка специалистом.**\\n\";\nelse footer += disclaimer + \"\\n\";\nfooter += now;\n\nreturn [{ json: { output: header + agentOutput + footer, sessionId: sessionId } }];\n",
         "mode": "runOnceForAllItems",
         "language": "javaScript"
       },
@@ -817,17 +818,52 @@
     },
     {
       "parameters": {
-        "jsCode": "const agentItem = $input.first().json;\nlet chatInput = '';\ntry {\n  chatInput = $('Enrich with Classification').first().json.chatInput || '';\n} catch(e) {}\nreturn [{\n  json: {\n    ...agentItem,\n    chatInput: chatInput\n  }\n}];\n",
-        "mode": "runOnceForAllItems",
-        "language": "javaScript"
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "question",
+              "type": "string",
+              "value": "={{ $json.chatInput }}"
+            },
+            {
+              "id": "2",
+              "name": "classificationCategory",
+              "type": "string",
+              "value": "={{ $json.classificationCategory }}"
+            },
+            {
+              "id": "3",
+              "name": "classificationConfidence",
+              "type": "string",
+              "value": "={{ $json.classificationConfidence }}"
+            }
+          ]
+        },
+        "options": {}
       },
-      "id": "ccb7fda6fcf84d",
-      "name": "Inject Chat Input",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "id": "dd2bca54958940",
+      "name": "Keep Question",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
       "position": [
-        2464,
-        1296
+        1824,
+        1728
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByIndex",
+        "options": {}
+      },
+      "id": "ee328a8b048041",
+      "name": "Merge Question + Answer",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        2224,
+        1664
       ]
     }
   ],
@@ -1162,9 +1198,9 @@
       "main": [
         [
           {
-            "node": "Inject Chat Input",
+            "node": "Merge Question + Answer",
             "type": "main",
-            "index": 0
+            "index": 1
           }
         ]
       ]
@@ -1249,6 +1285,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Keep Question",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -1277,7 +1320,18 @@
         ]
       ]
     },
-    "Inject Chat Input": {
+    "Keep Question": {
+      "main": [
+        [
+          {
+            "node": "Merge Question + Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Question + Answer": {
       "main": [
         [
           {
@@ -1301,14 +1355,14 @@
   },
   "meta": null,
   "pinData": {},
-  "activeVersionId": "00171f9f-3677-42e2-a3aa-7120d230a268",
-  "versionCounter": 90,
+  "activeVersionId": "c3ff11a2-867d-402e-a6bd-4ad7c792f87a",
+  "versionCounter": 99,
   "triggerCount": 2,
   "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-05-11T02:37:15.907Z",
-    "createdAt": "2026-05-11T02:37:15.907Z",
-    "versionId": "00171f9f-3677-42e2-a3aa-7120d230a268",
+    "updatedAt": "2026-05-11T03:00:02.386Z",
+    "createdAt": "2026-05-11T03:00:02.386Z",
+    "versionId": "c3ff11a2-867d-402e-a6bd-4ad7c792f87a",
     "workflowId": "UQ32XEuvDAc9MNer",
     "nodes": [
       {
@@ -1945,7 +1999,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Confidence: AI classifier + LLM judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\n\n// Agent output (read directly from AI Agent node, always a string)\nlet agentOutput = \"\";\ntry {\n  agentOutput = String($('Legal/HR AI Agent').first().json.output || '');\n} catch(e) {}\n\n// 1. Classifier confidence\nlet classifierConf = 0.5;\ntry {\n  const enrich = $('Enrich with Classification').first().json;\n  classifierConf = parseFloat(enrich.classificationConfidence) || 0.5;\n} catch(e) {}\n\n// 2. LLM Judge score (Structured Output Parser returns parsed JSON)\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  // Parser outputs score directly on json\n  if (judgeData.score !== undefined) {\n    judgeScore = parseFloat(judgeData.score);\n  }\n  // Or nested in output\n  if (judgeScore === null || isNaN(judgeScore)) {\n    const out = judgeData.output;\n    if (out && typeof out === \"object\" && out.score !== undefined) {\n      judgeScore = parseFloat(out.score);\n    }\n  }\n  // Or text field\n  if ((judgeScore === null || isNaN(judgeScore)) && judgeData.text) {\n    try {\n      const parsed = JSON.parse(judgeData.text);\n      judgeScore = parseFloat(parsed.score);\n    } catch(e) {}\n  }\n  if (judgeScore !== null && !isNaN(judgeScore)) {\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) {}\n\n// Combined: judge weighted higher\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7\n  : classifierConf;\n\nconst sourceCount = (agentOutput.match(/источник:|source:/gi) || []).length;\n\nreturn [{\n  json: {\n    ...inputItem,\n    output: agentOutput,\n    confidenceScore: Math.min(Math.max(confidenceScore, 0), 1),\n    documentCount: sourceCount\n  }\n}];\n",
+          "jsCode": "const inputItem = $input.all()[0].json;\nconst agentOutput = String(inputItem.output || '');\n\nlet classifierConf = 0.5;\ntry {\n  classifierConf = parseFloat($('Enrich with Classification').all()[0].json.classificationConfidence) || 0.5;\n} catch(e) {}\n\nlet judgeScore = null;\ntry {\n  const j = $('LLM Answer Judge').all()[0].json;\n  if (j.score !== undefined) judgeScore = parseFloat(j.score);\n  if ((judgeScore === null || isNaN(judgeScore)) && j.output && typeof j.output === 'object' && j.output.score !== undefined) judgeScore = parseFloat(j.output.score);\n  if ((judgeScore === null || isNaN(judgeScore)) && j.text) {\n    try { judgeScore = parseFloat(JSON.parse(j.text).score); } catch(e) {}\n  }\n  if (judgeScore !== null && !isNaN(judgeScore)) judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n} catch(e) {}\n\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7\n  : classifierConf;\n\nconst sourceCount = (agentOutput.match(/источник:|source:/gi) || []).length;\n\nreturn [{ json: { ...inputItem, output: agentOutput, confidenceScore: Math.min(Math.max(confidenceScore, 0), 1), documentCount: sourceCount } }];\n",
           "mode": "runOnceForAllItems",
           "language": "javaScript"
         },
@@ -2081,8 +2135,9 @@
       {
         "parameters": {
           "promptType": "define",
-          "text": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer and output a valid JSON object with score and reasoning.\nScore criteria:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nIf the answer states information was not found, score MUST be 0.0.\nScore scale:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, significant gaps\n- 0.3-0.49: Limited sources, mostly generic\n- 0.0-0.29: No meaningful sources, not found or irrelevant\n</task>\n\nQuestion: {{ $json.chatInput }}\n\nAnswer to evaluate:\n{{ $json.output }}",
-          "hasOutputParser": true
+          "text": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the answer below against the user question. Output valid JSON.\n\nScore criteria:\n1. Source citations: Does the answer cite specific documents, laws, articles?\n2. Relevance: Is the answer relevant to the question?\n3. Specificity: Detailed and specific, or vague?\n4. Completeness: Fully addresses the question?\n\nIf answer says \"not found\" or \"не найдена\", score MUST be 0.0.\nIf answer cites specific laws (ТК РФ, статьи), score HIGH.\n\nScore: 0.0-1.0\n</task>\n\nUser question:\n{{ $json.question }}\n\nAnswer to evaluate:\n{{ $json.output }}",
+          "hasOutputParser": true,
+          "options": {}
         },
         "id": "9911fe9787d24d",
         "name": "LLM Answer Judge",
@@ -2095,7 +2150,7 @@
       },
       {
         "parameters": {
-          "jsCode": "// Template Response — applies rigid category templates per spec.\n// \"LLM для поиска и ответов, шаблоны - через код с заполнением полей\"\n// Confidence from: AI classifier + LLM Answer Judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\nconst category = inputItem.classificationCategory || \"General\";\nconst sessionId = inputItem.sessionId || \"\";\nconst agentOutput = String(inputItem.output || \"\");\nconst confidenceScore = parseFloat(inputItem.confidenceScore) || 0.5;\nconst sourceCount = parseInt(inputItem.documentCount) || 0;\n\nconst confidencePct = (Math.min(Math.max(confidenceScore, 0), 1) * 100).toFixed(0);\nconst now = new Date().toLocaleString(\"ru-RU\", { timeZone: \"Europe/Moscow\" });\n\nif (confidenceScore < 0.6) {\n  const catLabel = category === \"HR\" ? \"Кадровый вопрос\" :\n                   category === \"Legal\" ? \"Юридический вопрос\" : \"Общий вопрос\";\n  return [{ json: {\n    output: (\n      \"## ⚠️ Ответ с пониженной уверенностью\\n\\n\"\n      + \"**Категория:** \" + catLabel + \"\\n\"\n      + \"**Уверенность:** \" + confidencePct + \"% (ниже порога 60%)\\n\"\n      + \"**Найдено источников:** \" + sourceCount + \"\\n\\n\"\n      + \"---\\n\\n\"\n      + agentOutput + \"\\n\\n\"\n      + \"---\\n\\n\"\n      + \"⚠️ *Точность данного ответа ниже установленного порога. Рекомендуется проверка специалистом.*\\n\"\n      + \"📅 \" + now\n    ),\n    sessionId\n  } }];\n}\n\nconst templates = {\n  HR: {\n    heading: \"## 🏢 Ответ HR-ассистента\\n\\n**Категория:** Кадровый вопрос\",\n    disclaimer: \"*Ответ основан на внутренних HR-документах и политиках компании. Источники документов имеют приоритет над формулировками ИИ-ассистента.*\"\n  },\n  Legal: {\n    heading: \"## ⚖️ Ответ Юридического ассистента\\n\\n**Категория:** Юридический вопрос\",\n    disclaimer: \"⚠️ *Данный ответ носит информационный характер. Нормативные документы и источники имеют приоритет над формулировками ИИ-ассистента. Для подготовки финальных юридических документов требуется проверка квалифицированным специалистом.*\"\n  },\n  General: {\n    heading: \"## 📋 Ответ Ассистента\\n\\n**Категория:** Общий вопрос\",\n    disclaimer: \"*Ответ основан на доступных документах базы знаний. Первоисточники имеют приоритет над формулировками ИИ-ассистента.*\"\n  }\n};\n\nconst t = templates[category] || templates.General;\n\nreturn [{ json: {\n  output: (\n    t.heading + \"\\n\"\n    + \"**Уверенность:** \" + confidencePct + \"%\\n\"\n    + \"**Найдено источников:** \" + sourceCount + \"\\n\\n\"\n    + \"---\\n\\n\"\n    + agentOutput + \"\\n\\n\"\n    + \"---\\n\\n\"\n    + t.disclaimer + \"\\n\"\n    + \"📅 \" + now\n  ),\n  sessionId\n} }];\n",
+          "jsCode": "const inputItem = $input.all()[0].json;\nconst category = inputItem.classificationCategory || \"General\";\nconst agentOutput = String(inputItem.output || '');\nconst confidenceScore = parseFloat(inputItem.confidenceScore) || 0.5;\nconst sourceCount = parseInt(inputItem.documentCount) || 0;\nconst sessionId = inputItem.sessionId || '';\n\nconst pct = (Math.min(Math.max(confidenceScore, 0), 1) * 100).toFixed(0);\nconst now = new Date().toLocaleString(\"ru-RU\", { timeZone: \"Europe/Moscow\" });\n\nvar catLabel = \"Общий вопрос\";\nvar icon = \"\";\nvar disclaimer = \"\";\nvar lowConf = confidenceScore < 0.6;\n\nif (category === \"HR\") { catLabel = \"Кадровый вопрос\"; icon = \"HR\"; disclaimer = \"Ответ основан на внутренних HR-документах. Источники имеют приоритет.\"; }\nelse if (category === \"Legal\") { catLabel = \"Юридический вопрос\"; icon = \"Legal\"; disclaimer = \"Данный ответ носит информационный характер. Для финальных документов требуется проверка специалистом.\"; }\nelse { icon = \"General\"; disclaimer = \"Ответ основан на доступных документах. Первоисточники имеют приоритет.\"; }\n\nvar header = \"**Категория:** \" + catLabel + \"\\n**Уверенность:** \" + pct + \"%\";\nif (lowConf) header += \" (ниже порога 60%)\";\nheader += \"\\n**Найдено источников:** \" + sourceCount + \"\\n\\n---\\n\\n\";\n\nvar footer = \"\\n\\n---\\n\\n\";\nif (lowConf) footer += \"**Точность ниже порога. Рекомендуется проверка специалистом.**\\n\";\nelse footer += disclaimer + \"\\n\";\nfooter += now;\n\nreturn [{ json: { output: header + agentOutput + footer, sessionId: sessionId } }];\n",
           "mode": "runOnceForAllItems",
           "language": "javaScript"
         },
@@ -2124,17 +2179,52 @@
       },
       {
         "parameters": {
-          "jsCode": "const agentItem = $input.first().json;\nlet chatInput = '';\ntry {\n  chatInput = $('Enrich with Classification').first().json.chatInput || '';\n} catch(e) {}\nreturn [{\n  json: {\n    ...agentItem,\n    chatInput: chatInput\n  }\n}];\n",
-          "mode": "runOnceForAllItems",
-          "language": "javaScript"
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1",
+                "name": "question",
+                "type": "string",
+                "value": "={{ $json.chatInput }}"
+              },
+              {
+                "id": "2",
+                "name": "classificationCategory",
+                "type": "string",
+                "value": "={{ $json.classificationCategory }}"
+              },
+              {
+                "id": "3",
+                "name": "classificationConfidence",
+                "type": "string",
+                "value": "={{ $json.classificationConfidence }}"
+              }
+            ]
+          },
+          "options": {}
         },
-        "id": "ccb7fda6fcf84d",
-        "name": "Inject Chat Input",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
+        "id": "dd2bca54958940",
+        "name": "Keep Question",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
         "position": [
-          2464,
-          1296
+          1824,
+          1728
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combinationMode": "mergeByIndex",
+          "options": {}
+        },
+        "id": "ee328a8b048041",
+        "name": "Merge Question + Answer",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          2224,
+          1664
         ]
       }
     ],
@@ -2469,9 +2559,9 @@
         "main": [
           [
             {
-              "node": "Inject Chat Input",
+              "node": "Merge Question + Answer",
               "type": "main",
-              "index": 0
+              "index": 1
             }
           ]
         ]
@@ -2556,6 +2646,13 @@
               "type": "main",
               "index": 0
             }
+          ],
+          [
+            {
+              "node": "Keep Question",
+              "type": "main",
+              "index": 0
+            }
           ]
         ]
       },
@@ -2584,7 +2681,18 @@
           ]
         ]
       },
-      "Inject Chat Input": {
+      "Keep Question": {
+        "main": [
+          [
+            {
+              "node": "Merge Question + Answer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge Question + Answer": {
         "main": [
           [
             {
@@ -2602,18 +2710,18 @@
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-05-11T02:37:16.039Z",
-        "id": 9,
+        "createdAt": "2026-05-11T03:00:02.552Z",
+        "id": 15,
         "workflowId": "UQ32XEuvDAc9MNer",
-        "versionId": "00171f9f-3677-42e2-a3aa-7120d230a268",
+        "versionId": "c3ff11a2-867d-402e-a6bd-4ad7c792f87a",
         "event": "activated",
         "userId": "c9ab87a9-eb6b-42cb-91f1-da45d686ad29"
       },
       {
-        "createdAt": "2026-05-11T02:37:15.990Z",
-        "id": 8,
+        "createdAt": "2026-05-11T03:00:02.506Z",
+        "id": 14,
         "workflowId": "UQ32XEuvDAc9MNer",
-        "versionId": "00171f9f-3677-42e2-a3aa-7120d230a268",
+        "versionId": "c3ff11a2-867d-402e-a6bd-4ad7c792f87a",
         "event": "deactivated",
         "userId": "c9ab87a9-eb6b-42cb-91f1-da45d686ad29"
       }
