@@ -638,7 +638,7 @@
     },
     {
       "parameters": {
-        "mode": "runOnceForEachItem",
+        "mode": "runOnceForAllItems",
         "jsCode": "// Confidence: AI classifier + LLM judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\n\n// 1. Classifier confidence\nlet classifierConf = 0.5;\ntry {\n  classifierConf = parseFloat($('Enrich with Classification').first().json.classificationConfidence) || 0.5;\n} catch(e) {}\n\n// 2. LLM Judge score (from separate LLM Answer Judge node)\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  const judgeText = judgeData.text || '';\n  const m = judgeText.match(/([0-9.]+)/);\n  if (m) {\n    judgeScore = parseFloat(m[1]);\n    if (judgeScore > 1) judgeScore = judgeScore / 100;\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) {}\n\n// 3. Fallback: agent self-assessment tags\nlet selfScore = null;\nif (judgeScore === null) {\n  const agentOutput = inputItem.output || '';\n  const sm = agentOutput.match(/<confidence_assessment>\\s*([0-9.]+)\\s*<\\/confidence_assessment>/);\n  if (sm) {\n    selfScore = parseFloat(sm[1]);\n    if (selfScore >= 0 && selfScore <= 1) judgeScore = selfScore;\n  }\n}\n\n// Combined confidence\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7\n  : classifierConf;\n\n// Source count for display\nconst sourceCount = (inputItem.output || '').match(/источник:|source:/gi)?.length || 0;\n\nreturn [{\n  json: {\n    ...inputItem,\n    confidenceScore: Math.min(Math.max(confidenceScore, 0), 1),\n    documentCount: sourceCount\n  }\n}];\n"
       },
       "id": "b3b0d4f7-f3ca-449b-8025-c123d908ba0c",
@@ -772,8 +772,7 @@
     },
     {
       "parameters": {
-        "prompt": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer on a scale of 0.0 to 1.0 based on:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nScore interpretation:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers the question\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, some inference needed, significant gaps\n- 0.3-0.49: Limited sources, mostly generic answer\n- Below 0.3: No meaningful sources, answer not found or irrelevant\n\nOUTPUT ONLY THE NUMERIC SCORE (e.g. \"0.75\"). No other text.\n</task>\n\n<question>\n{{ $json.chatInput }}\n</question>\n\n<answer_to_evaluate>\n{{ $json.output }}\n</answer_to_evaluate>",
-        "options": {}
+        "prompt": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer on a scale of 0.0 to 1.0 based on:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nScore interpretation:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers the question\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, some inference needed, significant gaps\n- 0.3-0.49: Limited sources, mostly generic answer\n- Below 0.3: No meaningful sources, answer not found or irrelevant\n\nOUTPUT ONLY THE NUMERIC SCORE (e.g. \"0.75\"). No other text.\n</task>\n\n<question>\n{{ $json.chatInput }}\n</question>\n\n<answer_to_evaluate>\n{{ $json.output }}\n</answer_to_evaluate>"
       },
       "id": "9911fe9787d24d",
       "name": "LLM Answer Judge",
@@ -786,7 +785,8 @@
     },
     {
       "parameters": {
-        "jsCode": "// Template Response — applies rigid category templates per spec.\n// \"LLM для поиска и ответов, шаблоны - через код с заполнением полей\"\n// Confidence from: AI classifier + LLM Answer Judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\nconst category = inputItem.classificationCategory || 'General';\nconst sessionId = inputItem.sessionId || '';\nconst agentOutput = inputItem.output || '';\n\n// ---- Confidence: AI classifier + LLM judge ----\nconst classifierConf = parseFloat(inputItem.classificationConfidence) || 0.5;\n\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  const judgeText = judgeData.text || judgeData.output || '';\n  const m = judgeText.match(/([0-9.]+)/);\n  if (m) {\n    judgeScore = parseFloat(m[1]);\n    if (judgeScore > 1) judgeScore = judgeScore / 100; // normalize percentage\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) { /* judge data unavailable */ }\n\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7   // weigh independent judge more\n  : classifierConf;\n\nconst confidencePct = (Math.min(Math.max(confidenceScore, 0), 1) * 100).toFixed(0);\nconst now = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });\n\nconst sourceMatches = agentOutput.match(/источник:|source:/gi);\nconst sourceCount = sourceMatches ? sourceMatches.length : 0;\n\n// ---- Low confidence (below 60%) ----\nif (confidenceScore < 0.6) {\n  const catLabel = category === 'HR' ? 'Кадровый вопрос' :\n                   category === 'Legal' ? 'Юридический вопрос' : 'Общий вопрос';\n\n  return [{\n    json: {\n      output: (\n        '## ⚠️ Ответ с пониженной уверенностью\\n\\n' +\n        `**Категория:** ${catLabel}\\n` +\n        `**Уверенность:** ${confidencePct}% (ниже порога 60%)\\n` +\n        `**Найдено источников:** ${sourceCount}\\n\\n` +\n        '---\\n\\n' +\n        `${agentOutput}\\n\\n` +\n        '---\\n\\n' +\n        '⚠️ *Точность данного ответа ниже установленного порога. Рекомендуется проверка специалистом.*\\n' +\n        '📅 ' + now\n      ),\n      sessionId\n    }\n  }];\n}\n\n// ---- High confidence: category-specific rigid templates ----\nconst templates = {\n  HR: {\n    heading: '## 🏢 Ответ HR-ассистента\\n\\n**Категория:** Кадровый вопрос',\n    disclaimer: '*Ответ основан на внутренних HR-документах и политиках компании. Источники документов имеют приоритет над формулировками ИИ-ассистента.*'\n  },\n  Legal: {\n    heading: '## ⚖️ Ответ Юридического ассистента\\n\\n**Категория:** Юридический вопрос',\n    disclaimer: '⚠️ *Данный ответ носит информационный характер. Нормативные документы и источники имеют приоритет над формулировками ИИ-ассистента. Для подготовки финальных юридических документов требуется проверка квалифицированным специалистом.*'\n  },\n  General: {\n    heading: '## 📋 Ответ Ассистента\\n\\n**Категория:** Общий вопрос',\n    disclaimer: '*Ответ основан на доступных документах базы знаний. Первоисточники имеют приоритет над формулировками ИИ-ассистента.*'\n  }\n};\n\nconst t = templates[category] || templates.General;\n\nreturn [{\n  json: {\n    output: (\n      `${t.heading}\\n` +\n      `**Уверенность:** ${confidencePct}%\\n` +\n      `**Найдено источников:** ${sourceCount}\\n\\n` +\n      '---\\n\\n' +\n      `${agentOutput}\\n\\n` +\n      '---\\n\\n' +\n      `${t.disclaimer}\\n` +\n      '📅 ' + now\n    ),\n    sessionId\n  }\n}];\n"
+        "jsCode": "// Template Response — applies rigid category templates per spec.\n// \"LLM для поиска и ответов, шаблоны - через код с заполнением полей\"\n// Confidence from: AI classifier + LLM Answer Judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\nconst category = inputItem.classificationCategory || 'General';\nconst sessionId = inputItem.sessionId || '';\nconst agentOutput = inputItem.output || '';\n\n// ---- Confidence: AI classifier + LLM judge ----\nconst classifierConf = parseFloat(inputItem.classificationConfidence) || 0.5;\n\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  const judgeText = judgeData.text || judgeData.output || '';\n  const m = judgeText.match(/([0-9.]+)/);\n  if (m) {\n    judgeScore = parseFloat(m[1]);\n    if (judgeScore > 1) judgeScore = judgeScore / 100; // normalize percentage\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) { /* judge data unavailable */ }\n\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7   // weigh independent judge more\n  : classifierConf;\n\nconst confidencePct = (Math.min(Math.max(confidenceScore, 0), 1) * 100).toFixed(0);\nconst now = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });\n\nconst sourceMatches = agentOutput.match(/источник:|source:/gi);\nconst sourceCount = sourceMatches ? sourceMatches.length : 0;\n\n// ---- Low confidence (below 60%) ----\nif (confidenceScore < 0.6) {\n  const catLabel = category === 'HR' ? 'Кадровый вопрос' :\n                   category === 'Legal' ? 'Юридический вопрос' : 'Общий вопрос';\n\n  return [{\n    json: {\n      output: (\n        '## ⚠️ Ответ с пониженной уверенностью\\n\\n' +\n        `**Категория:** ${catLabel}\\n` +\n        `**Уверенность:** ${confidencePct}% (ниже порога 60%)\\n` +\n        `**Найдено источников:** ${sourceCount}\\n\\n` +\n        '---\\n\\n' +\n        `${agentOutput}\\n\\n` +\n        '---\\n\\n' +\n        '⚠️ *Точность данного ответа ниже установленного порога. Рекомендуется проверка специалистом.*\\n' +\n        '📅 ' + now\n      ),\n      sessionId\n    }\n  }];\n}\n\n// ---- High confidence: category-specific rigid templates ----\nconst templates = {\n  HR: {\n    heading: '## 🏢 Ответ HR-ассистента\\n\\n**Категория:** Кадровый вопрос',\n    disclaimer: '*Ответ основан на внутренних HR-документах и политиках компании. Источники документов имеют приоритет над формулировками ИИ-ассистента.*'\n  },\n  Legal: {\n    heading: '## ⚖️ Ответ Юридического ассистента\\n\\n**Категория:** Юридический вопрос',\n    disclaimer: '⚠️ *Данный ответ носит информационный характер. Нормативные документы и источники имеют приоритет над формулировками ИИ-ассистента. Для подготовки финальных юридических документов требуется проверка квалифицированным специалистом.*'\n  },\n  General: {\n    heading: '## 📋 Ответ Ассистента\\n\\n**Категория:** Общий вопрос',\n    disclaimer: '*Ответ основан на доступных документах базы знаний. Первоисточники имеют приоритет над формулировками ИИ-ассистента.*'\n  }\n};\n\nconst t = templates[category] || templates.General;\n\nreturn [{\n  json: {\n    output: (\n      `${t.heading}\\n` +\n      `**Уверенность:** ${confidencePct}%\\n` +\n      `**Найдено источников:** ${sourceCount}\\n\\n` +\n      '---\\n\\n' +\n      `${agentOutput}\\n\\n` +\n      '---\\n\\n' +\n      `${t.disclaimer}\\n` +\n      '📅 ' + now\n    ),\n    sessionId\n  }\n}];\n",
+        "mode": "runOnceForAllItems"
       },
       "id": "8875ccc12f354f",
       "name": "Template Response",
@@ -796,6 +796,30 @@
         2896,
         1600
       ]
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2480,
+        1776
+      ],
+      "id": "ea791a09-0c7e-485d-92ce-f6c31da9d7a2",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserItemList",
+      "typeVersion": 1,
+      "position": [
+        2624,
+        1760
+      ],
+      "id": "57bb4145-d849-4ee1-9f3e-21cdcad42856",
+      "name": "Item List Output Parser"
     }
   ],
   "connections": {
@@ -1232,6 +1256,17 @@
       "ai_languageModel": [
         []
       ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "LLM Answer Judge",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1242,7 +1277,7 @@
   "meta": null,
   "pinData": {},
   "activeVersionId": null,
-  "versionCounter": 36,
+  "versionCounter": 42,
   "triggerCount": 0,
   "tags": [],
   "activeVersion": null
