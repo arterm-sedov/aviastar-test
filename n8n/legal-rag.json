@@ -1,5 +1,8 @@
 {
   "name": "aviastar-test v2 (file-based + AI classifier)",
+  "description": null,
+  "active": false,
+  "isArchived": false,
   "nodes": [
     {
       "parameters": {},
@@ -11,7 +14,7 @@
         1824
       ],
       "typeVersion": 1.3,
-      "notes": "� arterm-sedov"
+      "notes": "Session memory"
     },
     {
       "parameters": {
@@ -160,9 +163,9 @@
     {
       "parameters": {
         "public": true,
-        "initialMessages": "????????????! ? AI-????????? ?? ???????? ? ??????????? ????????.\n?? ?????? ?????? ??? ??????? ?? ????????? ????????????????, ?????????? ????????? ???????? ? HR-??????????. ????????:\n\"????? ??????? ?????????? ????????\"\n\"????? ????????? ????? ??? ?????? ?? ???????\"",
+        "initialMessages": "Здравствуйте! Я AI-ассистент по вопросам юридического и кадрового департамента.\nВы можете задать мне вопрос по внутренним регламентам, трудовому законодательству и HR-политикам. Например:\n\"Какая процедура увольнения сотрудника?\"\n\"Какие правила перевозки опасных грузов?\"",
         "options": {
-          "inputPlaceholder": "??????? ?????? ?? ???????? ??? ??????????? ????????...",
+          "inputPlaceholder": "Задайте вопрос по юридическим или кадровым документам...",
           "subtitle": "",
           "title": "",
           "customCss": "/* === THEME OVERRIDE: n8n Glass & Glow (Revised) === */\n\n/*\n  This theme is built upon the default n8n chat CSS variables.\n  We'll use your desired branding and layout, and then add\n  the \"glass\" effect using a semi-transparent background\n  and a backdrop-filter on the main window class.\n*/\n\n:root {\n  /* --- 1. CORE BRANDING & FONTS --- */\n  /* Your choices for font and primary color are applied here. */\n  --chat--font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\n  --chat--color-primary: #EA4B71; /* n8n Red */\n  --chat--color-primary-shade-50: #D93A60;\n  --chat--color-primary-shade-100: #C82A50;\n  --chat--color-secondary: #20b69e; /* Kept default secondary for things like file uploads */\n  --chat--color-secondary-shade-50: #1ca08a;\n  --chat--color-white: #ffffff;\n  --chat--color-light: #f2f4f8;\n  --chat--color-dark: #1F2937; /* Darker, more modern text color */\n  --chat--color-disabled: #9CA3AF;\n  --chat--color-typing: #404040;\n\n  /* --- 2. WINDOW & LAYOUT --- */\n  /* Your dimensions and rounded corners. The actual glass effect is handled in the class override below. */\n  --chat--window--width: 430px;\n  --chat--window--height: 80vh;\n  --chat--window--border-radius: 16px;\n  --chat--window--border: 1px solid rgba(255, 255, 255, 0.3);\n  --chat--spacing: 1rem; /* 16px base spacing */\n  --chat--window--z-index: 9999;\n  --chat--window--bottom: var(--chat--spacing);\n  --chat--window--right: var(--chat--spacing);\n  --chat--window--margin-bottom: var(--chat--spacing);\n\n  /* --- 3. GLASSMORPHISM BACKGROUNDS --- */\n  /* We make the main sections transparent to let the glass window show through. */\n  --chat--header--background: transparent;\n  --chat--body--background: transparent;\n  --chat--footer--background: transparent;\n\n  /* --- 4. HEADER STYLING (REMOVED) --- */\n  /* The header is removed by setting its height, padding, and border to 0/none. */\n  --chat--header-height: 0;\n  --chat--header--padding: 0;\n  --chat--header--border-bottom: none;\n  /* The rest of the header variables are now irrelevant. */\n  --chat--header--color: var(--chat--color-dark);\n  --chat--heading--font-size: 1.5rem;\n  --chat--subtitle--font-size: 0.875rem;\n  --chat--subtitle--line-height: 1.4;\n  --chat--close--button--color-hover: var(--chat--color-primary);\n\n  /* --- 5. MESSAGE BUBBLES --- */\n  --chat--message--font-size: 0.875rem;\n  --chat--message--padding: 12px 16px;\n  --chat--message--border-radius: 12px;\n  --chat--message-line-height: 1.6;\n  --chat--message--margin-bottom: calc(var(--chat--spacing) * 0.75);\n  /* Adjusted padding: Top is 0, sides and bottom use the base spacing. */\n  --chat--messages-list--padding: 0 var(--chat--spacing) var(--chat--spacing);\n  --chat--message--bot--background: var(--chat--color-white);\n  --chat--message--bot--color: #111827;\n  --chat--message--bot--border: none;\n  --chat--message--user--background: var(--chat--color-primary);\n  --chat--message--user--color: var(--chat--color-white);\n  --chat--message--user--border: none;\n\n  /* --- 6. INPUT AREA --- */\n  --chat--textarea--height: 50px;\n  --chat--textarea--max-height: 10rem;\n  --chat--input--font-size: 0.9rem;\n  --chat--input--border: 0;\n  --chat--input--border-radius: 12px; /* Rounded input field */\n  --chat--input--padding: 12px 16px;\n  --chat--input--background: rgba(255, 255, 255, 0.5); /* Semi-transparent input */\n  --chat--input--text-color: #111827;\n  --chat--input--line-height: 1.5;\n  --chat--input--border-active: 0;\n\n  /* --- 7. SEND & FILE BUTTONS --- */\n  --chat--input--send--button--background: transparent;\n  --chat--input--send--button--color: var(--chat--color-primary);\n  --chat--input--send--button--background-hover: transparent;\n  --chat--input--send--button--color-hover: var(--chat--color-primary-shade-50);\n  --chat--input--file--button--background: transparent;\n  --chat--input--file--button--color: var(--chat--color-secondary);\n  --chat--input--file--button--background-hover: transparent;\n  --chat--input--file--button--color-hover: var(--chat--color-secondary-shade-50);\n\n  /* --- 8. TOGGLE BUTTON & OTHERS --- */\n  /* Using your primary brand color for the main toggle button */\n  --chat--toggle--size: 64px;\n  --chat--toggle--width: var(--chat--toggle--size);\n  --chat--toggle--height: var(--chat--toggle--size);\n  --chat--toggle--border-radius: 50%;\n  --chat--toggle--background: var(--chat--color-primary);\n  --chat--toggle--hover--background: var(--chat--color-primary-shade-50);\n  --chat--toggle--active--background: var(--chat--color-primary-shade-100);\n  --chat--toggle--color: var(--chat--color-white);\n}\n\n/* === CLASS OVERRIDES === */\n/*\n  These are essential for effects that CSS variables can't control,\n  like the glass blur, shadows, and max-height.\n*/\n\n.chat-window {\n  /* This is the magic for the glass effect! */\n  background-color: rgba(249, 243, 245, 0.6); /* A semi-transparent background color */\n  backdrop-filter: blur(20px);\n  -webkit-backdrop-filter: blur(20px); /* For Safari compatibility */\n\n  /* A subtle shadow helps lift the window off the page */\n  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);\n\n  /* Here we apply the max-height you wanted */\n  max-height: 750px;\n}\n\n/* Add top margin to the first message only for initial spacing */\n.chat-messages-list .chat-message:first-child {\n  margin-top: var(--chat--spacing);\n}\n\n/* Make user messages slightly wider for better balance */\n.chat-message.is-user {\n\tmax-width: 70%;\n}\n\n.chat-message.is-bot {\n\tmax-width: 80%;\n}\n\n/* Add a subtle glow to messages on hover */\n.chat-message {\n    transition: transform 0.2s ease, box-shadow 0.2s ease;\n}\n.chat-message:hover {\n    transform: translateY(-2px);\n    box-shadow: 0 0 25px 0 rgba(234, 75, 113, 0.2);\n}\n\n/* === PAGE BACKGROUND === */\n/* Your dotted background to simulate the n8n canvas. Perfect as is! */\nbody {\n    background-color: #FDFBFF;\n    background-image:\n        radial-gradient(circle at 1px 1px, rgba(0,0,0,0.07) 1px, transparent 0),\n        linear-gradient(135deg, #F9F3F5 0%, #EFF3FB 100%);\n    background-size: 25px 25px, 100% 100%;\n}"
@@ -348,7 +351,8 @@
     {
       "parameters": {
         "options": {
-          "systemMessage": "=<role>\nYou are a specialized AI assistant for legal and HR departments. Your mission is to help users by providing accurate information from internal company documents, labor law regulations, and HR policies.\n</role>\n\n<instructions>\n<goal>\nYour primary goal is to provide precise and factual answers to user questions about legal and HR matters, based **exclusively** on the documents in your knowledge base.\n</goal>\n\n<context>\nYou operate according to a RAG (Retrieval-Augmented Generation) model. For each user question, use the appropriate tool to retrieve the necessary information from the legal/HR document database.\n\n**Mandatory rules:**\n\n1.  **Single source of truth:** Your answer MUST be entirely and solely derived from the information present in the provided documents.\n2.  **Accuracy and citation:** Base your answer as literally as possible on the document text. When possible, mention the source document name or URL.\n3.  **Transparency:** If the information is not found in your knowledge base, clearly state that you don't have this information in the available documents.\n4.  **Professional tone:** Maintain a helpful, professional tone appropriate for legal and HR matters.\n</context>\n\n<output_format>\n*   **Clarity:** Provide a clear, concise, and direct answer.\n*   **Structuring:** Use Markdown syntax for better readability (bullet points, numbered lists, etc.).\n*   **Sources:** When relevant, mention which document or source the information comes from.\n*   **Language:** Respond in Russian for Russian questions, in English for English questions.\n</output_format>\n</instructions>"
+          "systemMessage": "<role>\nYou are a specialized AI assistant for legal and HR departments.\nRetrieve relevant information from the knowledge base and provide a clear, factual answer.\n</role>\n\n<instructions>\n1. Answer ONLY from retrieved documents — never invent, guess, or extrapolate.\n2. Include source references: \"Источник: [document name], раздел [section]\"\n3. Be concise — the system wraps your answer in a template.\n4. DO NOT add headers, confidence labels, disclaimers, or category framing.\n5. If not found: \"Информация по данному вопросу в доступных документах не найдена.\"\n6. For legal questions: mention applicable law/regulation/article.\n7. For HR questions: mention applicable policy/document section.\n8. Answer in Russian for Russian, English for English.\n</instructions>",
+          "returnIntermediateSteps": true
         }
       },
       "id": "6c96b8cb-3fd5-4d6f-83c8-bf6334ea2670",
@@ -635,7 +639,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const agentOutput = $input.item.json;\n\nlet minScore = 1.0;\nlet maxScore = 0.0;\nlet avgScore = 0.0;\nlet scoreCount = 0;\n\nif (agentOutput.output && typeof agentOutput.output === \"string\") {\n  const outputText = agentOutput.output;\n  \n  const scorePattern = /similarity[:\\s]+([0-9.]+)|score[:\\s]+([0-9.]+)|confidence[:\\s]+([0-9.]+)/gi;\n  const matches = [...outputText.matchAll(scorePattern)];\n  \n  if (matches.length > 0) {\n    const scores = matches.map(m => parseFloat(m[1] || m[2] || m[3])).filter(s => !isNaN(s) && s >= 0 && s <= 1);\n    \n    if (scores.length > 0) {\n      minScore = Math.min(...scores);\n      maxScore = Math.max(...scores);\n      avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;\n      scoreCount = scores.length;\n    }\n  }\n}\n\nconst hasLowConfidenceIndicators = \n  agentOutput.output && (\n    agentOutput.output.includes(\"?? ???????\") ||\n    agentOutput.output.includes(\"??? ??????????\") ||\n    agentOutput.output.includes(\"not found\") ||\n    agentOutput.output.includes(\"no information\") ||\n    agentOutput.output.length < 50\n  );\n\nconst estimatedConfidence = hasLowConfidenceIndicators ? 0.3 : (scoreCount > 0 ? avgScore : 0.75);\n\nreturn {\n  ...agentOutput,\n  confidenceScore: estimatedConfidence,\n  minSimilarity: minScore,\n  maxSimilarity: maxScore,\n  avgSimilarity: avgScore,\n  documentCount: scoreCount\n};"
+        "jsCode": "// Confidence: AI classifier + LLM judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\n\n// 1. Classifier confidence\nlet classifierConf = 0.5;\ntry {\n  classifierConf = parseFloat($('Enrich with Classification').first().json.classificationConfidence) || 0.5;\n} catch(e) {}\n\n// 2. LLM Judge score (from separate LLM Answer Judge node)\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  const judgeText = judgeData.text || '';\n  const m = judgeText.match(/([0-9.]+)/);\n  if (m) {\n    judgeScore = parseFloat(m[1]);\n    if (judgeScore > 1) judgeScore = judgeScore / 100;\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) {}\n\n// 3. Fallback: agent self-assessment tags\nlet selfScore = null;\nif (judgeScore === null) {\n  const agentOutput = inputItem.output || '';\n  const sm = agentOutput.match(/<confidence_assessment>\\s*([0-9.]+)\\s*<\\/confidence_assessment>/);\n  if (sm) {\n    selfScore = parseFloat(sm[1]);\n    if (selfScore >= 0 && selfScore <= 1) judgeScore = selfScore;\n  }\n}\n\n// Combined confidence\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7\n  : classifierConf;\n\n// Source count for display\nconst sourceCount = (inputItem.output || '').match(/источник:|source:/gi)?.length || 0;\n\nreturn [{\n  json: {\n    ...inputItem,\n    confidenceScore: Math.min(Math.max(confidenceScore, 0), 1),\n    documentCount: sourceCount\n  }\n}];\n"
       },
       "id": "b3b0d4f7-f3ca-449b-8025-c123d908ba0c",
       "name": "Extract Similarity Scores",
@@ -644,97 +648,6 @@
       "position": [
         2560,
         1600
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "1",
-              "leftValue": "={{ $json.confidenceScore }}",
-              "operator": {
-                "type": "number",
-                "operation": "gte"
-              },
-              "rightValue": 0.6
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "4154d591-1dfb-4f86-801f-42a58d386331",
-      "name": "Check Confidence Threshold",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        2784,
-        1600
-      ]
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "1",
-              "name": "output",
-              "type": "string",
-              "value": "={{ $json.output }}"
-            },
-            {
-              "id": "2",
-              "name": "sessionId",
-              "type": "string",
-              "value": "={{ $json.sessionId }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "30c72758-e851-42dc-ba8f-f7e358f9cfbb",
-      "name": "Format High Confidence Response",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        3008,
-        1504
-      ]
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "1",
-              "name": "output",
-              "type": "string",
-              "value": "={{ \"? ?????????, ? ?? ???? ????? ?????????? ???????? ?????????? ?? ?????? ??????? ? ????????? ??????????.\\n\\n\" + ($json.confidenceScore > 0.4 ? \"????????, ????????? ?????????? ????? ???? ??????? (?????? ???????????):\\n\\n\" + $json.output : \"??????????, ???????? ??? ?????? ??? ?????????? ? ??????????? ?????? ?????? ??? ???????????? ??????.\") }}"
-            },
-            {
-              "id": "2",
-              "name": "sessionId",
-              "type": "string",
-              "value": "={{ $json.sessionId }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "3265feda-249f-4425-b45e-3a991139c85d",
-      "name": "Format Low Confidence Response",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        3008,
-        1696
       ]
     },
     {
@@ -831,6 +744,18 @@
               "name": "chatInput",
               "type": "string",
               "value": "={{ \"[Query category: \" + $json.category + \", confidence: \" + $json.confidence + \"]\\n\\n\" + $json.chatInput }}"
+            },
+            {
+              "id": "2",
+              "name": "classificationCategory",
+              "type": "string",
+              "value": "={{ $json.category }}"
+            },
+            {
+              "id": "3",
+              "name": "classificationConfidence",
+              "type": "string",
+              "value": "={{ $json.confidence }}"
             }
           ]
         },
@@ -844,9 +769,37 @@
         1824,
         1568
       ]
+    },
+    {
+      "parameters": {
+        "text": "<role>\nYou are a strict quality evaluator for RAG (Retrieval-Augmented Generation) answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer on a scale of 0.0 to 1.0 based on:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nScore interpretation:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers the question\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, some inference needed, significant gaps\n- 0.3-0.49: Limited sources, mostly generic answer\n- Below 0.3: No meaningful sources, answer not found or irrelevant\n\nOUTPUT ONLY THE NUMERIC SCORE (e.g., \"0.75\"). No other text.\n</task>\n\n<question>\n{{ $json.chatInput }}\n</question>\n\n<answer_to_evaluate>\n{{ $json.output }}\n</answer_to_evaluate>",
+        "options": {}
+      },
+      "id": "9911fe9787d24d",
+      "name": "LLM Answer Judge",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        2224,
+        1568
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// Template Response — applies rigid category templates per spec.\n// \"LLM для поиска и ответов, шаблоны - через код с заполнением полей\"\n// Confidence from: AI classifier + LLM Answer Judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\nconst category = inputItem.classificationCategory || 'General';\nconst sessionId = inputItem.sessionId || '';\nconst agentOutput = inputItem.output || '';\n\n// ---- Confidence: AI classifier + LLM judge ----\nconst classifierConf = parseFloat(inputItem.classificationConfidence) || 0.5;\n\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  const judgeText = judgeData.text || judgeData.output || '';\n  const m = judgeText.match(/([0-9.]+)/);\n  if (m) {\n    judgeScore = parseFloat(m[1]);\n    if (judgeScore > 1) judgeScore = judgeScore / 100; // normalize percentage\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) { /* judge data unavailable */ }\n\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7   // weigh independent judge more\n  : classifierConf;\n\nconst confidencePct = (Math.min(Math.max(confidenceScore, 0), 1) * 100).toFixed(0);\nconst now = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });\n\nconst sourceMatches = agentOutput.match(/источник:|source:/gi);\nconst sourceCount = sourceMatches ? sourceMatches.length : 0;\n\n// ---- Low confidence (below 60%) ----\nif (confidenceScore < 0.6) {\n  const catLabel = category === 'HR' ? 'Кадровый вопрос' :\n                   category === 'Legal' ? 'Юридический вопрос' : 'Общий вопрос';\n\n  return [{\n    json: {\n      output: (\n        '## ⚠️ Ответ с пониженной уверенностью\\n\\n' +\n        `**Категория:** ${catLabel}\\n` +\n        `**Уверенность:** ${confidencePct}% (ниже порога 60%)\\n` +\n        `**Найдено источников:** ${sourceCount}\\n\\n` +\n        '---\\n\\n' +\n        `${agentOutput}\\n\\n` +\n        '---\\n\\n' +\n        '⚠️ *Точность данного ответа ниже установленного порога. Рекомендуется проверка специалистом.*\\n' +\n        '📅 ' + now\n      ),\n      sessionId\n    }\n  }];\n}\n\n// ---- High confidence: category-specific rigid templates ----\nconst templates = {\n  HR: {\n    heading: '## 🏢 Ответ HR-ассистента\\n\\n**Категория:** Кадровый вопрос',\n    disclaimer: '*Ответ основан на внутренних HR-документах и политиках компании. Источники документов имеют приоритет над формулировками ИИ-ассистента.*'\n  },\n  Legal: {\n    heading: '## ⚖️ Ответ Юридического ассистента\\n\\n**Категория:** Юридический вопрос',\n    disclaimer: '⚠️ *Данный ответ носит информационный характер. Нормативные документы и источники имеют приоритет над формулировками ИИ-ассистента. Для подготовки финальных юридических документов требуется проверка квалифицированным специалистом.*'\n  },\n  General: {\n    heading: '## 📋 Ответ Ассистента\\n\\n**Категория:** Общий вопрос',\n    disclaimer: '*Ответ основан на доступных документах базы знаний. Первоисточники имеют приоритет над формулировками ИИ-ассистента.*'\n  }\n};\n\nconst t = templates[category] || templates.General;\n\nreturn [{\n  json: {\n    output: (\n      `${t.heading}\\n` +\n      `**Уверенность:** ${confidencePct}%\\n` +\n      `**Найдено источников:** ${sourceCount}\\n\\n` +\n      '---\\n\\n' +\n      `${agentOutput}\\n\\n` +\n      '---\\n\\n' +\n      `${t.disclaimer}\\n` +\n      '📅 ' + now\n    ),\n    sessionId\n  }\n}];\n",
+        "language": "javaScript"
+      },
+      "id": "8875ccc12f354f",
+      "name": "Template Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2624,
+        1568
+      ]
     }
   ],
-  "pinData": {},
   "connections": {
     "RAG Chatbot": {
       "main": [
@@ -879,7 +832,8 @@
             "index": 0
           }
         ]
-      ]
+      ],
+      "main": []
     },
     "Start Indexing": {
       "main": [
@@ -906,7 +860,8 @@
             "index": 0
           }
         ]
-      ]
+      ],
+      "main": []
     },
     "Default Data Loader": {
       "ai_document": [
@@ -917,7 +872,8 @@
             "index": 0
           }
         ]
-      ]
+      ],
+      "main": []
     },
     "Gemini Chunk Embedding": {
       "ai_embedding": [
@@ -928,7 +884,8 @@
             "index": 0
           }
         ]
-      ]
+      ],
+      "main": []
     },
     "Gemini Query Embedding": {
       "ai_embedding": [
@@ -939,7 +896,8 @@
             "index": 0
           }
         ]
-      ]
+      ],
+      "main": []
     },
     "Recursive Character Text Splitter": {
       "ai_textSplitter": [
@@ -950,7 +908,8 @@
             "index": 0
           }
         ]
-      ]
+      ],
+      "main": []
     },
     "Remove Duplicate Documents": {
       "main": [
@@ -965,7 +924,6 @@
     },
     "Loop Over Documents": {
       "main": [
-        [],
         [
           {
             "node": "Route Document By Source",
@@ -1039,7 +997,8 @@
             "index": 0
           }
         ]
-      ]
+      ],
+      "main": []
     },
     "Clear Old Documents": {
       "main": [
@@ -1167,7 +1126,7 @@
       "main": [
         [
           {
-            "node": "Extract Similarity Scores",
+            "node": "LLM Answer Judge",
             "type": "main",
             "index": 0
           }
@@ -1178,25 +1137,7 @@
       "main": [
         [
           {
-            "node": "Check Confidence Threshold",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Check Confidence Threshold": {
-      "main": [
-        [
-          {
-            "node": "Format High Confidence Response",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Format Low Confidence Response",
+            "node": "Template Response",
             "type": "main",
             "index": 0
           }
@@ -1274,17 +1215,38 @@
           }
         ]
       ]
+    },
+    "LLM Answer Judge": {
+      "main": [
+        [
+          {
+            "node": "Extract Similarity Scores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "ai_languageModel": [
+        [
+          {
+            "node": "Gemini 2.5 Flash",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "38957bf0-5caf-4dec-9204-74d054bfcabe",
-  "meta": {
-    "instanceId": "ab8a07d2b692d5341ee84514c51cbc763550aefa32d8142b49ff4b768c362524"
-  },
-  "id": "UQ32XEuvDAc9MNer",
-  "tags": []
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "activeVersionId": null,
+  "versionCounter": 19,
+  "triggerCount": 0,
+  "tags": [],
+  "activeVersion": null
 }
