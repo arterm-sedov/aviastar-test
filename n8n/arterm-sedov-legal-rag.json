@@ -10,8 +10,8 @@
       "name": "Simple Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "position": [
-        3328,
-        4000
+        3472,
+        3952
       ],
       "typeVersion": 1.3,
       "notes": "Session memory"
@@ -41,20 +41,22 @@
       "name": "Recursive Character Text Splitter",
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "position": [
-        6128,
-        3696
+        5920,
+        3680
       ],
       "typeVersion": 1,
       "notes": "� arterm-sedov"
     },
     {
-      "parameters": {},
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
       "id": "30717dee-1c1b-4c50-9839-b100badad3a6",
       "name": "Gemini Query Embedding",
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "position": [
-        3504,
-        4176
+        3632,
+        4128
       ],
       "typeVersion": 1,
       "credentials": {
@@ -96,8 +98,8 @@
       "name": "Keep Supabase Instance Alive",
       "type": "n8n-nodes-base.supabase",
       "position": [
-        2224,
-        4336
+        2352,
+        4288
       ],
       "typeVersion": 1,
       "credentials": {
@@ -122,8 +124,8 @@
       "name": "Every 6 Days",
       "type": "n8n-nodes-base.scheduleTrigger",
       "position": [
-        2000,
-        4336
+        2128,
+        4288
       ],
       "typeVersion": 1.2,
       "notes": "� arterm-sedov"
@@ -148,8 +150,8 @@
       "name": "RAG Chatbot",
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "position": [
-        2000,
-        3968
+        1984,
+        3920
       ],
       "webhookId": "965843ea-8dc2-4760-b13a-b65b68e3e8aa",
       "typeVersion": 1.1,
@@ -328,7 +330,7 @@
         "promptType": "define",
         "text": "={{ $('Chat unify').item.json.chatInput }}",
         "options": {
-          "systemMessage": "=<role>\nYou are a specialized AI assistant for Legal and HR departments.\nRetrieve relevant information from the knowledge base and provide a clear, factual answer.\n</role>\n\n<instructions>\n1. Answer ONLY from retrieved documents — never invent, guess, or extrapolate.\n2. ALWAYS include source references: \"Источник: [document name], раздел [section]\"\n3. Be to the point — the system wraps your answer in a template.\n4. DO NOT add confidence labels, disclaimers, or category framing.\n5. If no documents found: \"Информация по данному вопросу в доступных документах не найдена.\"\n6. For legal questions: mention applicable laws/regulations/articles/sections.\n7. For HR questions: mention applicable policies/document sections.\n8. Answer in Russian always.\n</instructions>\n\n<question_classification>\nUser's question category:\n{{ $json.category }}\n\nAnswer only legal and HR-related questions.\n\nReject any other topics immediately.\n</question_classification>",
+          "systemMessage": "=<role>\nYou are a specialized AI assistant for Legal and HR departments.\nRetrieve relevant information from the knowledge base and provide a clear, factual answer.\n</role>\n\n<question_classification>\nUser's question category:\n{{ $json.category }}\n\nAnswer only legal and HR-related questions.\n\nReject any other topics immediately.\n</question_classification>\n\n<instructions>\n\nBy default search for legal and HR documents even for simplest obvious questions.\n\n1. Answer ONLY from retrieved documents — never invent, guess, or extrapolate.\n2. ALWAYS include source references: \"Источник: [document name], раздел [section]\"\n3. Be to the point — the system wraps your answer in a template.\n4. DO NOT add confidence labels, disclaimers, or category framing.\n5. If no documents found: \"Информация по данному вопросу в доступных документах не найдена.\"\n6. For legal questions: mention applicable laws/regulations/articles/sections.\n7. For HR questions: mention applicable policies/document sections.\n8. Answer in Russian always.\n</instructions>\n",
           "returnIntermediateSteps": true
         }
       },
@@ -337,8 +339,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.1,
       "position": [
-        3440,
-        3776
+        3568,
+        3728
       ]
     },
     {
@@ -359,8 +361,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        3504,
-        4000
+        3632,
+        3952
       ],
       "credentials": {
         "supabaseApi": {
@@ -678,8 +680,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        3904,
-        3776
+        4032,
+        3728
       ]
     },
     {
@@ -691,23 +693,26 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4256,
-        3776
+        4384,
+        3728
       ]
     },
     {
       "parameters": {
         "schemaType": "manual",
-        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"hasCitations\": {\n      \"type\": \"boolean\",\n      \"description\": \"Does the answer cite specific documents, laws, or articles? If false, answer MUST NOT be shown.\"\n    },\n    \"sourceCount\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"description\": \"How many sources are cited? Count actual sources: doc/doc_section/section_article - counts as a single source if related to the same doc. Same source: count only once\"\n    },\n    \"relevance\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Is the answer relevant to the question?\"\n    },\n    \"specificity\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Detailed and specific, or vague?\"\n    },\n    \"completeness\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Fully addresses the question?\"\n    },\n    \"confidence\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Is the answer really based on the ground truth and valid?\"\n    }\n  },\n  \"required\": [\"hasCitations\", \"sourceCount\", \"relevance\", \"specificity\", \"completeness\", \"confidence\"]\n}"
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"hasCitations\": {\n      \"type\": \"boolean\",\n      \"description\": \"Does the answer cite specific documents, laws, or articles? If false, answer MUST NOT be shown.\"\n    },\n    \"sourceCount\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"description\": \"How many sources are cited? Count actual sources: doc/doc_section/section_article - counts as a single source if related to the same doc. Same source: count only once\"\n    },\n    \"relevance\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Is the answer relevant to the question?\"\n    },\n    \"specificity\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Detailed and specific, or vague?\"\n    },\n    \"completeness\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Fully addresses the question?\"\n    },\n    \"confidence\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1,\n      \"description\": \"Is the answer really based on the ground truth and valid?\"\n    }\n  },\n  \"required\": [\"hasCitations\", \"sourceCount\", \"relevance\", \"specificity\", \"completeness\", \"confidence\"]\n}",
+        "autoFix": true
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        4048,
-        4000
+        4096,
+        3952
       ],
       "id": "dd410880-5ac1-44a6-8078-eae8b1c8a069",
-      "name": "Structured Output Parser"
+      "name": "Structured Output Parser",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -717,8 +722,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        3152,
-        4000
+        3392,
+        4128
       ],
       "id": "50c8840c-7028-4dae-a5a6-f9bd9f9d598b",
       "name": "OpenRouter Chat Model",
@@ -732,16 +737,19 @@
     {
       "parameters": {
         "schemaType": "manual",
-        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"category\": {\n      \"type\": \"string\",\n      \"enum\": [\"hr\", \"legal\", \"general\"],\n      \"description\": \"HR: vacation, hiring, personnel, employees, recruitment, dismissal, staff policies. Legal: contracts, laws, regulations, labor code, rights, agreements, compliance. General: questions not specific to HR or legal domains.\"\n    }\n  },\n  \"required\": [\"category\"]\n}"
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"category\": {\n      \"type\": \"string\",\n      \"enum\": [\"hr\", \"legal\", \"general\"],\n      \"description\": \"HR: vacation, hiring, personnel, employees, recruitment, dismissal, staff policies. Legal: contracts, laws, regulations, labor code, rights, agreements, compliance. General: questions not specific to HR or legal domains.\"\n    }\n  },\n  \"required\": [\"category\"]\n}",
+        "autoFix": true
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        2960,
-        4000
+        3008,
+        3936
       ],
       "id": "23ab07d8-9b1a-415b-9569-281a7541e319",
-      "name": "Structured Output Parser1"
+      "name": "Structured Output Parser1",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -753,8 +761,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        2816,
-        3776
+        2944,
+        3728
       ],
       "id": "52f4fdb8-4b0b-4b4d-bd17-79c1de845a42",
       "name": "Categorize"
@@ -776,8 +784,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3184,
-        3776
+        3312,
+        3728
       ],
       "id": "1b96d13e-e788-4042-a298-51fcedddd978",
       "name": "Category human-readable"
@@ -785,15 +793,16 @@
     {
       "parameters": {
         "updates": [
-          "message"
+          "message",
+          "callback_query"
         ],
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        2000,
-        3776
+        1984,
+        3728
       ],
       "id": "f87350de-2092-44a1-b145-5593b5ad4e83",
       "name": "Telegram Trigger",
@@ -812,13 +821,13 @@
             {
               "id": "d767600b-85c3-4ac1-a047-e9b4d37751b7",
               "name": "chatInput",
-              "value": "={{ $if($('RAG Chatbot').isExecuted, $json.chatInput, $json.message.text ) }}\n",
+              "value": "={{ $if($('RAG Chatbot').isExecuted, $$('RAG Chatbot').item.json.chatInput, $if($('Telegram Trigger').isExecuted, $('Telegram Trigger').item.json.message.text ), null) }}\n",
               "type": "string"
             },
             {
               "id": "c61061b3-51fd-4bb7-a0af-f50e6a95df8c",
               "name": "sessionId",
-              "value": "={{ $if($('RAG Chatbot').isExecuted, $json.sessionId, $json.message.chat.id ) }}",
+              "value": "={{ $if($('RAG Chatbot').isExecuted, $json.sessionId, $if($('Telegram Trigger').isExecuted, $('Telegram Trigger').item.json.message.chat.id ), null) }}",
               "type": "string"
             },
             {
@@ -830,13 +839,13 @@
             {
               "id": "telegram-user-id",
               "name": "telegramUserId",
-              "value": "={{ $if($('Telegram Trigger').isExecuted, $json.message.from.id, null) }}",
+              "value": "={{ $if($('Telegram Trigger').isExecuted, $('Telegram Trigger').item.json.message.from.id, null) }}",
               "type": "string"
             },
             {
               "id": "telegram-username",
               "name": "telegramUsername",
-              "value": "={{ $if($('Telegram Trigger').isExecuted, $json.message.from.username ?? $json.message.from.first_name, null) }}",
+              "value": "={{ $if($('Telegram Trigger').isExecuted, $('Telegram Trigger').item.json.message.from.username ?? $('Telegram Trigger').item.json.message.from.first_name, null) }}",
               "type": "string"
             }
           ]
@@ -846,8 +855,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2608,
-        3776
+        2736,
+        3728
       ],
       "id": "de7b36e4-a026-44a6-a4ae-4f2e119e52d1",
       "name": "Chat unify"
@@ -881,8 +890,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        4480,
-        3920
+        4608,
+        3872
       ],
       "id": "e8eaf0e8-f211-447e-8da1-3fa50d9e331c",
       "name": "Route to Telegram"
@@ -1057,8 +1066,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        4480,
-        3728
+        4608,
+        3680
       ]
     },
     {
@@ -1138,8 +1147,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        4704,
-        3728
+        4832,
+        3680
       ],
       "credentials": {
         "supabaseApi": {
@@ -1187,23 +1196,25 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2160,
-        3776
+        2144,
+        3728
       ]
     },
     {
       "parameters": {
         "chatId": "={{ $json.message.chat.id }}",
         "text": "Вам не разрешён доступ в этот чат",
-        "additionalFields": {}
+        "additionalFields": {
+          "appendAttribution": false
+        }
       },
       "id": "31d6e07e-a6b4-41c9-9dc1-6c550da06109",
       "name": "Unauthorized Message",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2624,
-        4160
+        2752,
+        4112
       ],
       "webhookId": "e083ec37-f76b-4acf-b560-d96de74bbbeb",
       "credentials": {
@@ -1316,8 +1327,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2816,
-        4160
+        2944,
+        4112
       ]
     },
     {
@@ -1393,8 +1404,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        2992,
-        4160
+        3120,
+        4112
       ],
       "credentials": {
         "supabaseApi": {
@@ -1430,13 +1441,15 @@
             }
           ]
         },
-        "additionalFields": {}
+        "additionalFields": {
+          "appendAttribution": false
+        }
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        4704,
-        3920
+        4832,
+        3872
       ],
       "id": "5ddc488e-b1e9-4af6-8f0b-09d74382af8b",
       "name": "Send reply with like/dislike buttons",
@@ -1450,77 +1463,17 @@
     },
     {
       "parameters": {
-        "operation": "update",
-        "tableId": "chat_logs",
-        "matchType": "allFilters",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "message_id",
-              "condition": "eq",
-              "keyValue": "={{ $if($(\"Telegram fetch button click\").isExecuted, $(\"Telegram fetch button click\").item.json.callback_query.message.message_id-1, null) }}"
-            }
-          ]
-        },
-        "fieldsUi": {
-          "fieldValues": [
-            {
-              "fieldId": "useful",
-              "fieldValue": "={{ $if($(\"Telegram fetch button click\").isExecuted, $(\"Telegram fetch button click\").item.json.callback_query.data==\"useful_answer\", null) }}"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.supabase",
-      "typeVersion": 1,
-      "position": [
-        2160,
-        3600
-      ],
-      "id": "895b9bde-d55c-4f97-b14e-577398f231f5",
-      "name": "Update a row",
-      "alwaysOutputData": false,
-      "credentials": {
-        "supabaseApi": {
-          "id": "JTGuwt2KKbraDdDg",
-          "name": "Supabase account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "updates": [
-          "callback_query"
-        ],
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegramTrigger",
-      "typeVersion": 1.2,
-      "position": [
-        2000,
-        3600
-      ],
-      "id": "a67e269c-c80c-453d-b1d4-236b48751ab5",
-      "name": "Telegram fetch button click",
-      "webhookId": "c529dfba-ea19-4bd3-9d79-92f401f56bf1",
-      "credentials": {
-        "telegramApi": {
-          "id": "wToY4L9HvJWmqfwB",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "chatId": "={{ $json.message.chat.id }}",
         "text": "Работаю над вашим вопросом.",
-        "additionalFields": {}
+        "additionalFields": {
+          "appendAttribution": false
+        }
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2384,
-        3776
+        2592,
+        3728
       ],
       "id": "767e32b9-ba2e-49cd-8782-436038a9f39b",
       "name": "Send confirmation",
@@ -1563,9 +1516,129 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2384,
-        4160
+        2512,
+        4112
       ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "chat_logs",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "message_id",
+              "condition": "eq",
+              "keyValue": "={{ $if($(\"Telegram Trigger\").isExecuted, $(\"Telegram Trigger\").item.json.callback_query.message.message_id-2, null) }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "useful",
+              "fieldValue": "={{ $if($(\"Telegram Trigger\").isExecuted, $(\"Telegram Trigger\").item.json.callback_query.data==\"useful_answer\", null) }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2752,
+        4304
+      ],
+      "id": "ba853a03-786a-4e00-b4f3-57db4f0c45be",
+      "name": "Record the button click in Supabase",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "JTGuwt2KKbraDdDg",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "79cf53fb-f71f-4989-aaa0-c508673c877b",
+              "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2368,
+        3728
+      ],
+      "id": "7eedbdc8-d486-4f15-bbaf-a79cc894a0ae",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Приветствую! Я помощник по административным вопросам Aviaostar. Я консультирую по вопросам, касающимся кадровой политики и юриспруденции. С другими вопросами прошу обращаться к специалистам-людям.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2592,
+        3904
+      ],
+      "id": "c2e874a4-c56e-4aeb-a6db-92b0d86b8563",
+      "name": "Start conversation",
+      "webhookId": "b585eacd-38ce-443c-93f2-3e54bb8dd42c",
+      "credentials": {
+        "telegramApi": {
+          "id": "wToY4L9HvJWmqfwB",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.callback_query.message.chat.id }}",
+        "text": "={{ $if($(\"Telegram Trigger\").isExecuted && $('Telegram Trigger').item.json.callback_query.data==\"useful_answer\",\"Спасибо за хорошую оценку. Тем не менее, проверьте мой ответ у специалиста-человека\",\"Если мой ответ не был полезен, прошу обратиться к специалисту-человеку.\") }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2752,
+        4496
+      ],
+      "id": "e4cdeb07-513d-4370-8c67-f7cfd2158b20",
+      "name": "Thank the user",
+      "webhookId": "b585eacd-38ce-443c-93f2-3e54bb8dd42c",
+      "credentials": {
+        "telegramApi": {
+          "id": "wToY4L9HvJWmqfwB",
+          "name": "Telegram account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -1957,6 +2030,16 @@
             "node": "Categorize",
             "type": "ai_languageModel",
             "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
           }
         ]
       ]
@@ -2091,7 +2174,7 @@
       "main": [
         [
           {
-            "node": "Send confirmation",
+            "node": "If",
             "type": "main",
             "index": 0
           }
@@ -2127,17 +2210,6 @@
         ]
       ]
     },
-    "Telegram fetch button click": {
-      "main": [
-        [
-          {
-            "node": "Update a row",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Send confirmation": {
       "main": [
         [
@@ -2157,17 +2229,47 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Record the button click in Supabase",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Thank the user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Start conversation",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
-    "availableInMCP": true
+    "availableInMCP": false
   },
-  "versionId": "0d01f470-0e94-4384-9b3c-7d6f1c440252",
+  "versionId": "bebddeb7-de6f-454b-9fa5-a6c05254310a",
   "meta": {
     "templateId": "5993",
     "templateCredsSetupCompleted": true,
