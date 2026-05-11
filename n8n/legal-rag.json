@@ -638,8 +638,8 @@
     },
     {
       "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "// Confidence: AI classifier + LLM judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\n\n// Agent output (read directly from AI Agent node, always a string)\nlet agentOutput = \"\";\ntry {\n  agentOutput = String($('Legal/HR AI Agent').first().json.output || '');\n} catch(e) {}\n\n// 1. Classifier confidence\nlet classifierConf = 0.5;\ntry {\n  const enrich = $('Enrich with Classification').first().json;\n  classifierConf = parseFloat(enrich.classificationConfidence) || 0.5;\n} catch(e) {}\n\n// 2. LLM Judge score (Structured Output Parser returns parsed JSON)\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  // Parser outputs score directly on json\n  if (judgeData.score !== undefined) {\n    judgeScore = parseFloat(judgeData.score);\n  }\n  // Or nested in output\n  if (judgeScore === null || isNaN(judgeScore)) {\n    const out = judgeData.output;\n    if (out && typeof out === \"object\" && out.score !== undefined) {\n      judgeScore = parseFloat(out.score);\n    }\n  }\n  // Or text field\n  if ((judgeScore === null || isNaN(judgeScore)) && judgeData.text) {\n    try {\n      const parsed = JSON.parse(judgeData.text);\n      judgeScore = parseFloat(parsed.score);\n    } catch(e) {}\n  }\n  if (judgeScore !== null && !isNaN(judgeScore)) {\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) {}\n\n// Combined: judge weighted higher\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7\n  : classifierConf;\n\nconst sourceCount = (agentOutput.match(/источник:|source:/gi) || []).length;\n\nreturn [{\n  json: {\n    ...inputItem,\n    output: agentOutput,\n    confidenceScore: Math.min(Math.max(confidenceScore, 0), 1),\n    documentCount: sourceCount\n  }\n}];\n"
+        "jsCode": "// Confidence: AI classifier + LLM judge. Zero heuristics.\n\nconst inputItem = $input.first().json;\n\n// Agent output (read directly from AI Agent node, always a string)\nlet agentOutput = \"\";\ntry {\n  agentOutput = String($('Legal/HR AI Agent').first().json.output || '');\n} catch(e) {}\n\n// 1. Classifier confidence\nlet classifierConf = 0.5;\ntry {\n  const enrich = $('Enrich with Classification').first().json;\n  classifierConf = parseFloat(enrich.classificationConfidence) || 0.5;\n} catch(e) {}\n\n// 2. LLM Judge score (Structured Output Parser returns parsed JSON)\nlet judgeScore = null;\ntry {\n  const judgeData = $('LLM Answer Judge').first().json;\n  // Parser outputs score directly on json\n  if (judgeData.score !== undefined) {\n    judgeScore = parseFloat(judgeData.score);\n  }\n  // Or nested in output\n  if (judgeScore === null || isNaN(judgeScore)) {\n    const out = judgeData.output;\n    if (out && typeof out === \"object\" && out.score !== undefined) {\n      judgeScore = parseFloat(out.score);\n    }\n  }\n  // Or text field\n  if ((judgeScore === null || isNaN(judgeScore)) && judgeData.text) {\n    try {\n      const parsed = JSON.parse(judgeData.text);\n      judgeScore = parseFloat(parsed.score);\n    } catch(e) {}\n  }\n  if (judgeScore !== null && !isNaN(judgeScore)) {\n    judgeScore = Math.min(Math.max(judgeScore, 0), 1);\n  }\n} catch(e) {}\n\n// Combined: judge weighted higher\nconst confidenceScore = (judgeScore !== null && !isNaN(judgeScore))\n  ? classifierConf * 0.3 + judgeScore * 0.7\n  : classifierConf;\n\nconst sourceCount = (agentOutput.match(/источник:|source:/gi) || []).length;\n\nreturn [{\n  json: {\n    ...inputItem,\n    output: agentOutput,\n    confidenceScore: Math.min(Math.max(confidenceScore, 0), 1),\n    documentCount: sourceCount\n  }\n}];\n",
+        "mode": "runOnceForAllItems"
       },
       "id": "b3b0d4f7-f3ca-449b-8025-c123d908ba0c",
       "name": "Extract Similarity Scores",
@@ -774,6 +774,7 @@
       "parameters": {
         "promptType": "define",
         "text": "<role>\nYou are a strict quality evaluator for RAG answers in a legal/HR context.\n</role>\n\n<task>\nEvaluate the provided answer and output a JSON object with score and reasoning.\nScore criteria:\n1. Source coverage: Does the answer cite specific documents, laws, or policies?\n2. Specificity: Is the answer detailed and specific, or vague and generic?\n3. Factual grounding: Is every claim backed by a retrieved source?\n4. Completeness: Does the answer fully address the question?\n\nScore scale:\n- 0.9-1.0: Direct source coverage, highly specific, fully answers\n- 0.7-0.89: Good source coverage, mostly specific, minor gaps\n- 0.5-0.69: Partial source coverage, significant gaps\n- 0.3-0.49: Limited sources, mostly generic\n- Below 0.3: No meaningful sources, not found or irrelevant\n</task>\n\nQuestion: {{ $json.chatInput }}\n\nAnswer to evaluate:\n{{ $json.output }}",
+        "hasOutputParser": true,
         "options": {}
       },
       "id": "9911fe9787d24d",
@@ -781,7 +782,7 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        2336,
+        2320,
         1600
       ]
     },
@@ -809,8 +810,8 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        2480,
-        1776
+        2464,
+        1840
       ],
       "id": "ea791a09-0c7e-485d-92ce-f6c31da9d7a2",
       "name": "Structured Output Parser"
@@ -1271,7 +1272,7 @@
   "meta": null,
   "pinData": {},
   "activeVersionId": null,
-  "versionCounter": 44,
+  "versionCounter": 57,
   "triggerCount": 0,
   "tags": [],
   "activeVersion": null
