@@ -330,7 +330,7 @@
         "promptType": "define",
         "text": "={{ $('Chat unify').item.json.chatInput }}",
         "options": {
-          "systemMessage": "=<role>\nYou are a specialized AI assistant for Legal and HR departments.\nRetrieve relevant information from the knowledge base and provide a clear, factual answer.\n</role>\n\n<question_classification>\nUser's question category:\n{{ $json.category }}\n\nAnswer only legal and HR-related questions.\n\nReject any other topics immediately.\n</question_classification>\n\n<instructions>\n\nBy default search for legal and HR documents even for simplest obvious questions.\n\n1. Answer ONLY from retrieved documents — never invent, guess, or extrapolate.\n2. ALWAYS include source references: \"Источник: [document name], раздел [section]\"\n3. Be to the point — the system wraps your answer in a template.\n4. DO NOT add confidence labels, disclaimers, or category framing.\n5. If no documents found: \"Информация по данному вопросу в доступных документах не найдена.\"\n6. For legal questions: mention applicable laws/regulations/articles/sections.\n7. For HR questions: mention applicable policies/document sections.\n8. Answer in Russian always.\n</instructions>\n",
+          "systemMessage": "=<role>\nYou are a specialized AI assistant for Legal and HR departments.\nRetrieve relevant information from the knowledge base and provide a clear, factual answer.\n</role>\n\n<max_length>\nLimit your answer to ~600 words, max 800 words. Because Telegam can't display more and fails on longer answers.\n</max_length>\n\n<question_classification>\nUser's question category:\n{{ $json.category }}\n\nAnswer only legal and HR-related questions.\n\nReject any other topics immediately.\n</question_classification>\n\n<instructions>\n\nBy default search for legal and HR documents even for simplest obvious questions.\n\n1. Answer ONLY from retrieved documents — never invent, guess, or extrapolate.\n2. ALWAYS include source references: \"Источник: [document name], раздел [section]\"\n3. Be to the point — the system wraps your answer in a template.\n4. DO NOT add confidence labels, disclaimers, or category framing.\n5. If no documents found: \"Информация по данному вопросу в доступных документах не найдена.\"\n6. For legal questions: mention applicable laws/regulations/articles/sections.\n7. For HR questions: mention applicable policies/document sections.\n8. Answer in Russian always.\n</instructions>\n",
           "returnIntermediateSteps": true
         }
       },
@@ -1561,39 +1561,6 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "79cf53fb-f71f-4989-aaa0-c508673c877b",
-              "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
-              "rightValue": "/start",
-              "operator": {
-                "type": "string",
-                "operation": "notEquals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        2368,
-        3728
-      ],
-      "id": "7eedbdc8-d486-4f15-bbaf-a79cc894a0ae",
-      "name": "If"
-    },
-    {
-      "parameters": {
         "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
         "text": "Приветствую! Я помощник по административным вопросам Aviaostar. Я консультирую по вопросам, касающимся кадровой политики и юриспруденции. С другими вопросами прошу обращаться к специалистам-людям.",
         "additionalFields": {
@@ -1639,6 +1606,39 @@
           "name": "Telegram account"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "79cf53fb-f71f-4989-aaa0-c508673c877b",
+              "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2368,
+        3728
+      ],
+      "id": "7eedbdc8-d486-4f15-bbaf-a79cc894a0ae",
+      "name": "Telegram /start"
     }
   ],
   "pinData": {},
@@ -2174,7 +2174,7 @@
       "main": [
         [
           {
-            "node": "If",
+            "node": "Telegram /start",
             "type": "main",
             "index": 0
           }
@@ -2244,7 +2244,7 @@
         ]
       ]
     },
-    "If": {
+    "Telegram /start": {
       "main": [
         [
           {
@@ -2269,7 +2269,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "bebddeb7-de6f-454b-9fa5-a6c05254310a",
+  "versionId": "fe266c7f-16ea-4f4f-8257-8fb6aa30531a",
   "meta": {
     "templateId": "5993",
     "templateCredsSetupCompleted": true,
